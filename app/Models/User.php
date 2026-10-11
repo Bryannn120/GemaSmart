@@ -22,7 +22,13 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'kampus_id',
     ];
+
+    public function kampus()
+    {
+        return $this->belongsTo(KampusMitra::class, 'kampus_id');
+    }
 
     /**
      * The attributes that should be hidden for serialization.

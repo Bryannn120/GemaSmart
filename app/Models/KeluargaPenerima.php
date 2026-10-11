@@ -13,7 +13,7 @@ class KeluargaPenerima extends Model
     protected $fillable = [
         'no_kk', 'kepala_keluarga', 'nik', 'alamat', 'desil',
         'wilayah_id', 'program_bantuan_id', 'status_validasi',
-        'user_id', 'status_kemandirian', 'is_flagged'
+        'user_id', 'pendamping_id', 'kampus_id', 'status_kemandirian', 'is_flagged'
     ];
 
     public function wilayah()
@@ -29,6 +29,16 @@ class KeluargaPenerima extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function pendamping()
+    {
+        return $this->belongsTo(User::class, 'pendamping_id');
+    }
+
+    public function kampusMitra()
+    {
+        return $this->belongsTo(KampusMitra::class, 'kampus_id');
     }
 
     public function laporanPenerimas()

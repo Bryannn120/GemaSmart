@@ -84,14 +84,14 @@
                     <form class="space-y-4" id="loginForm" method="POST" action="{{ route('login') }}" onsubmit="handleLoginSubmission()">
                         @csrf
                         
-                        <!-- Email Field -->
+                        <!-- Email / No KK Field -->
                         <div class="space-y-1.5">
-                            <label class="block font-label-lg text-label-lg text-text-primary" for="email">Alamat Email</label>
+                            <label class="block font-label-lg text-label-lg text-text-primary" for="login">Email Kedinasan atau Nomor KK (Warga)</label>
                             <div class="relative flex items-center">
-                                <span class="absolute left-3 text-text-tertiary material-symbols-outlined text-[20px] pointer-events-none">mail</span>
-                                <input class="w-full h-11 pl-10 pr-3.5 bg-canvas-bg rounded text-body-md font-body-md text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm @error('email') ring-2 ring-error/50 @enderror" id="email" name="email" value="{{ old('email') }}" placeholder="nama@sumbawakab.go.id atau email terdaftar" required="" type="email"/>
+                                <span class="absolute left-3 text-text-tertiary material-symbols-outlined text-[20px] pointer-events-none">account_circle</span>
+                                <input class="w-full h-11 pl-10 pr-3.5 bg-canvas-bg rounded text-body-md font-body-md text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm @error('login') ring-2 ring-error/50 @enderror" id="login" name="login" value="{{ old('login') }}" placeholder="Email ASN / Nomor KK Penerima" required="" type="text"/>
                             </div>
-                            @error('email')
+                            @error('login')
                                 <p class="text-error font-body-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>

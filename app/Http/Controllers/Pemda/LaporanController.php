@@ -9,6 +9,8 @@ use App\Models\KeluargaPenerima;
 use App\Models\Penyaluran;
 use App\Models\ValidasiCpcl;
 use App\Models\LaporanTumbuhKembang;
+use App\Models\LaporanPenerima;
+use App\Models\KampusMitra;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanController extends Controller
@@ -23,15 +25,44 @@ class LaporanController extends Controller
         $totalPenyaluran = Penyaluran::count();
         $totalValidasi = ValidasiCpcl::count();
         $totalLaporan = LaporanTumbuhKembang::count();
+        $totalLaporanWarga = LaporanPenerima::count();
 
         $keluarga_penerimaByStatus = KeluargaPenerima::selectRaw('status_validasi, count(*) as total')->groupBy('status_validasi')->get();
         $penyaluranByStatus = Penyaluran::selectRaw('status, count(*) as total')->groupBy('status')->get();
         $laporanByKondisi = LaporanTumbuhKembang::selectRaw('status_kondisi, count(*) as total')->groupBy('status_kondisi')->get();
 
+        // Mengambil seluruh Laporan / Feedback dari Penerima beserta relasinya
+        $laporanWargas = LaporanPenerima::with([
+            'keluargaPenerima.wilayah.parent',
+            'keluargaPenerima.programBantuan',
+            'keluargaPenerima.pendamping.kampus',
+            'keluargaPenerima.kampusMitra'
+        ])->latest()->get();
+
         return view('dashboard.pemda.laporan.index', compact(
-            'totalProgram', 'totalKeluargaPenerima', 'totalPenyaluran', 'totalValidasi', 'totalLaporan',
-            'keluarga_penerimaByStatus', 'penyaluranByStatus', 'laporanByKondisi'
+            'totalProgram', 'totalKeluargaPenerima', 'totalPenyaluran', 'totalValidasi', 'totalLaporan', 'totalLaporanWarga',
+            'keluarga_penerimaByStatus', 'penyaluranByStatus', 'laporanByKondisi', 'laporanWargas'
         ));
+    }
+
+    /**
+     * Detail laporan penerima warga
+     */
+    public function show(string $id)
+    {
+        $laporan = LaporanPenerima::with([
+            'keluargaPenerima.wilayah.parent',
+            'keluargaPenerima.programBantuan',
+            'keluargaPenerima.pendamping.kampus',
+            'keluargaPenerima.kampusMitra'
+        ])->findOrFail($id);
+
+        // Tandai sudah dibaca oleh pemda
+        if (!$laporan->is_read_by_pemda) {
+            $laporan->update(['is_read_by_pemda' => true]);
+        }
+
+        return view('dashboard.pemda.laporan.show', compact('laporan'));
     }
 
     /**
@@ -76,13 +107,6 @@ class LaporanController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.

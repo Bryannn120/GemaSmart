@@ -115,8 +115,6 @@
             </div>
             <div class="flex items-center gap-space-md">
                 <div class="hidden md:flex items-center gap-space-xs bg-status-verified-surface text-primary px-space-md py-1 rounded-full font-label-sm text-label-sm font-semibold"><span class="w-2 h-2 rounded-full bg-status-verified animate-pulse"></span><span>Server Aktif: Sumbawa-Node-01</span></div>
-                <button aria-label="Notifikasi" class="relative p-space-sm rounded-lg text-text-secondary hover:bg-surface-subtle hover:text-text-primary transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-error text-on-error font-label-sm text-label-sm flex items-center justify-center font-bold text-[10px]">3</span></button>
-                <div class="h-6 w-px bg-border-medium hidden sm:block"></div>
                 <div class="flex items-center gap-space-sm cursor-pointer">
                     <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
                     <span class="material-symbols-outlined text-text-secondary text-[20px]">keyboard_arrow_down</span>

@@ -64,6 +64,20 @@
             </div>
         @endif
 
+        @if ($errors->any())
+            <div class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 flex items-start gap-3 shadow-sm">
+                <span class="material-symbols-outlined text-red-600 text-[24px]">error</span>
+                <div class="text-sm">
+                    <p class="font-bold">Gagal memperbarui kata sandi:</p>
+                    <ul class="list-disc pl-5 mt-1 space-y-0.5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        @endif
+
         <!-- Welcome Banner -->
         <div class="bg-gradient-to-r from-gov-green-dark to-primary-container rounded-2xl p-6 sm:p-8 text-white shadow-lg mb-8 relative overflow-hidden">
             <div class="relative z-10 max-w-2xl">
@@ -198,6 +212,36 @@
                         <p class="text-xs text-gray-500 text-center py-4">Belum pernah mengirimkan laporan.</p>
                         @endforelse
                     </div>
+                </div>
+
+                <!-- Form Ubah Password Penerima -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2 mb-2">
+                        <span class="material-symbols-outlined text-green-700">lock_reset</span>
+                        Ubah Kata Sandi (Password)
+                    </h3>
+                    <p class="text-xs text-gray-500 mb-4">Ganti kata sandi bawaan (No. KK) Anda dengan kata sandi baru yang aman.</p>
+
+                    <form action="{{ route('profile.password.update') }}" method="POST" class="flex flex-col gap-3">
+                        @csrf
+                        @method('PUT')
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Password Saat Ini</label>
+                            <input type="password" name="current_password" required class="w-full text-sm rounded-lg border border-gray-300 p-2.5 focus:outline-none focus:ring-2 focus:ring-green-700" placeholder="Masukkan password saat ini (No. KK)"/>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Password Baru (Min. 8 Karakter)</label>
+                            <input type="password" name="password" required class="w-full text-sm rounded-lg border border-gray-300 p-2.5 focus:outline-none focus:ring-2 focus:ring-green-700" placeholder="Minimal 8 karakter"/>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Ulangi Password Baru</label>
+                            <input type="password" name="password_confirmation" required class="w-full text-sm rounded-lg border border-gray-300 p-2.5 focus:outline-none focus:ring-2 focus:ring-green-700" placeholder="Ketik ulang password baru"/>
+                        </div>
+                        <button type="submit" class="w-full bg-green-700 hover:bg-green-800 text-white py-2.5 px-4 rounded-lg font-semibold text-sm transition-colors flex items-center justify-center gap-2 shadow-sm mt-1">
+                            <span class="material-symbols-outlined text-[18px]">save</span>
+                            <span>Simpan Password Baru</span>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

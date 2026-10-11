@@ -19,26 +19,38 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+            'login' => ['required', 'string'],
+            'password' => ['required', 'string'],
             'captcha' => ['required', 'numeric'],
         ]);
 
         if ($request->captcha != session('captcha_answer')) {
             return back()->withErrors([
                 'captcha' => 'Jawaban penjumlahan salah.',
-            ])->onlyInput('email');
+            ])->onlyInput('login');
         }
 
         // Hapus session captcha setelah divalidasi
         $request->session()->forget('captcha_answer');
 
-        if (\Illuminate\Support\Facades\Auth::attempt($request->only('email', 'password'))) {
+        $loginInput = $request->login;
+        $password = $request->password;
+
+        // 1. Coba login normal via email
+        $attempt = Auth::attempt(['email' => $loginInput, 'password' => $password]);
+
+        // 2. Jika gagal atau loginInput bukan email, cek apakah itu Nomor KK (Penerima)
+        if (!$attempt) {
+            $keluarga = \App\Models\KeluargaPenerima::where('no_kk', $loginInput)->first();
+            if ($keluarga && $keluarga->user) {
+                $attempt = Auth::attempt(['id' => $keluarga->user_id, 'password' => $password]);
+            }
+        }
+
+        if ($attempt) {
             $request->session()->regenerate();
             
             // Redirect based on role
-            // Assume the users table has a 'role' column. 
-            // Roles: 'pemda', 'kampus', 'pendamping', 'validator'
             $role = Auth::user()->role ?? 'default';
             
             return match($role) {
@@ -52,8 +64,8 @@ class AuthController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'Email atau password yang Anda masukkan salah.',
-        ])->onlyInput('email');
+            'login' => 'Email / Nomor KK atau kata sandi yang Anda masukkan salah.',
+        ])->onlyInput('login');
     }
     
     public function logout(Request $request)

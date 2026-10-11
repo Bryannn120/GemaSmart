@@ -102,10 +102,6 @@
                     <div class="hidden md:flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-muted font-code-dense text-code-dense text-text-secondary">
                         <span class="w-2 h-2 rounded-full bg-status-verified animate-pulse"></span><span>Node-Mitra-02 Online</span>
                     </div>
-                    <button aria-label="Notifikasi" class="relative p-space-xs rounded-full text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button">
-                        <span class="material-symbols-outlined text-[22px]">notifications</span>
-                        <span class="absolute top-0.5 right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-error text-on-error font-label-sm text-label-sm font-bold">2</span>
-                    </button>
                     <div class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors">
                         <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
                             <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
