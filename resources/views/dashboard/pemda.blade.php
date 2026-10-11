@@ -711,7 +711,7 @@
                                             <span class="material-symbols-outlined text-error text-[18px]">badge</span>
                                             <span>Pengecekan NIK Ganda (Dukcapil Sumbawa)</span>
                                         </div>
-                                        <span class="text-error font-body-sm text-[11px] block font-semibold">Duplikasi Terdeteksi: 1 NIK 2 Poktan</span>
+                                        <span class="text-error font-body-sm text-[11px] block font-semibold">Duplikasi Terdeteksi: 1 NIK Terdaftar Ganda</span>
                                     </td>
                                     <td class="py-3.5 px-4 text-text-primary">
                                         <span class="font-medium">Desa Labuhan Burung</span>
@@ -841,10 +841,10 @@
 
                         <div class="p-3.5 rounded-xl bg-surface-subtle/70 border border-surface-subtle flex flex-col">
                             <div class="flex items-center justify-between text-text-tertiary mb-1">
-                                <span class="text-xs font-semibold">Poktan / Binaan</span>
-                                <span class="material-symbols-outlined text-[18px]">nature_people</span>
+                                <span class="text-xs font-semibold">Kluster Dampingan</span>
+                                <span class="material-symbols-outlined text-[18px]">hub</span>
                             </div>
-                            <span id="stat-poktan" class="text-xl font-bold font-code-dense text-text-primary">18 Poktan</span>
+                            <span id="stat-poktan" class="text-xl font-bold font-code-dense text-text-primary">18 Titik Dampingan</span>
                             <span id="stat-desa-count" class="text-[11px] text-text-tertiary mt-0.5">8 Desa Terjangkau</span>
                         </div>
                     </div>
@@ -918,7 +918,7 @@
                                     <thead>
                                         <tr class="border-b border-surface-subtle text-text-secondary">
                                             <th class="py-2 px-2.5">Desa</th>
-                                            <th class="py-2 px-2.5">Kelompok Binaan</th>
+                                            <th class="py-2 px-2.5">Kluster / Dusun Dampingan</th>
                                             <th class="py-2 px-2.5">Alokasi</th>
                                             <th class="py-2 px-2.5 text-right">Status Audit</th>
                                         </tr>
@@ -966,7 +966,7 @@
                         statusClass: 'bg-status-verified-surface text-primary border-primary/20',
                         survivalColor: 'text-status-verified',
                         iconBg: 'bg-gov-green-surface text-primary',
-                        poktan: '18 Kelompok',
+                        titikDampingan: '18 Titik Dampingan',
                         desaCount: '8 Desa Terjangkau',
                         trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
                         trenTarget: [250, 500, 750, 1050, 1300, 1450],
@@ -975,10 +975,10 @@
                         komoditasData: [45, 25, 15, 10, 5],
                         desilData: [480, 520, 310, 120, 20],
                         desaList: [
-                            { desa: 'Brang Bara', poktan: 'Tani Makmur Jaya', alokasi: '350 KK', status: 'Terverifikasi 100%' },
-                            { desa: 'Lempeh', poktan: 'Subur Mandiri', alokasi: '420 KK', status: 'Terverifikasi 100%' },
-                            { desa: 'Seketi', poktan: 'Harapan Sejahtera', alokasi: '380 KK', status: 'Monitoring Lapangan' },
-                            { desa: 'Uma Sima', poktan: 'Tunas Harapan', alokasi: '260 KK', status: 'Terverifikasi 100%' }
+                            { desa: 'Brang Bara', kluster: 'Dusun Brang Bara (45 KK Binaan)', alokasi: '350 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Lempeh', kluster: 'Dusun Lempeh Selatan (52 KK Binaan)', alokasi: '420 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Seketi', kluster: 'Dusun Seketi Baru (40 KK Binaan)', alokasi: '380 KK', status: 'Monitoring Lapangan' },
+                            { desa: 'Uma Sima', kluster: 'Dusun Uma Sima (35 KK Binaan)', alokasi: '260 KK', status: 'Terverifikasi 100%' }
                         ]
                     },
                     'Kecamatan Moyo Hilir': {
@@ -991,7 +991,7 @@
                         statusClass: 'bg-status-verified-surface text-primary border-primary/20',
                         survivalColor: 'text-status-verified',
                         iconBg: 'bg-gov-green-surface text-primary',
-                        poktan: '15 Kelompok',
+                        titikDampingan: '15 Titik Dampingan',
                         desaCount: '7 Desa Terjangkau',
                         trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
                         trenTarget: [200, 420, 650, 880, 1050, 1200],
@@ -1000,10 +1000,10 @@
                         komoditasData: [50, 30, 10, 6, 4],
                         desilData: [390, 450, 220, 75, 15],
                         desaList: [
-                            { desa: 'Kakiang', poktan: 'Karya Bersama', alokasi: '320 KK', status: 'Terverifikasi 100%' },
-                            { desa: 'Serading', poktan: 'Bina Tani', alokasi: '290 KK', status: 'Monitoring Lapangan' },
-                            { desa: 'Poto', poktan: 'Mekar Sari', alokasi: '310 KK', status: 'Terverifikasi 100%' },
-                            { desa: 'Berare', poktan: 'Tunas Baru', alokasi: '230 KK', status: 'Uji Petik Lapangan' }
+                            { desa: 'Kakiang', kluster: 'Dusun Kakiang Bawah (40 KK Binaan)', alokasi: '320 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Serading', kluster: 'Dusun Serading (38 KK Binaan)', alokasi: '290 KK', status: 'Monitoring Lapangan' },
+                            { desa: 'Poto', kluster: 'Dusun Poto Timur (42 KK Binaan)', alokasi: '310 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Berare', kluster: 'Dusun Berare Mandiri (30 KK Binaan)', alokasi: '230 KK', status: 'Uji Petik Lapangan' }
                         ]
                     },
                     'Kecamatan Moyo Utara': {
@@ -1016,7 +1016,7 @@
                         statusClass: 'bg-status-warning-surface text-secondary border-secondary/20',
                         survivalColor: 'text-secondary',
                         iconBg: 'bg-status-warning-surface text-secondary',
-                        poktan: '12 Kelompok',
+                        titikDampingan: '12 Titik Dampingan',
                         desaCount: '6 Desa Terjangkau',
                         trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
                         trenTarget: [180, 360, 540, 720, 880, 980],
@@ -1025,10 +1025,10 @@
                         komoditasData: [40, 35, 12, 8, 5],
                         desilData: [340, 320, 160, 55, 15],
                         desaList: [
-                            { desa: 'Sebewe', poktan: 'Harapan Maju', alokasi: '240 KK', status: 'Monitoring Intensif' },
-                            { desa: 'Kukin', poktan: 'Sinar Bahari', alokasi: '220 KK', status: 'Menunggu Validasi' },
-                            { desa: 'Baru Tahan', poktan: 'Maju Berkah', alokasi: '260 KK', status: 'Monitoring Lapangan' },
-                            { desa: 'Songkar', poktan: 'Pangan Sejahtera', alokasi: '170 KK', status: 'Terverifikasi 100%' }
+                            { desa: 'Sebewe', kluster: 'Dusun Sebewe (32 KK Binaan)', alokasi: '240 KK', status: 'Monitoring Intensif' },
+                            { desa: 'Kukin', kluster: 'Dusun Kukin Pesisir (28 KK Binaan)', alokasi: '220 KK', status: 'Menunggu Validasi' },
+                            { desa: 'Baru Tahan', kluster: 'Dusun Baru Tahan (36 KK Binaan)', alokasi: '260 KK', status: 'Monitoring Lapangan' },
+                            { desa: 'Songkar', kluster: 'Dusun Songkar (24 KK Binaan)', alokasi: '170 KK', status: 'Terverifikasi 100%' }
                         ]
                     },
                     'Kecamatan Utan': {
@@ -1041,7 +1041,7 @@
                         statusClass: 'bg-status-fraud-surface text-error border-error/20',
                         survivalColor: 'text-error',
                         iconBg: 'bg-status-fraud-surface text-error',
-                        poktan: '14 Kelompok',
+                        titikDampingan: '14 Titik Dampingan',
                         desaCount: '6 Desa Terdampak',
                         trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
                         trenTarget: [200, 400, 620, 820, 980, 1100],
@@ -1050,10 +1050,10 @@
                         komoditasData: [60, 20, 10, 6, 4],
                         desilData: [410, 260, 110, 30, 10],
                         desaList: [
-                            { desa: 'Labuhan Burung', poktan: 'Nelayan Tani Berdikari', alokasi: '280 KK', status: 'Investigasi Lapangan' },
-                            { desa: 'Motong', poktan: 'Tunas Utan', alokasi: '210 KK', status: 'Anomali Survival 44%' },
-                            { desa: 'Sabedo', poktan: 'Lestari Makmur', alokasi: '190 KK', status: 'Perlu Uji Petik Ulang' },
-                            { desa: 'Pukat', poktan: 'Subur Bahari', alokasi: '140 KK', status: 'Monitoring Intensif' }
+                            { desa: 'Labuhan Burung', kluster: 'Dusun Burung Pesisir (36 KK Binaan)', alokasi: '280 KK', status: 'Investigasi Lapangan' },
+                            { desa: 'Motong', kluster: 'Dusun Motong Timur (30 KK Binaan)', alokasi: '210 KK', status: 'Anomali Survival 44%' },
+                            { desa: 'Sabedo', kluster: 'Dusun Sabedo (26 KK Binaan)', alokasi: '190 KK', status: 'Perlu Uji Petik Ulang' },
+                            { desa: 'Pukat', kluster: 'Dusun Pukat Makmur (20 KK Binaan)', alokasi: '140 KK', status: 'Monitoring Intensif' }
                         ]
                     },
                     'Kecamatan Plampang': {
@@ -1066,7 +1066,7 @@
                         statusClass: 'bg-status-warning-surface text-secondary border-secondary/20',
                         survivalColor: 'text-secondary',
                         iconBg: 'bg-status-warning-surface text-secondary',
-                        poktan: '13 Kelompok',
+                        titikDampingan: '13 Titik Dampingan',
                         desaCount: '6 Desa Terjangkau',
                         trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
                         trenTarget: [180, 360, 560, 740, 900, 1050],
@@ -1075,10 +1075,10 @@
                         komoditasData: [55, 20, 15, 6, 4],
                         desilData: [320, 230, 105, 25, 10],
                         desaList: [
-                            { desa: 'Sepakat', poktan: 'Tani Sepakat', alokasi: '230 KK', status: 'Menunggu Uji Petik' },
-                            { desa: 'Plampang', poktan: 'Sinar Tani Mandiri', alokasi: '210 KK', status: 'Monitoring Lapangan' },
-                            { desa: 'Teluk Santong', poktan: 'Bahari Subur', alokasi: '150 KK', status: 'Terverifikasi 100%' },
-                            { desa: 'Muer', poktan: 'Tunas Harapan', alokasi: '100 KK', status: 'Perlu Konfirmasi CPCL' }
+                            { desa: 'Sepakat', kluster: 'Dusun Sepakat Jaya (31 KK Binaan)', alokasi: '230 KK', status: 'Menunggu Uji Petik' },
+                            { desa: 'Plampang', kluster: 'Dusun Plampang Tengah (29 KK Binaan)', alokasi: '210 KK', status: 'Monitoring Lapangan' },
+                            { desa: 'Teluk Santong', kluster: 'Dusun Teluk (22 KK Binaan)', alokasi: '150 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Muer', kluster: 'Dusun Muer (16 KK Binaan)', alokasi: '100 KK', status: 'Perlu Konfirmasi CPCL' }
                         ]
                     },
                     'Kecamatan Empang': {
@@ -1091,7 +1091,7 @@
                         statusClass: 'bg-status-verified-surface text-primary border-primary/20',
                         survivalColor: 'text-status-verified',
                         iconBg: 'bg-gov-green-surface text-primary',
-                        poktan: '11 Kelompok',
+                        titikDampingan: '11 Titik Dampingan',
                         desaCount: '5 Desa Terjangkau',
                         trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
                         trenTarget: [150, 300, 460, 620, 760, 880],
@@ -1100,10 +1100,10 @@
                         komoditasData: [52, 28, 10, 6, 4],
                         desilData: [310, 290, 130, 40, 10],
                         desaList: [
-                            { desa: 'Empang Bawa', poktan: 'Tani Makmur Empang', alokasi: '260 KK', status: 'Terverifikasi 100%' },
-                            { desa: 'Empang Atas', poktan: 'Subur Makmur', alokasi: '220 KK', status: 'Terverifikasi 100%' },
-                            { desa: 'Jotang', poktan: 'Lembah Hijau', alokasi: '180 KK', status: 'Monitoring Lapangan' },
-                            { desa: 'Bonto', poktan: 'Tunas Subur', alokasi: '120 KK', status: 'Terverifikasi 100%' }
+                            { desa: 'Empang Bawa', kluster: 'Dusun Empang Bawa (35 KK Binaan)', alokasi: '260 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Empang Atas', kluster: 'Dusun Empang Atas (30 KK Binaan)', alokasi: '220 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Jotang', kluster: 'Dusun Jotang Subur (25 KK Binaan)', alokasi: '180 KK', status: 'Monitoring Lapangan' },
+                            { desa: 'Bonto', kluster: 'Dusun Bonto (18 KK Binaan)', alokasi: '120 KK', status: 'Terverifikasi 100%' }
                         ]
                     },
                     'Kecamatan Alas': {
@@ -1116,7 +1116,7 @@
                         statusClass: 'bg-status-verified-surface text-primary border-primary/20',
                         survivalColor: 'text-status-verified',
                         iconBg: 'bg-gov-green-surface text-primary',
-                        poktan: '12 Kelompok',
+                        titikDampingan: '12 Titik Dampingan',
                         desaCount: '6 Desa Terjangkau',
                         trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
                         trenTarget: [160, 320, 500, 670, 820, 950],
@@ -1125,10 +1125,10 @@
                         komoditasData: [48, 32, 10, 6, 4],
                         desilData: [360, 330, 140, 32, 8],
                         desaList: [
-                            { desa: 'Luar', poktan: 'Alas Subur Berkah', alokasi: '240 KK', status: 'Terverifikasi 100%' },
-                            { desa: 'Dalam', poktan: 'Bumi Lestari', alokasi: '210 KK', status: 'Terverifikasi 100%' },
-                            { desa: 'Kalimango', poktan: 'Tunas Muda Alas', alokasi: '230 KK', status: 'Monitoring Lapangan' },
-                            { desa: 'Juring', poktan: 'Karya Mandiri', alokasi: '190 KK', status: 'Terverifikasi 100%' }
+                            { desa: 'Luar', kluster: 'Dusun Luar (32 KK Binaan)', alokasi: '240 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Dalam', kluster: 'Dusun Dalam (28 KK Binaan)', alokasi: '210 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Kalimango', kluster: 'Dusun Kalimango (30 KK Binaan)', alokasi: '230 KK', status: 'Monitoring Lapangan' },
+                            { desa: 'Juring', kluster: 'Dusun Juring (25 KK Binaan)', alokasi: '190 KK', status: 'Terverifikasi 100%' }
                         ]
                     }
                 };
@@ -1153,7 +1153,7 @@
                         statusClass: 'bg-status-verified-surface text-primary border-primary/20',
                         survivalColor: 'text-status-verified',
                         iconBg: 'bg-gov-green-surface text-primary',
-                        poktan: '10 Kelompok',
+                        titikDampingan: '10 Titik Dampingan',
                         desaCount: '5 Desa Terjangkau',
                         trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
                         trenTarget: [140, 280, 440, 600, 730, 850],
@@ -1162,10 +1162,10 @@
                         komoditasData: [50, 25, 12, 8, 5],
                         desilData: [290, 280, 130, 45, 15],
                         desaList: [
-                            { desa: 'Desa Pusat', poktan: 'Kelompok Tani Makmur', alokasi: '250 KK', status: 'Terverifikasi 100%' },
-                            { desa: 'Desa Timur', poktan: 'Tunas Harapan Baru', alokasi: '200 KK', status: 'Monitoring Lapangan' },
-                            { desa: 'Desa Barat', poktan: 'Karya Bersama Lestari', alokasi: '180 KK', status: 'Terverifikasi 100%' },
-                            { desa: 'Desa Selatan', poktan: 'Bina Tani Sejahtera', alokasi: '130 KK', status: 'Terverifikasi 100%' }
+                            { desa: 'Desa Pusat', kluster: 'Dusun Krajan (35 KK Binaan)', alokasi: '250 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Desa Timur', kluster: 'Dusun Harapan Baru (28 KK Binaan)', alokasi: '200 KK', status: 'Monitoring Lapangan' },
+                            { desa: 'Desa Barat', kluster: 'Dusun Barat Lestari (25 KK Binaan)', alokasi: '180 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Desa Selatan', kluster: 'Dusun Selatan Sejahtera (18 KK Binaan)', alokasi: '130 KK', status: 'Terverifikasi 100%' }
                         ]
                     };
                 }
@@ -1202,7 +1202,7 @@
                     statSurvivalElem.className = `text-xl font-bold font-code-dense ${data.survivalColor}`;
                     document.getElementById('stat-status-tanaman').textContent = data.statusTanaman;
 
-                    document.getElementById('stat-poktan').textContent = data.poktan;
+                    document.getElementById('stat-poktan').textContent = data.titikDampingan || data.poktan;
                     document.getElementById('stat-desa-count').textContent = data.desaCount;
 
                     // Update Tabel Desa
@@ -1221,7 +1221,7 @@
 
                         tr.innerHTML = `
                             <td class="py-2 px-2.5 font-semibold text-text-primary">${item.desa}</td>
-                            <td class="py-2 px-2.5 text-text-secondary">${item.poktan}</td>
+                            <td class="py-2 px-2.5 text-text-secondary">${item.kluster || item.poktan}</td>
                             <td class="py-2 px-2.5 font-code-dense font-medium">${item.alokasi}</td>
                             <td class="py-2 px-2.5 text-right">
                                 <span class="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold ${badgeStyle}">${item.status}</span>
