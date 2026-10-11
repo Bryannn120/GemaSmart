@@ -29,8 +29,8 @@
             <h3 class="font-headline-sm text-headline-sm text-text-primary border-b border-border-medium pb-2">Data Laporan Pendamping</h3>
             
             <div class="flex flex-col gap-1">
-                <span class="font-label-sm text-text-secondary">KeluargaPenerima (CPCL)</span>
-                <span class="font-body-md text-text-primary font-semibold">{{ $antrean->keluarga_penerima->nama ?? '-' }} ({{ $antrean->keluarga_penerima->nik ?? '-' }})</span>
+                <span class="font-label-sm text-text-secondary">Keluarga Penerima (CPCL)</span>
+                <span class="font-body-md text-text-primary font-semibold">{{ $antrean->keluarga_penerima->kepala_keluarga ?? $antrean->keluarga_penerima->nama ?? '-' }} (NIK: {{ $antrean->keluarga_penerima->nik ?? '-' }})</span>
             </div>
             
             <div class="flex flex-col gap-1">

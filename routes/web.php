@@ -39,6 +39,7 @@ Route::middleware(['auth', 'role:pemda'])->group(function () {
         Route::resource('/validator', \App\Http\Controllers\Pemda\ValidatorController::class);
         Route::resource('/data-penerima', \App\Http\Controllers\Pemda\DataPenerimaController::class);
         Route::resource('/penyaluran-bibit', \App\Http\Controllers\Pemda\PenyaluranBibitController::class);
+        Route::resource('/validasi-lapangan', \App\Http\Controllers\Pemda\ValidasiLapanganController::class);
         Route::get('/monitoring/kecamatan/{id}', [\App\Http\Controllers\Pemda\MonitoringController::class, 'getKecamatanDetail'])->name('monitoring.kecamatan-detail');
         Route::resource('/monitoring', \App\Http\Controllers\Pemda\MonitoringController::class);
         Route::get('/laporan/cetak-pdf', [\App\Http\Controllers\Pemda\LaporanController::class, 'cetakPdf'])->name('laporan.pdf');
@@ -79,7 +80,7 @@ Route::middleware(['auth', 'role:pendamping'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:validator'])->group(function () {
-    Route::get('/dashboard/validator', function () { return view('dashboard.validator'); })->name('dashboard.validator');
+    Route::get('/dashboard/validator', [\App\Http\Controllers\Validator\DashboardController::class, 'index'])->name('dashboard.validator');
     Route::prefix('validator')->name('validator.')->group(function () {
         Route::resource('/antrean', \App\Http\Controllers\Validator\AntreanController::class);
         Route::resource('/riwayat', \App\Http\Controllers\Validator\RiwayatController::class);

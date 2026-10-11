@@ -34,8 +34,8 @@
                     <tr class="hover:bg-surface-subtle transition-colors group">
                         <td class="py-3.5 px-4 font-semibold text-text-primary">{{ \Carbon\Carbon::parse($antrean->tgl_survei)->format('d M Y') }}</td>
                         <td class="py-3.5 px-4">
-                            <span class="font-semibold text-text-primary block">{{ $antrean->keluarga_penerima->nama ?? '-' }}</span>
-                            <span class="text-text-tertiary font-code-dense text-[12px]">{{ $antrean->keluarga_penerima->nik ?? '-' }}</span>
+                            <span class="font-semibold text-text-primary block">{{ $antrean->keluarga_penerima->kepala_keluarga ?? $antrean->keluarga_penerima->nama ?? '-' }}</span>
+                            <span class="text-text-tertiary font-code-dense text-[12px]">NIK: {{ $antrean->keluarga_penerima->nik ?? '-' }}</span>
                         </td>
                         <td class="py-3.5 px-4 text-text-primary">{{ $antrean->pendamping->name ?? '-' }}</td>
                         <td class="py-3.5 px-4 text-text-primary truncate max-w-[200px]">{{ $antrean->catatan ?? 'Tidak ada catatan' }}</td>

@@ -11,6 +11,7 @@ use App\Models\IndikatorKemandirian;
 use App\Models\PenilaianKemandirian;
 use App\Models\DetailPenilaianKemandirian;
 use App\Models\LaporanPenerima;
+use App\Models\ValidasiCpcl;
 use Illuminate\Support\Facades\Hash;
 
 class KeluargaPenerimaSeeder extends Seeder
@@ -67,9 +68,16 @@ class KeluargaPenerimaSeeder extends Seeder
                 'status_perkembangan' => 'Maju'
             ]);
 
-            DetailPenilaianKemandirian::create(['penilaian_kemandirian_id' => $penilaian->id, 'indikator_kemandirian_id' => $indikator1->id, 'nilai' => rand(50,100)]);
-            DetailPenilaianKemandirian::create(['penilaian_kemandirian_id' => $penilaian->id, 'indikator_kemandirian_id' => $indikator2->id, 'nilai' => rand(50,100)]);
-            DetailPenilaianKemandirian::create(['penilaian_kemandirian_id' => $penilaian->id, 'indikator_kemandirian_id' => $indikator3->id, 'nilai' => rand(50,100)]);
+            // Buat tugas validasi CPCL untuk validator
+            ValidasiCpcl::create([
+                'keluarga_penerima_id' => $kk->id,
+                'pendamping_id' => $pendamping->id,
+                'tgl_survei' => now()->subDays($i)->toDateString(),
+                'status_kelayakan' => 'review',
+                'status_approval_pemda' => 'menunggu',
+                'catatan' => 'Survei lahan dan berkas CPCL untuk ' . $kk->kepala_keluarga . ' telah selesai di lapangan. Menunggu verifikasi.',
+                'foto_lahan_url' => null,
+            ]);
         }
     }
 }

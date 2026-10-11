@@ -28,16 +28,18 @@
                             <span class="material-symbols-outlined absolute right-2 top-2.5 text-text-secondary text-[18px] pointer-events-none">expand_more</span>
                         </div>
                         <div class="relative bg-canvas-bg rounded-xl shadow-sm">
-                            <select class="appearance-none font-label-md text-label-md text-text-primary bg-transparent pl-space-md pr-8 py-2 rounded-xl cursor-pointer focus:outline-none focus:bg-surface-subtle">
-                                <option>Semua Kecamatan (24)</option>
-                                <option>Kecamatan Sumbawa</option>
-                                <option>Kecamatan Moyo Hilir</option>
-                                <option>Kecamatan Moyo Utara</option>
-                                <option>Kecamatan Alas</option>
-                                <option>Kecamatan Utan</option>
-                                <option>Kecamatan Labuhan Badas</option>
-                                <option>Kecamatan Plampang</option>
-                                <option>Kecamatan Empang</option>
+                            <select id="select-kecamatan-quick" onchange="if(this.value && this.value !== 'Semua') openKecamatanModal(this.value)" class="appearance-none font-label-md text-label-md text-text-primary bg-transparent pl-space-md pr-8 py-2 rounded-xl cursor-pointer focus:outline-none focus:bg-surface-subtle">
+                                <option value="Semua">-- Pilih Kecamatan untuk Lihat Grafik --</option>
+                                <option value="Kecamatan Sumbawa">Kecamatan Sumbawa</option>
+                                <option value="Kecamatan Moyo Hilir">Kecamatan Moyo Hilir</option>
+                                <option value="Kecamatan Moyo Utara">Kecamatan Moyo Utara</option>
+                                <option value="Kecamatan Alas">Kecamatan Alas</option>
+                                <option value="Kecamatan Utan">Kecamatan Utan</option>
+                                <option value="Kecamatan Labuhan Badas">Kecamatan Labuhan Badas</option>
+                                <option value="Kecamatan Plampang">Kecamatan Plampang</option>
+                                <option value="Kecamatan Empang">Kecamatan Empang</option>
+                                <option value="Kecamatan Moyo Hulu">Kecamatan Moyo Hulu</option>
+                                <option value="Kecamatan Lunyuk">Kecamatan Lunyuk</option>
                             </select>
                             <span class="material-symbols-outlined absolute right-2 top-2.5 text-text-secondary text-[18px] pointer-events-none">expand_more</span>
                         </div>
@@ -194,42 +196,61 @@
                                 <!-- Overlay Administrative Pins -->
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
                                 
-                                <!-- Pinned locations -->
-                                <div class="absolute top-1/4 left-1/3 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 transition-transform">
-                                    <span class="w-2 h-2 rounded-full bg-status-verified animate-ping"></span>
-                                    <span class="font-label-sm text-label-sm font-bold text-text-primary">Sumbawa Kota (92%)</span>
-                                </div>
-                                <div class="absolute top-1/2 left-1/4 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 transition-transform">
-                                    <span class="w-2 h-2 rounded-full bg-status-verified"></span>
-                                    <span class="font-label-sm text-label-sm font-bold text-text-primary">Utan (78%)</span>
-                                </div>
-                                <div class="absolute top-1/3 right-1/4 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 transition-transform">
-                                    <span class="w-2 h-2 rounded-full bg-status-warning"></span>
-                                    <span class="font-label-sm text-label-sm font-bold text-text-primary">Plampang (64%)</span>
-                                </div>
-                                <div class="absolute bottom-1/4 right-1/3 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 transition-transform">
-                                    <span class="w-2 h-2 rounded-full bg-status-verified"></span>
-                                    <span class="font-label-sm text-label-sm font-bold text-text-primary">Empang (88%)</span>
-                                </div>
-                                <div class="absolute top-16 right-12 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 transition-transform">
-                                    <span class="w-2 h-2 rounded-full bg-error"></span>
-                                    <span class="font-label-sm text-label-sm font-bold text-error">Lab. Burung (46.2%)</span>
-                                </div>
+                                <!-- Pinned locations (Clickable to show Graphs) -->
+                                <button type="button" onclick="openKecamatanModal('Kecamatan Sumbawa')" class="absolute top-1/4 left-1/3 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-110 hover:shadow-lg hover:ring-2 hover:ring-primary transition-all text-left group">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-status-verified animate-ping"></span>
+                                    <span class="font-label-sm text-label-sm font-bold text-text-primary group-hover:text-primary">Sumbawa (92.4%)</span>
+                                    <span class="material-symbols-outlined text-[14px] text-primary">bar_chart</span>
+                                </button>
+                                <button type="button" onclick="openKecamatanModal('Kecamatan Utan')" class="absolute top-1/2 left-1/4 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-110 hover:shadow-lg hover:ring-2 hover:ring-error transition-all text-left group">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-error"></span>
+                                    <span class="font-label-sm text-label-sm font-bold text-error">Utan (46.2%)</span>
+                                    <span class="material-symbols-outlined text-[14px] text-error">bar_chart</span>
+                                </button>
+                                <button type="button" onclick="openKecamatanModal('Kecamatan Plampang')" class="absolute top-1/3 right-1/4 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-110 hover:shadow-lg hover:ring-2 hover:ring-secondary transition-all text-left group">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-status-warning"></span>
+                                    <span class="font-label-sm text-label-sm font-bold text-text-primary group-hover:text-secondary">Plampang (64%)</span>
+                                    <span class="material-symbols-outlined text-[14px] text-secondary">bar_chart</span>
+                                </button>
+                                <button type="button" onclick="openKecamatanModal('Kecamatan Empang')" class="absolute bottom-1/4 right-1/3 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-110 hover:shadow-lg hover:ring-2 hover:ring-primary transition-all text-left group">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-status-verified"></span>
+                                    <span class="font-label-sm text-label-sm font-bold text-text-primary group-hover:text-primary">Empang (88%)</span>
+                                    <span class="material-symbols-outlined text-[14px] text-primary">bar_chart</span>
+                                </button>
+                                <button type="button" onclick="openKecamatanModal('Kecamatan Alas')" class="absolute top-16 left-12 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-110 hover:shadow-lg hover:ring-2 hover:ring-primary transition-all text-left group">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-status-verified"></span>
+                                    <span class="font-label-sm text-label-sm font-bold text-text-primary group-hover:text-primary">Alas (81%)</span>
+                                    <span class="material-symbols-outlined text-[14px] text-primary">bar_chart</span>
+                                </button>
+                                <button type="button" onclick="openKecamatanModal('Kecamatan Moyo Hilir')" class="absolute top-16 right-16 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-110 hover:shadow-lg hover:ring-2 hover:ring-primary transition-all text-left group">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-status-verified"></span>
+                                    <span class="font-label-sm text-label-sm font-bold text-text-primary group-hover:text-primary">Moyo Hilir (86%)</span>
+                                    <span class="material-symbols-outlined text-[14px] text-primary">bar_chart</span>
+                                </button>
                                 
-                                <!-- Bottom map controls -->
+                                <!-- Bottom map controls & click guidance -->
                                 <div class="absolute bottom-3 left-3 bg-canvas-bg/90 backdrop-blur-md px-3 py-1.5 rounded-lg shadow flex items-center gap-3 text-text-secondary font-label-sm text-label-sm">
-                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">satellite_alt</span> Citra Satelit</span>
+                                    <span class="flex items-center gap-1 text-primary font-semibold"><span class="material-symbols-outlined text-[15px]">touch_app</span> Klik pin untuk lihat grafik</span>
                                     <span class="h-3 w-px bg-border-medium"></span>
                                     <span>24 Titik Pantau Aktif</span>
+                                </div>
+                                <div class="absolute bottom-3 right-3">
+                                    <a href="{{ route('pemda.monitoring.index') }}" class="px-2.5 py-1 rounded-lg bg-primary-container text-white text-xs font-semibold hover:bg-gov-green-dark transition-colors shadow flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[14px]">map</span>
+                                        <span>Buka Peta GIS</span>
+                                    </a>
                                 </div>
                             </div>
                             
                             <!-- Top Distribution Clusters Table -->
                             <div class="mt-space-md">
                                 <div class="flex items-center justify-between mb-space-sm">
-                                    <span class="font-label-lg text-label-lg text-text-primary">Kluster Wilayah Prioritas Penyaluran</span>
-                                    <a class="text-primary font-label-sm text-label-sm hover:underline font-semibold flex items-center" href="{{ route('pemda.master-data.wilayah.index') }}">
-                                        Lihat 24 Kecamatan
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-label-lg text-label-lg text-text-primary font-bold">Kluster Wilayah Prioritas Penyaluran</span>
+                                        <span class="text-xs text-text-tertiary">(Klik baris untuk buka grafik)</span>
+                                    </div>
+                                    <a class="text-primary font-label-sm text-label-sm hover:underline font-semibold flex items-center" href="{{ route('pemda.monitoring.index') }}">
+                                        Monitoring Lengkap
                                         <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
                                     </a>
                                 </div>
@@ -242,13 +263,14 @@
                                                 <th class="py-2.5 px-3">Bibit Terkirim</th>
                                                 <th class="py-2.5 px-3">Survival Rate</th>
                                                 <th class="py-2.5 px-3">Status Evaluasi</th>
+                                                <th class="py-2.5 px-3 text-right">Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-surface-muted font-body-md text-body-md">
-                                            <tr class="hover:bg-surface-subtle/70 transition-colors">
+                                            <tr onclick="openKecamatanModal('Kecamatan Sumbawa')" class="hover:bg-gov-green-surface/40 cursor-pointer transition-colors group">
                                                 <td class="py-3 px-3 font-semibold text-text-primary flex items-center gap-2">
                                                     <span class="material-symbols-outlined text-primary-container text-[18px]">location_on</span>
-                                                    Kecamatan Sumbawa
+                                                    <span class="group-hover:text-primary transition-colors">Kecamatan Sumbawa</span>
                                                 </td>
                                                 <td class="py-3 px-3 font-code-dense text-code-dense">1.450 KK</td>
                                                 <td class="py-3 px-3">
@@ -259,11 +281,17 @@
                                                 <td class="py-3 px-3">
                                                     <span class="inline-flex items-center px-space-sm py-0.5 rounded-full font-label-sm text-label-sm bg-status-verified-surface text-primary font-bold">Aman</span>
                                                 </td>
+                                                <td class="py-3 px-3 text-right">
+                                                    <button type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gov-green-surface text-primary hover:bg-primary hover:text-white font-label-sm text-xs font-semibold transition-colors shadow-sm">
+                                                        <span class="material-symbols-outlined text-[15px]">bar_chart</span>
+                                                        <span>Lihat Grafik</span>
+                                                    </button>
+                                                </td>
                                             </tr>
-                                            <tr class="hover:bg-surface-subtle/70 transition-colors">
+                                            <tr onclick="openKecamatanModal('Kecamatan Moyo Hilir')" class="hover:bg-gov-green-surface/40 cursor-pointer transition-colors group">
                                                 <td class="py-3 px-3 font-semibold text-text-primary flex items-center gap-2">
                                                     <span class="material-symbols-outlined text-primary-container text-[18px]">location_on</span>
-                                                    Kecamatan Moyo Hilir
+                                                    <span class="group-hover:text-primary transition-colors">Kecamatan Moyo Hilir</span>
                                                 </td>
                                                 <td class="py-3 px-3 font-code-dense text-code-dense">1.200 KK</td>
                                                 <td class="py-3 px-3">
@@ -274,11 +302,17 @@
                                                 <td class="py-3 px-3">
                                                     <span class="inline-flex items-center px-space-sm py-0.5 rounded-full font-label-sm text-label-sm bg-status-verified-surface text-primary font-bold">Aman</span>
                                                 </td>
+                                                <td class="py-3 px-3 text-right">
+                                                    <button type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gov-green-surface text-primary hover:bg-primary hover:text-white font-label-sm text-xs font-semibold transition-colors shadow-sm">
+                                                        <span class="material-symbols-outlined text-[15px]">bar_chart</span>
+                                                        <span>Lihat Grafik</span>
+                                                    </button>
+                                                </td>
                                             </tr>
-                                            <tr class="hover:bg-surface-subtle/70 transition-colors">
+                                            <tr onclick="openKecamatanModal('Kecamatan Moyo Utara')" class="hover:bg-gov-green-surface/40 cursor-pointer transition-colors group">
                                                 <td class="py-3 px-3 font-semibold text-text-primary flex items-center gap-2">
                                                     <span class="material-symbols-outlined text-primary-container text-[18px]">location_on</span>
-                                                    Kecamatan Moyo Utara
+                                                    <span class="group-hover:text-secondary transition-colors">Kecamatan Moyo Utara</span>
                                                 </td>
                                                 <td class="py-3 px-3 font-code-dense text-code-dense">980 KK</td>
                                                 <td class="py-3 px-3">
@@ -289,11 +323,17 @@
                                                 <td class="py-3 px-3">
                                                     <span class="inline-flex items-center px-space-sm py-0.5 rounded-full font-label-sm text-label-sm bg-status-warning-surface text-secondary font-bold">Perhatian</span>
                                                 </td>
+                                                <td class="py-3 px-3 text-right">
+                                                    <button type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-status-warning-surface text-secondary hover:bg-secondary hover:text-white font-label-sm text-xs font-semibold transition-colors shadow-sm">
+                                                        <span class="material-symbols-outlined text-[15px]">bar_chart</span>
+                                                        <span>Lihat Grafik</span>
+                                                    </button>
+                                                </td>
                                             </tr>
-                                            <tr class="hover:bg-surface-subtle/70 transition-colors">
+                                            <tr onclick="openKecamatanModal('Kecamatan Utan')" class="hover:bg-status-fraud-surface/40 cursor-pointer transition-colors group">
                                                 <td class="py-3 px-3 font-semibold text-text-primary flex items-center gap-2">
-                                                    <span class="material-symbols-outlined text-primary-container text-[18px]">location_on</span>
-                                                    Kecamatan Utan
+                                                    <span class="material-symbols-outlined text-error text-[18px]">location_on</span>
+                                                    <span class="group-hover:text-error transition-colors">Kecamatan Utan</span>
                                                 </td>
                                                 <td class="py-3 px-3 font-code-dense text-code-dense">1.100 KK</td>
                                                 <td class="py-3 px-3">
@@ -304,11 +344,17 @@
                                                 <td class="py-3 px-3">
                                                     <span class="inline-flex items-center px-space-sm py-0.5 rounded-full font-label-sm text-label-sm bg-status-fraud-surface text-error font-bold">Anomali</span>
                                                 </td>
+                                                <td class="py-3 px-3 text-right">
+                                                    <button type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-status-fraud-surface text-error hover:bg-error hover:text-white font-label-sm text-xs font-semibold transition-colors shadow-sm">
+                                                        <span class="material-symbols-outlined text-[15px]">bar_chart</span>
+                                                        <span>Lihat Grafik</span>
+                                                    </button>
+                                                </td>
                                             </tr>
-                                            <tr class="hover:bg-surface-subtle/70 transition-colors">
+                                            <tr onclick="openKecamatanModal('Kecamatan Plampang')" class="hover:bg-gov-green-surface/40 cursor-pointer transition-colors group">
                                                 <td class="py-3 px-3 font-semibold text-text-primary flex items-center gap-2">
                                                     <span class="material-symbols-outlined text-primary-container text-[18px]">location_on</span>
-                                                    Kecamatan Plampang
+                                                    <span class="group-hover:text-secondary transition-colors">Kecamatan Plampang</span>
                                                 </td>
                                                 <td class="py-3 px-3 font-code-dense text-code-dense">1.050 KK</td>
                                                 <td class="py-3 px-3">
@@ -318,6 +364,33 @@
                                                 <td class="py-3 px-3 font-semibold text-secondary">64.0%</td>
                                                 <td class="py-3 px-3">
                                                     <span class="inline-flex items-center px-space-sm py-0.5 rounded-full font-label-sm text-label-sm bg-status-warning-surface text-secondary font-bold">Perhatian</span>
+                                                </td>
+                                                <td class="py-3 px-3 text-right">
+                                                    <button type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-status-warning-surface text-secondary hover:bg-secondary hover:text-white font-label-sm text-xs font-semibold transition-colors shadow-sm">
+                                                        <span class="material-symbols-outlined text-[15px]">bar_chart</span>
+                                                        <span>Lihat Grafik</span>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr onclick="openKecamatanModal('Kecamatan Empang')" class="hover:bg-gov-green-surface/40 cursor-pointer transition-colors group">
+                                                <td class="py-3 px-3 font-semibold text-text-primary flex items-center gap-2">
+                                                    <span class="material-symbols-outlined text-primary-container text-[18px]">location_on</span>
+                                                    <span class="group-hover:text-primary transition-colors">Kecamatan Empang</span>
+                                                </td>
+                                                <td class="py-3 px-3 font-code-dense text-code-dense">880 KK</td>
+                                                <td class="py-3 px-3">
+                                                    <span class="font-semibold text-text-primary">780 KK</span>
+                                                    <span class="text-text-tertiary font-body-sm text-body-sm block">88.6%</span>
+                                                </td>
+                                                <td class="py-3 px-3 font-semibold text-status-verified">88.5%</td>
+                                                <td class="py-3 px-3">
+                                                    <span class="inline-flex items-center px-space-sm py-0.5 rounded-full font-label-sm text-label-sm bg-status-verified-surface text-primary font-bold">Aman</span>
+                                                </td>
+                                                <td class="py-3 px-3 text-right">
+                                                    <button type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gov-green-surface text-primary hover:bg-primary hover:text-white font-label-sm text-xs font-semibold transition-colors shadow-sm">
+                                                        <span class="material-symbols-outlined text-[15px]">bar_chart</span>
+                                                        <span>Lihat Grafik</span>
+                                                    </button>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -707,4 +780,659 @@
                     </div>
                 </div>
             </div>
+
+            <!-- MODAL DETAIL & GRAFIK SEBARAN KECAMATAN -->
+            <div id="modal-kecamatan-grafik" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-sm transition-all duration-300 opacity-0 pointer-events-none">
+                <div id="modal-kecamatan-card" class="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto bg-canvas-bg rounded-2xl shadow-2xl border border-surface-subtle p-5 sm:p-7 flex flex-col gap-6 transform scale-95 transition-all duration-300">
+                    
+                    <!-- Header Modal -->
+                    <div class="flex items-start justify-between border-b border-surface-subtle pb-4">
+                        <div class="flex items-center gap-3">
+                            <div id="modal-icon-container" class="w-12 h-12 rounded-xl bg-gov-green-surface text-primary flex items-center justify-center shadow-sm">
+                                <span class="material-symbols-outlined text-[28px]">explore</span>
+                            </div>
+                            <div>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <h3 id="modal-kecamatan-title" class="font-headline-md text-headline-sm sm:text-headline-md font-bold text-text-primary">Kecamatan Sumbawa</h3>
+                                    <span id="modal-kecamatan-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-status-verified-surface text-primary border border-primary/20">Status: Aman</span>
+                                </div>
+                                <p id="modal-kecamatan-subtitle" class="text-text-secondary font-body-sm text-xs sm:text-sm mt-0.5">Analisis Sebaran Realisasi Bibit, Survival Rate & Profil Penerima Manfaat</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('pemda.monitoring.index') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-subtle hover:bg-surface-muted text-text-secondary hover:text-text-primary font-label-sm text-xs font-medium transition-colors">
+                                <span class="material-symbols-outlined text-[16px]">map</span>
+                                <span>Buka Peta GIS</span>
+                            </a>
+                            <button type="button" onclick="closeKecamatanModal()" class="w-9 h-9 rounded-lg flex items-center justify-center bg-surface-subtle hover:bg-surface-muted text-text-secondary hover:text-text-primary transition-colors">
+                                <span class="material-symbols-outlined text-[20px]">close</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 4 Kartu KPI Metrik Cepat -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                        <div class="p-3.5 rounded-xl bg-surface-subtle/70 border border-surface-subtle flex flex-col">
+                            <div class="flex items-center justify-between text-text-tertiary mb-1">
+                                <span class="text-xs font-semibold">Alokasi Kuota</span>
+                                <span class="material-symbols-outlined text-[18px]">groups</span>
+                            </div>
+                            <span id="stat-kuota" class="text-xl font-bold font-code-dense text-text-primary">1.450 KK</span>
+                            <span class="text-[11px] text-text-tertiary mt-0.5">Target SK Bupati 2026</span>
+                        </div>
+
+                        <div class="p-3.5 rounded-xl bg-surface-subtle/70 border border-surface-subtle flex flex-col">
+                            <div class="flex items-center justify-between text-text-tertiary mb-1">
+                                <span class="text-xs font-semibold">Bibit Tersalur</span>
+                                <span class="material-symbols-outlined text-[18px]">local_shipping</span>
+                            </div>
+                            <span id="stat-realisasi" class="text-xl font-bold font-code-dense text-text-primary">1.410 KK</span>
+                            <span id="stat-persen-realisasi" class="text-[11px] font-semibold text-primary mt-0.5">97.2% Terpenuhi</span>
+                        </div>
+
+                        <div class="p-3.5 rounded-xl bg-surface-subtle/70 border border-surface-subtle flex flex-col">
+                            <div class="flex items-center justify-between text-text-tertiary mb-1">
+                                <span class="text-xs font-semibold">Survival Rate</span>
+                                <span class="material-symbols-outlined text-[18px]">eco</span>
+                            </div>
+                            <span id="stat-survival" class="text-xl font-bold font-code-dense text-status-verified">92.4%</span>
+                            <span id="stat-status-tanaman" class="text-[11px] font-semibold text-primary mt-0.5">Tumbuh Optimal</span>
+                        </div>
+
+                        <div class="p-3.5 rounded-xl bg-surface-subtle/70 border border-surface-subtle flex flex-col">
+                            <div class="flex items-center justify-between text-text-tertiary mb-1">
+                                <span class="text-xs font-semibold">Poktan / Binaan</span>
+                                <span class="material-symbols-outlined text-[18px]">nature_people</span>
+                            </div>
+                            <span id="stat-poktan" class="text-xl font-bold font-code-dense text-text-primary">18 Poktan</span>
+                            <span id="stat-desa-count" class="text-[11px] text-text-tertiary mt-0.5">8 Desa Terjangkau</span>
+                        </div>
+                    </div>
+
+                    <!-- Row Grafik Utama: Bar vs Doughnut -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                        <!-- Grafik 1: Tren Realisasi Bulanan (7 cols) -->
+                        <div class="lg:col-span-7 p-4 sm:p-5 rounded-xl bg-surface-subtle/40 border border-surface-subtle flex flex-col">
+                            <div class="flex items-center justify-between mb-3">
+                                <div>
+                                    <h4 class="font-bold text-sm sm:text-base text-text-primary flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-primary text-[18px]">analytics</span>
+                                        Progres Distribusi Bulanan (Jan - Jun 2026)
+                                    </h4>
+                                    <span class="text-xs text-text-tertiary">Perbandingan target kuota alokasi vs bibit terdistribusi (Kg/Pcs)</span>
+                                </div>
+                            </div>
+                            <div class="w-full h-[220px] sm:h-[240px] relative">
+                                <canvas id="chart-tren-bulanan"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Grafik 2: Komposisi Komoditas (5 cols) -->
+                        <div class="lg:col-span-5 p-4 sm:p-5 rounded-xl bg-surface-subtle/40 border border-surface-subtle flex flex-col">
+                            <div class="flex items-center justify-between mb-3">
+                                <div>
+                                    <h4 class="font-bold text-sm sm:text-base text-text-primary flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-secondary text-[18px]">pie_chart</span>
+                                        Proporsi Komoditas Bibit
+                                    </h4>
+                                    <span class="text-xs text-text-tertiary">Jenis varietas tanaman terdistribusi</span>
+                                </div>
+                            </div>
+                            <div class="w-full h-[220px] sm:h-[240px] relative flex items-center justify-center">
+                                <canvas id="chart-komposisi-komoditas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row Grafik Bawah: Profil Kemiskinan Desil & Daftar Desa -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                        <!-- Grafik 3: Sebaran Desil Penerima Manfaat (6 cols) -->
+                        <div class="lg:col-span-6 p-4 sm:p-5 rounded-xl bg-surface-subtle/40 border border-surface-subtle flex flex-col">
+                            <div class="flex items-center justify-between mb-3">
+                                <div>
+                                    <h4 class="font-bold text-sm sm:text-base text-text-primary flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-primary text-[18px]">bar_chart</span>
+                                        Sebaran Desil Kesejahteraan (P3KE / DTKS)
+                                    </h4>
+                                    <span class="text-xs text-text-tertiary">Prioritas sasaran kemiskinan ekstrem & pencegahan stunting</span>
+                                </div>
+                            </div>
+                            <div class="w-full h-[180px] sm:h-[200px] relative">
+                                <canvas id="chart-desil-kesejahteraan"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Ringkasan Sebaran Titik Desa Binaan (6 cols) -->
+                        <div class="lg:col-span-6 p-4 sm:p-5 rounded-xl bg-surface-subtle/40 border border-surface-subtle flex flex-col">
+                            <div class="flex items-center justify-between mb-3">
+                                <div>
+                                    <h4 class="font-bold text-sm sm:text-base text-text-primary flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-primary text-[18px]">holiday_village</span>
+                                        Sampel Desa & Status Audit Terkini
+                                    </h4>
+                                    <span class="text-xs text-text-tertiary">Hasil verifikasi lapangan pendamping & validator</span>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-surface-subtle text-text-secondary">
+                                            <th class="py-2 px-2.5">Desa</th>
+                                            <th class="py-2 px-2.5">Kelompok Binaan</th>
+                                            <th class="py-2 px-2.5">Alokasi</th>
+                                            <th class="py-2 px-2.5 text-right">Status Audit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table-desa-list" class="divide-y divide-surface-subtle">
+                                        <!-- Diisi secara dinamis -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Modal -->
+                    <div class="flex items-center justify-between pt-3 border-t border-surface-subtle">
+                        <div class="flex items-center gap-2 text-xs text-text-tertiary">
+                            <span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+                            <span>Data tersinkronisasi otomatis dengan SIG Geotagging & e-Walidata Pemkab Sumbawa</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="closeKecamatanModal()" class="px-4 py-2 rounded-xl bg-surface-subtle hover:bg-surface-muted text-text-primary font-label-md text-xs sm:text-sm font-semibold transition-colors">
+                                Tutup
+                            </button>
+                            <a href="{{ route('pemda.monitoring.index') }}" class="px-4 py-2 rounded-xl bg-primary hover:bg-gov-green text-on-primary font-label-md text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 shadow-sm">
+                                <span class="material-symbols-outlined text-[18px]">satellite_alt</span>
+                                <span>Analisis Spasial GIS</span>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- CDN Chart.js & Script Pengendali Grafik Interaktif -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                // Database Statistik Interaktif Kecamatan se-Kabupaten Sumbawa
+                const kecamatanDatabase = {
+                    'Kecamatan Sumbawa': {
+                        kuota: '1.450 KK',
+                        realisasi: '1.410 KK',
+                        persenRealisasi: '97.2% Terpenuhi',
+                        survival: '92.4%',
+                        statusTanaman: 'Tumbuh Optimal',
+                        status: 'Aman',
+                        statusClass: 'bg-status-verified-surface text-primary border-primary/20',
+                        survivalColor: 'text-status-verified',
+                        iconBg: 'bg-gov-green-surface text-primary',
+                        poktan: '18 Kelompok',
+                        desaCount: '8 Desa Terjangkau',
+                        trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                        trenTarget: [250, 500, 750, 1050, 1300, 1450],
+                        trenRealisasi: [240, 490, 760, 1030, 1280, 1410],
+                        komoditasLabels: ['Jagung Hibrida', 'Padi Gogo', 'Cabai Rawit', 'Bawang Merah', 'Kedelai'],
+                        komoditasData: [45, 25, 15, 10, 5],
+                        desilData: [480, 520, 310, 120, 20],
+                        desaList: [
+                            { desa: 'Brang Bara', poktan: 'Tani Makmur Jaya', alokasi: '350 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Lempeh', poktan: 'Subur Mandiri', alokasi: '420 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Seketi', poktan: 'Harapan Sejahtera', alokasi: '380 KK', status: 'Monitoring Lapangan' },
+                            { desa: 'Uma Sima', poktan: 'Tunas Harapan', alokasi: '260 KK', status: 'Terverifikasi 100%' }
+                        ]
+                    },
+                    'Kecamatan Moyo Hilir': {
+                        kuota: '1.200 KK',
+                        realisasi: '1.150 KK',
+                        persenRealisasi: '95.8% Terpenuhi',
+                        survival: '86.1%',
+                        statusTanaman: 'Kondisi Baik',
+                        status: 'Aman',
+                        statusClass: 'bg-status-verified-surface text-primary border-primary/20',
+                        survivalColor: 'text-status-verified',
+                        iconBg: 'bg-gov-green-surface text-primary',
+                        poktan: '15 Kelompok',
+                        desaCount: '7 Desa Terjangkau',
+                        trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                        trenTarget: [200, 420, 650, 880, 1050, 1200],
+                        trenRealisasi: [190, 410, 630, 850, 1010, 1150],
+                        komoditasLabels: ['Jagung Hibrida', 'Padi Sawah', 'Kacang Tanah', 'Cabai Rawit', 'Bawang Merah'],
+                        komoditasData: [50, 30, 10, 6, 4],
+                        desilData: [390, 450, 220, 75, 15],
+                        desaList: [
+                            { desa: 'Kakiang', poktan: 'Karya Bersama', alokasi: '320 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Serading', poktan: 'Bina Tani', alokasi: '290 KK', status: 'Monitoring Lapangan' },
+                            { desa: 'Poto', poktan: 'Mekar Sari', alokasi: '310 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Berare', poktan: 'Tunas Baru', alokasi: '230 KK', status: 'Uji Petik Lapangan' }
+                        ]
+                    },
+                    'Kecamatan Moyo Utara': {
+                        kuota: '980 KK',
+                        realisasi: '890 KK',
+                        persenRealisasi: '90.8% Terpenuhi',
+                        survival: '78.5%',
+                        statusTanaman: 'Perlu Pengawasan',
+                        status: 'Perhatian',
+                        statusClass: 'bg-status-warning-surface text-secondary border-secondary/20',
+                        survivalColor: 'text-secondary',
+                        iconBg: 'bg-status-warning-surface text-secondary',
+                        poktan: '12 Kelompok',
+                        desaCount: '6 Desa Terjangkau',
+                        trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                        trenTarget: [180, 360, 540, 720, 880, 980],
+                        trenRealisasi: [150, 310, 480, 660, 800, 890],
+                        komoditasLabels: ['Padi Gogo', 'Jagung Hibrida', 'Bawang Merah', 'Semangka', 'Kacang Hijau'],
+                        komoditasData: [40, 35, 12, 8, 5],
+                        desilData: [340, 320, 160, 55, 15],
+                        desaList: [
+                            { desa: 'Sebewe', poktan: 'Harapan Maju', alokasi: '240 KK', status: 'Monitoring Intensif' },
+                            { desa: 'Kukin', poktan: 'Sinar Bahari', alokasi: '220 KK', status: 'Menunggu Validasi' },
+                            { desa: 'Baru Tahan', poktan: 'Maju Berkah', alokasi: '260 KK', status: 'Monitoring Lapangan' },
+                            { desa: 'Songkar', poktan: 'Pangan Sejahtera', alokasi: '170 KK', status: 'Terverifikasi 100%' }
+                        ]
+                    },
+                    'Kecamatan Utan': {
+                        kuota: '1.100 KK',
+                        realisasi: '820 KK',
+                        persenRealisasi: '74.5% Tersendat',
+                        survival: '46.2%',
+                        statusTanaman: 'Anomali Pertumbuhan',
+                        status: 'Anomali',
+                        statusClass: 'bg-status-fraud-surface text-error border-error/20',
+                        survivalColor: 'text-error',
+                        iconBg: 'bg-status-fraud-surface text-error',
+                        poktan: '14 Kelompok',
+                        desaCount: '6 Desa Terdampak',
+                        trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                        trenTarget: [200, 400, 620, 820, 980, 1100],
+                        trenRealisasi: [160, 320, 470, 610, 740, 820],
+                        komoditasLabels: ['Jagung Hibrida', 'Cabai Rawit', 'Bawang Merah', 'Padi', 'Tomat'],
+                        komoditasData: [60, 20, 10, 6, 4],
+                        desilData: [410, 260, 110, 30, 10],
+                        desaList: [
+                            { desa: 'Labuhan Burung', poktan: 'Nelayan Tani Berdikari', alokasi: '280 KK', status: 'Investigasi Lapangan' },
+                            { desa: 'Motong', poktan: 'Tunas Utan', alokasi: '210 KK', status: 'Anomali Survival 44%' },
+                            { desa: 'Sabedo', poktan: 'Lestari Makmur', alokasi: '190 KK', status: 'Perlu Uji Petik Ulang' },
+                            { desa: 'Pukat', poktan: 'Subur Bahari', alokasi: '140 KK', status: 'Monitoring Intensif' }
+                        ]
+                    },
+                    'Kecamatan Plampang': {
+                        kuota: '1.050 KK',
+                        realisasi: '690 KK',
+                        persenRealisasi: '65.7% Menunggu Tahap 2',
+                        survival: '64.0%',
+                        statusTanaman: 'Kurang Pasokan Air',
+                        status: 'Perhatian',
+                        statusClass: 'bg-status-warning-surface text-secondary border-secondary/20',
+                        survivalColor: 'text-secondary',
+                        iconBg: 'bg-status-warning-surface text-secondary',
+                        poktan: '13 Kelompok',
+                        desaCount: '6 Desa Terjangkau',
+                        trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                        trenTarget: [180, 360, 560, 740, 900, 1050],
+                        trenRealisasi: [140, 270, 410, 540, 620, 690],
+                        komoditasLabels: ['Jagung Hibrida', 'Kacang Kedelai', 'Padi Gogo', 'Sorgum', 'Cabai'],
+                        komoditasData: [55, 20, 15, 6, 4],
+                        desilData: [320, 230, 105, 25, 10],
+                        desaList: [
+                            { desa: 'Sepakat', poktan: 'Tani Sepakat', alokasi: '230 KK', status: 'Menunggu Uji Petik' },
+                            { desa: 'Plampang', poktan: 'Sinar Tani Mandiri', alokasi: '210 KK', status: 'Monitoring Lapangan' },
+                            { desa: 'Teluk Santong', poktan: 'Bahari Subur', alokasi: '150 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Muer', poktan: 'Tunas Harapan', alokasi: '100 KK', status: 'Perlu Konfirmasi CPCL' }
+                        ]
+                    },
+                    'Kecamatan Empang': {
+                        kuota: '880 KK',
+                        realisasi: '780 KK',
+                        persenRealisasi: '88.6% Terpenuhi',
+                        survival: '88.5%',
+                        statusTanaman: 'Pertumbuhan Baik',
+                        status: 'Aman',
+                        statusClass: 'bg-status-verified-surface text-primary border-primary/20',
+                        survivalColor: 'text-status-verified',
+                        iconBg: 'bg-gov-green-surface text-primary',
+                        poktan: '11 Kelompok',
+                        desaCount: '5 Desa Terjangkau',
+                        trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                        trenTarget: [150, 300, 460, 620, 760, 880],
+                        trenRealisasi: [140, 290, 440, 590, 710, 780],
+                        komoditasLabels: ['Jagung Hibrida', 'Padi Gogo', 'Bawang Merah', 'Kacang Tanah', 'Sayuran'],
+                        komoditasData: [52, 28, 10, 6, 4],
+                        desilData: [310, 290, 130, 40, 10],
+                        desaList: [
+                            { desa: 'Empang Bawa', poktan: 'Tani Makmur Empang', alokasi: '260 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Empang Atas', poktan: 'Subur Makmur', alokasi: '220 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Jotang', poktan: 'Lembah Hijau', alokasi: '180 KK', status: 'Monitoring Lapangan' },
+                            { desa: 'Bonto', poktan: 'Tunas Subur', alokasi: '120 KK', status: 'Terverifikasi 100%' }
+                        ]
+                    },
+                    'Kecamatan Alas': {
+                        kuota: '950 KK',
+                        realisasi: '870 KK',
+                        persenRealisasi: '91.5% Terpenuhi',
+                        survival: '89.2%',
+                        statusTanaman: 'Pertumbuhan Baik',
+                        status: 'Aman',
+                        statusClass: 'bg-status-verified-surface text-primary border-primary/20',
+                        survivalColor: 'text-status-verified',
+                        iconBg: 'bg-gov-green-surface text-primary',
+                        poktan: '12 Kelompok',
+                        desaCount: '6 Desa Terjangkau',
+                        trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                        trenTarget: [160, 320, 500, 670, 820, 950],
+                        trenRealisasi: [150, 310, 480, 640, 780, 870],
+                        komoditasLabels: ['Padi Sawah', 'Jagung Hibrida', 'Cabai Merah', 'Bawang Merah', 'Kacang Hijau'],
+                        komoditasData: [48, 32, 10, 6, 4],
+                        desilData: [360, 330, 140, 32, 8],
+                        desaList: [
+                            { desa: 'Luar', poktan: 'Alas Subur Berkah', alokasi: '240 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Dalam', poktan: 'Bumi Lestari', alokasi: '210 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Kalimango', poktan: 'Tunas Muda Alas', alokasi: '230 KK', status: 'Monitoring Lapangan' },
+                            { desa: 'Juring', poktan: 'Karya Mandiri', alokasi: '190 KK', status: 'Terverifikasi 100%' }
+                        ]
+                    }
+                };
+
+                // Fallback generator untuk kecamatan lainnya di Sumbawa
+                function getKecamatanData(name) {
+                    // Cek exact match atau fuzzy match
+                    for (const key in kecamatanDatabase) {
+                        if (name.toLowerCase().includes(key.replace('Kecamatan ', '').toLowerCase())) {
+                            return kecamatanDatabase[key];
+                        }
+                    }
+
+                    // Default dummy generator realistis
+                    return {
+                        kuota: '850 KK',
+                        realisasi: '760 KK',
+                        persenRealisasi: '89.4% Terpenuhi',
+                        survival: '85.0%',
+                        statusTanaman: 'Kondisi Normal',
+                        status: 'Aman',
+                        statusClass: 'bg-status-verified-surface text-primary border-primary/20',
+                        survivalColor: 'text-status-verified',
+                        iconBg: 'bg-gov-green-surface text-primary',
+                        poktan: '10 Kelompok',
+                        desaCount: '5 Desa Terjangkau',
+                        trenLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                        trenTarget: [140, 280, 440, 600, 730, 850],
+                        trenRealisasi: [130, 260, 410, 560, 680, 760],
+                        komoditasLabels: ['Jagung Hibrida', 'Padi Gogo', 'Cabai Rawit', 'Bawang Merah', 'Kacang Hijau'],
+                        komoditasData: [50, 25, 12, 8, 5],
+                        desilData: [290, 280, 130, 45, 15],
+                        desaList: [
+                            { desa: 'Desa Pusat', poktan: 'Kelompok Tani Makmur', alokasi: '250 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Desa Timur', poktan: 'Tunas Harapan Baru', alokasi: '200 KK', status: 'Monitoring Lapangan' },
+                            { desa: 'Desa Barat', poktan: 'Karya Bersama Lestari', alokasi: '180 KK', status: 'Terverifikasi 100%' },
+                            { desa: 'Desa Selatan', poktan: 'Bina Tani Sejahtera', alokasi: '130 KK', status: 'Terverifikasi 100%' }
+                        ]
+                    };
+                }
+
+                // Global references ke instance Chart.js
+                let chartTrenBulananInstance = null;
+                let chartKomposisiKomoditasInstance = null;
+                let chartDesilInstance = null;
+
+                function openKecamatanModal(namaKecamatan) {
+                    if (!namaKecamatan || namaKecamatan === 'Semua Kecamatan') {
+                        namaKecamatan = 'Kecamatan Sumbawa';
+                    }
+
+                    // Normalkan nama
+                    const displayName = namaKecamatan.startsWith('Kecamatan') ? namaKecamatan : `Kecamatan ${namaKecamatan}`;
+                    const data = getKecamatanData(displayName);
+
+                    // Update UI teks & badge
+                    document.getElementById('modal-kecamatan-title').textContent = displayName;
+                    const badgeElem = document.getElementById('modal-kecamatan-badge');
+                    badgeElem.className = `px-2.5 py-0.5 rounded-full text-xs font-bold border ${data.statusClass}`;
+                    badgeElem.textContent = `Status: ${data.status} (${data.survival})`;
+
+                    document.getElementById('modal-icon-container').className = `w-12 h-12 rounded-xl flex items-center justify-center shadow-sm ${data.iconBg}`;
+
+                    // Update KPI cards
+                    document.getElementById('stat-kuota').textContent = data.kuota;
+                    document.getElementById('stat-realisasi').textContent = data.realisasi;
+                    document.getElementById('stat-persen-realisasi').textContent = data.persenRealisasi;
+                    
+                    const statSurvivalElem = document.getElementById('stat-survival');
+                    statSurvivalElem.textContent = data.survival;
+                    statSurvivalElem.className = `text-xl font-bold font-code-dense ${data.survivalColor}`;
+                    document.getElementById('stat-status-tanaman').textContent = data.statusTanaman;
+
+                    document.getElementById('stat-poktan').textContent = data.poktan;
+                    document.getElementById('stat-desa-count').textContent = data.desaCount;
+
+                    // Update Tabel Desa
+                    const tbody = document.getElementById('table-desa-list');
+                    tbody.innerHTML = '';
+                    data.desaList.forEach(item => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'hover:bg-surface-subtle/80 transition-colors';
+                        
+                        let badgeStyle = 'bg-status-verified-surface text-primary';
+                        if (item.status.includes('Investigasi') || item.status.includes('Anomali')) {
+                            badgeStyle = 'bg-status-fraud-surface text-error';
+                        } else if (item.status.includes('Menunggu') || item.status.includes('Uji Petik') || item.status.includes('Intensif')) {
+                            badgeStyle = 'bg-status-warning-surface text-secondary';
+                        }
+
+                        tr.innerHTML = `
+                            <td class="py-2 px-2.5 font-semibold text-text-primary">${item.desa}</td>
+                            <td class="py-2 px-2.5 text-text-secondary">${item.poktan}</td>
+                            <td class="py-2 px-2.5 font-code-dense font-medium">${item.alokasi}</td>
+                            <td class="py-2 px-2.5 text-right">
+                                <span class="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold ${badgeStyle}">${item.status}</span>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+
+                    // Render / Update Chart.js
+                    renderCharts(data);
+
+                    // Tampilkan modal dengan animasi fade in
+                    const modal = document.getElementById('modal-kecamatan-grafik');
+                    const card = document.getElementById('modal-kecamatan-card');
+                    modal.classList.remove('opacity-0', 'pointer-events-none');
+                    modal.classList.add('opacity-100', 'pointer-events-auto');
+                    card.classList.remove('scale-95');
+                    card.classList.add('scale-100');
+                    document.body.style.overflow = 'hidden';
+                }
+
+                function closeKecamatanModal() {
+                    const modal = document.getElementById('modal-kecamatan-grafik');
+                    const card = document.getElementById('modal-kecamatan-card');
+                    modal.classList.add('opacity-0', 'pointer-events-none');
+                    modal.classList.remove('opacity-100', 'pointer-events-auto');
+                    card.classList.add('scale-95');
+                    card.classList.remove('scale-100');
+                    document.body.style.overflow = '';
+                }
+
+                // Render Chart.js
+                function renderCharts(data) {
+                    if (typeof Chart === 'undefined') return;
+
+                    // 1. Chart Realisasi Bulanan (Target vs Realisasi)
+                    const ctxTren = document.getElementById('chart-tren-bulanan').getContext('2d');
+                    if (chartTrenBulananInstance) {
+                        chartTrenBulananInstance.destroy();
+                    }
+                    chartTrenBulananInstance = new Chart(ctxTren, {
+                        type: 'bar',
+                        data: {
+                            labels: data.trenLabels,
+                            datasets: [
+                                {
+                                    label: 'Realisasi Bibit (KK)',
+                                    data: data.trenRealisasi,
+                                    backgroundColor: '#1E5631',
+                                    borderRadius: 6,
+                                    barPercentage: 0.6,
+                                    order: 2
+                                },
+                                {
+                                    label: 'Target Alokasi (KK)',
+                                    data: data.trenTarget,
+                                    type: 'line',
+                                    borderColor: '#D97706',
+                                    backgroundColor: '#D97706',
+                                    borderWidth: 2,
+                                    borderDash: [5, 5],
+                                    fill: false,
+                                    pointRadius: 4,
+                                    pointBackgroundColor: '#D97706',
+                                    tension: 0.2,
+                                    order: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    labels: {
+                                        boxWidth: 12,
+                                        font: { size: 11, family: 'Inter, sans-serif' }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `${context.dataset.label}: ${context.raw.toLocaleString('id-ID')} KK`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                                    ticks: { font: { size: 10 } }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { font: { size: 11 } }
+                                }
+                            }
+                        }
+                    });
+
+                    // 2. Chart Komposisi Komoditas (Doughnut)
+                    const ctxKomoditas = document.getElementById('chart-komposisi-komoditas').getContext('2d');
+                    if (chartKomposisiKomoditasInstance) {
+                        chartKomposisiKomoditasInstance.destroy();
+                    }
+                    chartKomposisiKomoditasInstance = new Chart(ctxKomoditas, {
+                        type: 'doughnut',
+                        data: {
+                            labels: data.komoditasLabels,
+                            datasets: [{
+                                data: data.komoditasData,
+                                backgroundColor: [
+                                    '#1E5631', // Gov Green
+                                    '#3B82F6', // Blue
+                                    '#F59E0B', // Amber
+                                    '#EC4899', // Pink / Merah
+                                    '#10B981'  // Emerald
+                                ],
+                                borderWidth: 2,
+                                borderColor: '#FFFFFF',
+                                hoverOffset: 6
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    labels: {
+                                        boxWidth: 12,
+                                        font: { size: 11, family: 'Inter, sans-serif' }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `${context.label}: ${context.raw}% alokasi`;
+                                        }
+                                    }
+                                }
+                            },
+                            cutout: '62%'
+                        }
+                    });
+
+                    // 3. Chart Desil Kesejahteraan (Horizontal Bar)
+                    const ctxDesil = document.getElementById('chart-desil-kesejahteraan').getContext('2d');
+                    if (chartDesilInstance) {
+                        chartDesilInstance.destroy();
+                    }
+                    chartDesilInstance = new Chart(ctxDesil, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Desil 1 (Ekstrem)', 'Desil 2 (Sangat Miskin)', 'Desil 3 (Miskin)', 'Desil 4 (Rentan)', 'Desil 5+'],
+                            datasets: [{
+                                label: 'Jumlah Penerima (KK)',
+                                data: data.desilData,
+                                backgroundColor: [
+                                    '#B91C1C', // Merah gelap
+                                    '#EA580C', // Oranye
+                                    '#F59E0B', // Kuning
+                                    '#10B981', // Hijau
+                                    '#6B7280'  // Abu
+                                ],
+                                borderRadius: 5,
+                                barPercentage: 0.65
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `Penerima: ${context.raw} KK`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                                    ticks: { font: { size: 10 } }
+                                },
+                                y: {
+                                    grid: { display: false },
+                                    ticks: { font: { size: 11, weight: '500' } }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Tutup modal jika klik di luar card atau tekan tombol Escape
+                document.addEventListener('keydown', function(event) {
+                    if (event.key === 'Escape') {
+                        closeKecamatanModal();
+                    }
+                });
+
+                document.getElementById('modal-kecamatan-grafik').addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeKecamatanModal();
+                    }
+                });
+            </script>
 @endsection
