@@ -26,13 +26,15 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
                 <div class="flex flex-col gap-space-xs">
-                    <label for="keluarga_penerima_id" class="font-label-md text-text-primary">KeluargaPenerima (Penerima Bibit) <span class="text-error">*</span></label>
+                    <label for="keluarga_penerima_id" class="font-label-md text-text-primary">Keluarga Penerima (Penerima Bibit) <span class="text-error">*</span></label>
                     <div class="relative">
                         <select name="keluarga_penerima_id" id="keluarga_penerima_id" required
                             class="appearance-none w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle cursor-pointer">
-                            <option value="">-- Pilih KeluargaPenerima --</option>
+                            <option value="">-- Pilih Keluarga Penerima --</option>
                             @foreach ($keluarga_penerimas as $p)
-                                <option value="{{ $p->id }}" {{ old('keluarga_penerima_id') == $p->id ? 'selected' : '' }}>{{ $p->nama }}</option>
+                                <option value="{{ $p->id }}" {{ old('keluarga_penerima_id', request('keluarga_id')) == $p->id ? 'selected' : '' }}>
+                                    {{ $p->kepala_keluarga ?? $p->nama }} (No KK: {{ $p->no_kk }})
+                                </option>
                             @endforeach
                         </select>
                         <span class="material-symbols-outlined absolute right-3 top-3 text-text-secondary pointer-events-none">expand_more</span>

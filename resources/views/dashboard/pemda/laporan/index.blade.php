@@ -144,7 +144,7 @@
                 </div>
                 <h3 class="font-headline-sm font-semibold text-text-primary group-hover:text-primary transition-colors">Laporan Penyaluran Bibit</h3>
                 <p class="font-body-sm text-text-secondary mt-1 mb-space-md">Total data penyaluran bibit: {{ $totalPenyaluran }} transaksi.</p>
-                <a href="{{ route('pemda.laporan.pdf') }}" target="_blank" class="w-full block text-center py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Unduh PDF</a>
+                <a href="{{ route('pemda.laporan.penyaluran-pdf') }}" target="_blank" class="w-full block text-center py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Unduh PDF</a>
             </div>
 
             <!-- Card 2 -->
@@ -154,7 +154,7 @@
                 </div>
                 <h3 class="font-headline-sm font-semibold text-text-primary group-hover:text-primary transition-colors">Statistik Tumbuh Kembang</h3>
                 <p class="font-body-sm text-text-secondary mt-1 mb-space-md">Laporan pengamatan tumbuh kembang: {{ $totalLaporan }} data.</p>
-                <a href="{{ route('pemda.laporan.pdf') }}" target="_blank" class="w-full block text-center py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Unduh PDF</a>
+                <a href="{{ route('pemda.laporan.tumbuh-kembang-pdf') }}" target="_blank" class="w-full block text-center py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Unduh PDF</a>
             </div>
             
             <!-- Card 3 -->
@@ -164,7 +164,7 @@
                 </div>
                 <h3 class="font-headline-sm font-semibold text-text-primary group-hover:text-primary transition-colors">Laporan Validasi Lapangan</h3>
                 <p class="font-body-sm text-text-secondary mt-1 mb-space-md">Total validasi CPCL lapangan: {{ $totalValidasi }} data keluarga.</p>
-                <a href="{{ route('pemda.laporan.pdf') }}" target="_blank" class="w-full block text-center py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Unduh PDF</a>
+                <a href="{{ route('pemda.laporan.validasi-pdf') }}" target="_blank" class="w-full block text-center py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Unduh PDF</a>
             </div>
         </div>
     </div>

@@ -22,7 +22,14 @@ class KeluargaPenerimaController extends Controller
      */
     public function show(string $id)
     {
-        $keluarga_penerima = KeluargaPenerima::with(['wilayah', 'programBantuan'])->findOrFail($id);
+        $keluarga_penerima = KeluargaPenerima::with([
+            'wilayah', 
+            'programBantuan', 
+            'kampusMitra', 
+            'penilaianKemandirians' => function($q) {
+                $q->latest();
+            }
+        ])->findOrFail($id);
         return view('dashboard.pendamping.keluarga_penerima.show', compact('keluarga_penerima'));
     }
 

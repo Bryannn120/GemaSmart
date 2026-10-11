@@ -41,10 +41,10 @@
                             </select>
                             <span class="material-symbols-outlined absolute right-2 top-2.5 text-text-secondary text-[18px] pointer-events-none">expand_more</span>
                         </div>
-                        <button class="inline-flex items-center gap-space-xs px-space-md py-2 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md font-semibold hover:bg-gov-green-dark transition-colors shadow-sm">
+                        <a href="{{ route('pemda.laporan.pdf') }}" target="_blank" class="inline-flex items-center gap-space-xs px-space-md py-2 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md font-semibold hover:bg-gov-green-dark transition-colors shadow-sm">
                             <span class="material-symbols-outlined text-[18px]">download</span>
                             <span>Unduh Ringkasan PDF</span>
-                        </button>
+                        </a>
                     </div>
                 </div>
 

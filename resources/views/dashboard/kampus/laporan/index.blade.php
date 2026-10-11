@@ -19,8 +19,8 @@
                 <span class="material-symbols-outlined text-[24px]">description</span>
             </div>
             <h3 class="font-headline-sm font-semibold text-text-primary group-hover:text-primary transition-colors">Rekapitulasi SPJ</h3>
-            <p class="font-body-sm text-text-secondary mt-1 mb-space-md">Data SPJ yang telah di-approved oleh Pemda.</p>
-            <button class="w-full py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Generate PDF</button>
+            <p class="font-body-sm text-text-secondary mt-1 mb-space-md">Data SPJ dan pertanggungjawaban dana pengadaan bibit.</p>
+            <a href="{{ route('kampus.laporan.spj-pdf') }}" target="_blank" class="w-full block text-center py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Generate PDF</a>
         </div>
 
         <!-- Card 2 -->
@@ -29,8 +29,8 @@
                 <span class="material-symbols-outlined text-[24px]">how_to_reg</span>
             </div>
             <h3 class="font-headline-sm font-semibold text-text-primary group-hover:text-primary transition-colors">Log Harian Pendamping</h3>
-            <p class="font-body-sm text-text-secondary mt-1 mb-space-md">Kompilasi aktivitas mahasiswa di lapangan.</p>
-            <button class="w-full py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Generate PDF</button>
+            <p class="font-body-sm text-text-secondary mt-1 mb-space-md">Kompilasi aktivitas dan catatan mahasiswa di lapangan.</p>
+            <a href="{{ route('kampus.laporan.log-pendamping-pdf') }}" target="_blank" class="w-full block text-center py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Generate PDF</a>
         </div>
     </div>
 </div>

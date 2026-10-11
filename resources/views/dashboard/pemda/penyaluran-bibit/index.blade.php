@@ -6,7 +6,7 @@
         <div class="flex flex-col max-w-2xl">
             <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight">Penyaluran Bibit</h1>
             <p class="font-body-md text-text-secondary mt-1">
-                Monitor status pengiriman dan Berita Acara Serah Terima (BAST) bibit ke kelompok tani.
+                Monitor status pengiriman dan Berita Acara Serah Terima (BAST) bibit ke keluarga penerima bantuan.
             </p>
         </div>
         <div class="flex flex-wrap items-center gap-space-sm">

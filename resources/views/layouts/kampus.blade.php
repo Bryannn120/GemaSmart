@@ -52,7 +52,7 @@
                     <span class="material-symbols-outlined text-[20px]">how_to_reg</span><span>Tim Pendamping</span>
                 </a>
                 <a href="{{ route('kampus.keluarga_penerima.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg {{ request()->routeIs('kampus.keluarga_penerima.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : '' }}">
-                    <span class="material-symbols-outlined text-[20px]">group</span><span>Data KeluargaPenerima</span>
+                    <span class="material-symbols-outlined text-[20px]">group</span><span>Keluarga Penerima</span>
                 </a>
                 <a href="{{ route('kampus.penyaluran.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg {{ request()->routeIs('kampus.penyaluran.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : '' }}">
                     <span class="material-symbols-outlined text-[20px]">psychiatry</span><span>Penyaluran Bibit</span>

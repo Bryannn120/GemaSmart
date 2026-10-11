@@ -52,7 +52,7 @@
                     <span class="material-symbols-outlined text-[20px]">eco</span><span>Lapor Tumbuh Kembang</span>
                 </a>
                 <a href="{{ route('pendamping.keluarga_penerima.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg {{ request()->routeIs('pendamping.keluarga_penerima.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
-                    <span class="material-symbols-outlined text-[20px]">group</span><span>KeluargaPenerima Binaan</span>
+                    <span class="material-symbols-outlined text-[20px]">group</span><span>Keluarga Penerima Binaan</span>
                 </a>
                 <a href="{{ route('profile.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg {{ request()->routeIs('profile.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
                     <span class="material-symbols-outlined text-[20px]">settings</span><span>Pengaturan Akun</span>

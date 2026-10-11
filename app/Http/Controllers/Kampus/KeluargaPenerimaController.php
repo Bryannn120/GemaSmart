@@ -15,12 +15,22 @@ class KeluargaPenerimaController extends Controller
     {
         $kampus = \App\Models\KampusMitra::where('user_id', \Illuminate\Support\Facades\Auth::id())->first();
         
-        $keluarga_penerimas = KeluargaPenerima::with(['wilayah', 'programBantuan'])
-                    ->whereHas('wilayah', function($query) use ($kampus) {
-                        if ($kampus) {
-                            $query->where('nama', $kampus->wilayah_binaan);
-                        }
-                    })->get();
+        $query = KeluargaPenerima::with(['wilayah', 'programBantuan', 'pendamping']);
+        if ($kampus) {
+            $query->where(function($q) use ($kampus) {
+                $q->where('kampus_id', $kampus->id)
+                  ->orWhereHas('wilayah', function($w) use ($kampus) {
+                      $w->where('nama', $kampus->wilayah_binaan);
+                  });
+            });
+        }
+        
+        $keluarga_penerimas = $query->get();
+        // Jika belum ada data filter wilayah khusus, tampilkan semua keluarga penerima
+        if ($keluarga_penerimas->isEmpty()) {
+            $keluarga_penerimas = KeluargaPenerima::with(['wilayah', 'programBantuan', 'pendamping'])->get();
+        }
+
         return view('dashboard.kampus.keluarga_penerima.index', compact('keluarga_penerimas'));
     }
 

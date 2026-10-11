@@ -23,10 +23,10 @@
 </div>
 <!-- Top Global Actions -->
 <div class="flex items-center gap-space-sm self-start xl:self-auto shrink-0">
-<button class="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-lg bg-surface-container-lowest text-text-primary font-label-lg text-label-lg shadow-sm hover:bg-surface-container-low transition-all" type="button">
+<a href="{{ route('kampus.laporan.pdf') }}" target="_blank" class="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-lg bg-surface-container-lowest text-text-primary font-label-lg text-label-lg shadow-sm hover:bg-surface-container-low transition-all">
 <span class="material-symbols-outlined text-[18px] text-text-secondary">file_download</span>
 <span>Unduh Laporan Internal (PDF)</span>
-</button>
+</a>
 <button class="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg shadow-md hover:bg-primary transition-all" type="button">
 <span class="material-symbols-outlined text-[18px]">add_circle</span>
 <span>+ Ajukan SPJ Baru</span>

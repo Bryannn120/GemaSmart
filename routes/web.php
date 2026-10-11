@@ -41,8 +41,10 @@ Route::middleware(['auth', 'role:pemda'])->group(function () {
         Route::resource('/penyaluran-bibit', \App\Http\Controllers\Pemda\PenyaluranBibitController::class);
         Route::get('/monitoring/kecamatan/{id}', [\App\Http\Controllers\Pemda\MonitoringController::class, 'getKecamatanDetail'])->name('monitoring.kecamatan-detail');
         Route::resource('/monitoring', \App\Http\Controllers\Pemda\MonitoringController::class);
-        Route::resource('/validasi-lapangan', \App\Http\Controllers\Pemda\ValidasiLapanganController::class);
         Route::get('/laporan/cetak-pdf', [\App\Http\Controllers\Pemda\LaporanController::class, 'cetakPdf'])->name('laporan.pdf');
+        Route::get('/laporan/penyaluran-pdf', [\App\Http\Controllers\Pemda\LaporanController::class, 'penyaluranPdf'])->name('laporan.penyaluran-pdf');
+        Route::get('/laporan/tumbuh-kembang-pdf', [\App\Http\Controllers\Pemda\LaporanController::class, 'tumbuhKembangPdf'])->name('laporan.tumbuh-kembang-pdf');
+        Route::get('/laporan/validasi-pdf', [\App\Http\Controllers\Pemda\LaporanController::class, 'validasiPdf'])->name('laporan.validasi-pdf');
         Route::resource('/laporan', \App\Http\Controllers\Pemda\LaporanController::class);
         Route::resource('/master-data/wilayah', \App\Http\Controllers\Pemda\WilayahController::class)->names('master-data.wilayah');
         Route::resource('/master-data/jenis-bibit', \App\Http\Controllers\Pemda\JenisBibitController::class)->names('master-data.jenis-bibit');
@@ -59,13 +61,16 @@ Route::middleware(['auth', 'role:kampus'])->group(function () {
         Route::resource('/keluarga_penerima', \App\Http\Controllers\Kampus\KeluargaPenerimaController::class);
         Route::resource('/penyaluran', \App\Http\Controllers\Kampus\PenyaluranController::class);
         Route::resource('/monitoring', \App\Http\Controllers\Kampus\MonitoringController::class);
+        Route::get('/laporan/cetak-pdf', [\App\Http\Controllers\Kampus\LaporanController::class, 'cetakPdf'])->name('laporan.pdf');
+        Route::get('/laporan/spj-pdf', [\App\Http\Controllers\Kampus\LaporanController::class, 'spjPdf'])->name('laporan.spj-pdf');
+        Route::get('/laporan/log-pendamping-pdf', [\App\Http\Controllers\Kampus\LaporanController::class, 'logPendampingPdf'])->name('laporan.log-pendamping-pdf');
         Route::resource('/laporan', \App\Http\Controllers\Kampus\LaporanController::class);
         Route::resource('/pengaturan', \App\Http\Controllers\Kampus\PengaturanController::class);
     });
 });
 
 Route::middleware(['auth', 'role:pendamping'])->group(function () {
-    Route::get('/dashboard/pendamping', function () { return view('dashboard.pendamping'); })->name('dashboard.pendamping');
+    Route::get('/dashboard/pendamping', [\App\Http\Controllers\Pendamping\DashboardController::class, 'index'])->name('dashboard.pendamping');
     Route::prefix('pendamping')->name('pendamping.')->group(function () {
         Route::resource('/tugas-validasi', \App\Http\Controllers\Pendamping\TugasValidasiController::class)->names('tugas-validasi');
         Route::resource('/lapor-tumbuh-kembang', \App\Http\Controllers\Pendamping\LaporController::class)->names('lapor');

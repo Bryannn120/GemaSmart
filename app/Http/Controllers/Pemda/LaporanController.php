@@ -85,10 +85,51 @@ class LaporanController extends Controller
             'keluarga_penerimaByStatus', 'penyaluranByStatus', 'laporanByKondisi'
         ));
         
-        // Atur ukuran kertas
         $pdf->setPaper('A4', 'portrait');
 
-        return $pdf->download('Laporan_Rekapitulasi_Gema Smart.pdf');
+        return $pdf->download('Laporan_Rekapitulasi_Gema_Smart.pdf');
+    }
+
+    /**
+     * Export Laporan Penyaluran Bibit ke PDF
+     */
+    public function penyaluranPdf()
+    {
+        $penyalurans = Penyaluran::with(['wilayah', 'jenisBibit'])->latest()->get();
+        $totalKuantitas = $penyalurans->sum('kuantitas');
+
+        $pdf = Pdf::loadView('dashboard.pemda.laporan.penyaluran_pdf', compact('penyalurans', 'totalKuantitas'));
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->download('Laporan_Penyaluran_Bibit_Pemda.pdf');
+    }
+
+    /**
+     * Export Statistik Tumbuh Kembang ke PDF
+     */
+    public function tumbuhKembangPdf()
+    {
+        $laporans = LaporanTumbuhKembang::with(['keluarga_penerima', 'pendamping'])->latest()->get();
+        $laporanByKondisi = LaporanTumbuhKembang::selectRaw('status_kondisi, count(*) as total')->groupBy('status_kondisi')->get();
+
+        $pdf = Pdf::loadView('dashboard.pemda.laporan.tumbuh_kembang_pdf', compact('laporans', 'laporanByKondisi'));
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->download('Laporan_Statistik_Tumbuh_Kembang.pdf');
+    }
+
+    /**
+     * Export Laporan Validasi Lapangan ke PDF
+     */
+    public function validasiPdf()
+    {
+        $validasis = ValidasiCpcl::with(['keluarga_penerima', 'pendamping', 'validator'])->latest()->get();
+        $keluarga_penerimaByStatus = KeluargaPenerima::selectRaw('status_validasi, count(*) as total')->groupBy('status_validasi')->get();
+
+        $pdf = Pdf::loadView('dashboard.pemda.laporan.validasi_pdf', compact('validasis', 'keluarga_penerimaByStatus'));
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->download('Laporan_Validasi_Lapangan.pdf');
     }
 
     /**
