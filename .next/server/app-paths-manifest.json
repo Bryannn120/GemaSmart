@@ -1,0 +1,12 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/data-penerima/page": "app/data-penerima/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/laporan/page": "app/laporan/page.js",
+  "/login/page": "app/login/page.js",
+  "/page": "app/page.js",
+  "/penyaluran-bibit/page": "app/penyaluran-bibit/page.js",
+  "/program-bantuan/page": "app/program-bantuan/page.js"
+}

@@ -1,0 +1,12 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/dashboard/page": "/dashboard",
+  "/data-penerima/page": "/data-penerima",
+  "/favicon.ico/route": "/favicon.ico",
+  "/laporan/page": "/laporan",
+  "/login/page": "/login",
+  "/page": "/",
+  "/penyaluran-bibit/page": "/penyaluran-bibit",
+  "/program-bantuan/page": "/program-bantuan"
+}

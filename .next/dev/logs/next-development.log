@@ -1,0 +1,29 @@
+{"timestamp":"00:00:12.633","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:24.513","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:00:41.219","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:05:25.441","source":"Server","level":"LOG","message":"✓ Compiled in 416ms"}
+{"timestamp":"00:11:10.609","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:16:59.978","source":"Server","level":"LOG","message":"✓ Compiled in 990ms"}
+{"timestamp":"00:17:25.067","source":"Server","level":"LOG","message":"✓ Compiled in 333ms"}
+{"timestamp":"00:20:59.811","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:25:42.182","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:30:26.691","source":"Server","level":"LOG","message":"✓ Compiled in 4.5s"}
+{"timestamp":"00:35:54.028","source":"Server","level":"LOG","message":"✓ Compiled in 6.9s"}
+{"timestamp":"00:36:58.619","source":"Server","level":"LOG","message":"○ Compiling /penyaluran-bibit ..."}
+{"timestamp":"00:37:07.602","source":"Server","level":"ERROR","message":"Use the `defaultValue` or `value` props on <select> instead of setting `selected` on <option>."}
+{"timestamp":"00:37:07.811","source":"Server","level":"ERROR","message":"You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`."}
+{"timestamp":"00:37:10.967","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:37:12.610","source":"Browser","level":"ERROR","message":"Use the `defaultValue` or `value` props on <select> instead of setting `selected` on <option>. "}
+{"timestamp":"00:37:12.627","source":"Server","level":"ERROR","message":"[browser] \"Use the `defaultValue` or `value` props on <select> instead of setting `selected` on <option>.\" \"\""}
+{"timestamp":"00:37:12.632","source":"Browser","level":"ERROR","message":"You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`. "}
+{"timestamp":"00:37:12.680","source":"Server","level":"ERROR","message":"[browser] \"You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.\" \"\""}
+{"timestamp":"00:37:32.871","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:38:01.909","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:38:28.984","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:39:42.553","source":"Server","level":"LOG","message":"○ Compiling /data-penerima ..."}
+{"timestamp":"00:39:53.683","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:39:54.266","source":"Browser","level":"ERROR","message":"Use the `defaultValue` or `value` props on <select> instead of setting `selected` on <option>. "}
+{"timestamp":"00:39:54.621","source":"Server","level":"ERROR","message":"[browser] \"Use the `defaultValue` or `value` props on <select> instead of setting `selected` on <option>.\" \"\""}
+{"timestamp":"00:40:11.874","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:40:19.634","source":"Server","level":"LOG","message":"✓ Compiled in 2.5s"}
+{"timestamp":"00:40:25.346","source":"Server","level":"LOG","message":"✓ Compiled in 4s"}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 13, "column": 0}, "map": {"version":3,"sources":["file:///C:/sibibit/app/favicon.ico.mjs%20(structured%20image%20object)"],"sourcesContent":["import src from \"IMAGE\";\nexport default { src, width: 256, height: 256 }\n"],"names":["src","width","height"],"mappings":";;;;AAAA;;uCACe;IAAEA,KAAAA,mIAAG;IAAEC,OAAO;IAAKC,QAAQ;AAAI"}},
+    {"offset": {"line": 28, "column": 0}, "map": {"version":3,"sources":["file:///C:/sibibit/app/laporan/page.tsx"],"sourcesContent":["export default function Laporan() {\n  return (\n    <div className=\"flex items-center justify-center min-h-screen bg-surface-subtle text-text-primary\">\n      <div className=\"text-center p-8 bg-surface-container-lowest rounded-xl shadow-sm\">\n        <h1 className=\"font-headline-lg text-headline-lg mb-2 text-status-warning\">Akses Ditolak (Proteksi Layar)</h1>\n        <p className=\"text-body-md font-body-md text-text-secondary\">\n          Layar \"Laporan & Export\" ini ternyata diproteksi oleh Google Login di sisi server prototipe (Stitch).\n          <br/>\n          Harap unggah file HTML-nya secara manual ke chat jika Anda ingin halaman ini dirender.\n        </p>\n      </div>\n    </div>\n  );\n}"],"names":["Laporan","className"],"mappings":";;;;;;AAAe,SAASA;IACtB,qBACE,8OAAC;QAAIC,WAAU;kBACb,cAAA,8OAAC;YAAIA,WAAU;;8BACb,8OAAC;oBAAGA,WAAU;8BAA6D;;;;;;8BAC3E,8OAAC;oBAAEA,WAAU;;wBAAgD;sCAE3D,8OAAC;;;;;wBAAI;;;;;;;;;;;;;;;;;;AAMf"}}]
+}
