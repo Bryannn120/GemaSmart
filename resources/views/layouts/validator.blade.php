@@ -120,5 +120,6 @@
             if (closeBtn) closeBtn.addEventListener('click', toggleSidebar);
         });
     </script>
+    @include('components.searchable-select-script')
 </body>
 </html>

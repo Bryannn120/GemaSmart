@@ -13,35 +13,55 @@ use App\Models\LaporanPenerima;
 use App\Models\KampusMitra;
 use Barryvdh\DomPDF\Facade\Pdf;
 
+use App\Services\PeriodFilterHelper;
+
 class LaporanController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource with period filter (hari, minggu, bulan, tahun).
      */
-    public function index()
+    public function index(Request $request)
     {
-        $totalProgram = ProgramBantuan::count();
-        $totalKeluargaPenerima = KeluargaPenerima::count();
-        $totalPenyaluran = Penyaluran::count();
-        $totalValidasi = ValidasiCpcl::count();
-        $totalLaporan = LaporanTumbuhKembang::count();
-        $totalLaporanWarga = LaporanPenerima::count();
+        $periodInfo = PeriodFilterHelper::parseRequest($request);
 
-        $keluarga_penerimaByStatus = KeluargaPenerima::selectRaw('status_validasi, count(*) as total')->groupBy('status_validasi')->get();
-        $penyaluranByStatus = Penyaluran::selectRaw('status, count(*) as total')->groupBy('status')->get();
-        $laporanByKondisi = LaporanTumbuhKembang::selectRaw('status_kondisi, count(*) as total')->groupBy('status_kondisi')->get();
-
-        // Mengambil seluruh Laporan / Feedback dari Penerima beserta relasinya
-        $laporanWargas = LaporanPenerima::with([
+        $programQuery = ProgramBantuan::query();
+        $penerimaQuery = KeluargaPenerima::query();
+        $penyaluranQuery = Penyaluran::query();
+        $validasiQuery = ValidasiCpcl::query();
+        $tumbuhKembangQuery = LaporanTumbuhKembang::query();
+        $wargaQuery = LaporanPenerima::with([
             'keluargaPenerima.wilayah.parent',
             'keluargaPenerima.programBantuan',
             'keluargaPenerima.pendamping.kampus',
             'keluargaPenerima.kampusMitra'
-        ])->latest()->get();
+        ]);
+
+        if ($periodInfo['start'] && $periodInfo['end']) {
+            $penyaluranQuery->whereBetween('created_at', [$periodInfo['start'], $periodInfo['end']]);
+            $validasiQuery->whereBetween('created_at', [$periodInfo['start'], $periodInfo['end']]);
+            $tumbuhKembangQuery->whereBetween('created_at', [$periodInfo['start'], $periodInfo['end']]);
+            $wargaQuery->whereBetween('created_at', [$periodInfo['start'], $periodInfo['end']]);
+        }
+
+        $totalProgram = $programQuery->count();
+        $totalKeluargaPenerima = $penerimaQuery->count();
+        $totalPenyaluran = $penyaluranQuery->count();
+        $totalValidasi = $validasiQuery->count();
+        $totalLaporan = $tumbuhKembangQuery->count();
+        $totalLaporanWarga = (clone $wargaQuery)->count();
+
+        $keluarga_penerimaByStatus = KeluargaPenerima::selectRaw('status_validasi, count(*) as total')->groupBy('status_validasi')->get();
+        $penyaluranByStatus = (clone $penyaluranQuery)->selectRaw('status, count(*) as total')->groupBy('status')->get();
+        $laporanByKondisi = (clone $tumbuhKembangQuery)->selectRaw('status_kondisi, count(*) as total')->groupBy('status_kondisi')->get();
+
+        // Mengambil Laporan / Feedback dari Penerima sesuai periode
+        $laporanWargas = $wargaQuery->latest()->get();
+        $filterParams = $request->only(['start_date', 'end_date', 'periode', 'bulan', 'tahun']);
 
         return view('dashboard.pemda.laporan.index', compact(
             'totalProgram', 'totalKeluargaPenerima', 'totalPenyaluran', 'totalValidasi', 'totalLaporan', 'totalLaporanWarga',
-            'keluarga_penerimaByStatus', 'penyaluranByStatus', 'laporanByKondisi', 'laporanWargas'
+            'keluarga_penerimaByStatus', 'penyaluranByStatus', 'laporanByKondisi', 'laporanWargas',
+            'periodInfo', 'filterParams'
         ));
     }
 
@@ -66,70 +86,100 @@ class LaporanController extends Controller
     }
 
     /**
-     * Export dashboard summary to PDF.
+     * Export dashboard summary to PDF with period filter.
      */
-    public function cetakPdf()
+    public function cetakPdf(Request $request)
     {
+        $periodInfo = PeriodFilterHelper::parseRequest($request);
+
+        $penyaluranQuery = Penyaluran::query();
+        $validasiQuery = ValidasiCpcl::query();
+        $tumbuhKembangQuery = LaporanTumbuhKembang::query();
+
+        if ($periodInfo['start'] && $periodInfo['end']) {
+            $penyaluranQuery->whereBetween('created_at', [$periodInfo['start'], $periodInfo['end']]);
+            $validasiQuery->whereBetween('created_at', [$periodInfo['start'], $periodInfo['end']]);
+            $tumbuhKembangQuery->whereBetween('created_at', [$periodInfo['start'], $periodInfo['end']]);
+        }
+
         $totalProgram = ProgramBantuan::count();
         $totalKeluargaPenerima = KeluargaPenerima::count();
-        $totalPenyaluran = Penyaluran::count();
-        $totalValidasi = ValidasiCpcl::count();
-        $totalLaporan = LaporanTumbuhKembang::count();
+        $totalPenyaluran = $penyaluranQuery->count();
+        $totalValidasi = $validasiQuery->count();
+        $totalLaporan = $tumbuhKembangQuery->count();
 
         $keluarga_penerimaByStatus = KeluargaPenerima::selectRaw('status_validasi, count(*) as total')->groupBy('status_validasi')->get();
-        $penyaluranByStatus = Penyaluran::selectRaw('status, count(*) as total')->groupBy('status')->get();
-        $laporanByKondisi = LaporanTumbuhKembang::selectRaw('status_kondisi, count(*) as total')->groupBy('status_kondisi')->get();
+        $penyaluranByStatus = $penyaluranQuery->selectRaw('status, count(*) as total')->groupBy('status')->get();
+        $laporanByKondisi = $tumbuhKembangQuery->selectRaw('status_kondisi, count(*) as total')->groupBy('status_kondisi')->get();
 
         $pdf = Pdf::loadView('dashboard.pemda.laporan.pdf', compact(
             'totalProgram', 'totalKeluargaPenerima', 'totalPenyaluran', 'totalValidasi', 'totalLaporan',
-            'keluarga_penerimaByStatus', 'penyaluranByStatus', 'laporanByKondisi'
+            'keluarga_penerimaByStatus', 'penyaluranByStatus', 'laporanByKondisi', 'periodInfo'
         ));
         
         $pdf->setPaper('A4', 'portrait');
 
-        return $pdf->download('Laporan_Rekapitulasi_Gema_Smart.pdf');
+        return $pdf->download('Laporan_Rekapitulasi_Gema_Smart_' . ($periodInfo['start_date'] ?? 'all') . '.pdf');
     }
 
     /**
-     * Export Laporan Penyaluran Bibit ke PDF
+     * Export Laporan Penyaluran Bibit ke PDF with period filter
      */
-    public function penyaluranPdf()
+    public function penyaluranPdf(Request $request)
     {
-        $penyalurans = Penyaluran::with(['wilayah', 'jenisBibit'])->latest()->get();
+        $periodInfo = PeriodFilterHelper::parseRequest($request);
+
+        $query = Penyaluran::with(['wilayah', 'jenisBibit']);
+        if ($periodInfo['start'] && $periodInfo['end']) {
+            $query->whereBetween('created_at', [$periodInfo['start'], $periodInfo['end']]);
+        }
+        $penyalurans = $query->latest()->get();
         $totalKuantitas = $penyalurans->sum('kuantitas');
 
-        $pdf = Pdf::loadView('dashboard.pemda.laporan.penyaluran_pdf', compact('penyalurans', 'totalKuantitas'));
+        $pdf = Pdf::loadView('dashboard.pemda.laporan.penyaluran_pdf', compact('penyalurans', 'totalKuantitas', 'periodInfo'));
         $pdf->setPaper('A4', 'portrait');
 
-        return $pdf->download('Laporan_Penyaluran_Bibit_Pemda.pdf');
+        return $pdf->download('Laporan_Penyaluran_Bibit_Pemda_' . ($periodInfo['start_date'] ?? 'all') . '.pdf');
     }
 
     /**
-     * Export Statistik Tumbuh Kembang ke PDF
+     * Export Statistik Tumbuh Kembang ke PDF with period filter
      */
-    public function tumbuhKembangPdf()
+    public function tumbuhKembangPdf(Request $request)
     {
-        $laporans = LaporanTumbuhKembang::with(['keluarga_penerima', 'pendamping'])->latest()->get();
-        $laporanByKondisi = LaporanTumbuhKembang::selectRaw('status_kondisi, count(*) as total')->groupBy('status_kondisi')->get();
+        $periodInfo = PeriodFilterHelper::parseRequest($request);
 
-        $pdf = Pdf::loadView('dashboard.pemda.laporan.tumbuh_kembang_pdf', compact('laporans', 'laporanByKondisi'));
+        $query = LaporanTumbuhKembang::with(['keluarga_penerima', 'pendamping']);
+        if ($periodInfo['start'] && $periodInfo['end']) {
+            $query->whereBetween('created_at', [$periodInfo['start'], $periodInfo['end']]);
+        }
+        $laporans = $query->latest()->get();
+        $laporanByKondisi = (clone $query)->selectRaw('status_kondisi, count(*) as total')->groupBy('status_kondisi')->get();
+
+        $pdf = Pdf::loadView('dashboard.pemda.laporan.tumbuh_kembang_pdf', compact('laporans', 'laporanByKondisi', 'periodInfo'));
         $pdf->setPaper('A4', 'portrait');
 
-        return $pdf->download('Laporan_Statistik_Tumbuh_Kembang.pdf');
+        return $pdf->download('Laporan_Statistik_Tumbuh_Kembang_' . ($periodInfo['start_date'] ?? 'all') . '.pdf');
     }
 
     /**
-     * Export Laporan Validasi Lapangan ke PDF
+     * Export Laporan Validasi Lapangan ke PDF with period filter
      */
-    public function validasiPdf()
+    public function validasiPdf(Request $request)
     {
-        $validasis = ValidasiCpcl::with(['keluarga_penerima', 'pendamping', 'validator'])->latest()->get();
+        $periodInfo = PeriodFilterHelper::parseRequest($request);
+
+        $query = ValidasiCpcl::with(['keluarga_penerima', 'pendamping', 'validator']);
+        if ($periodInfo['start'] && $periodInfo['end']) {
+            $query->whereBetween('created_at', [$periodInfo['start'], $periodInfo['end']]);
+        }
+        $validasis = $query->latest()->get();
         $keluarga_penerimaByStatus = KeluargaPenerima::selectRaw('status_validasi, count(*) as total')->groupBy('status_validasi')->get();
 
-        $pdf = Pdf::loadView('dashboard.pemda.laporan.validasi_pdf', compact('validasis', 'keluarga_penerimaByStatus'));
+        $pdf = Pdf::loadView('dashboard.pemda.laporan.validasi_pdf', compact('validasis', 'keluarga_penerimaByStatus', 'periodInfo'));
         $pdf->setPaper('A4', 'portrait');
 
-        return $pdf->download('Laporan_Validasi_Lapangan.pdf');
+        return $pdf->download('Laporan_Validasi_Lapangan_' . ($periodInfo['start_date'] ?? 'all') . '.pdf');
     }
 
     /**

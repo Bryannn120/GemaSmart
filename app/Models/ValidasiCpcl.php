@@ -16,7 +16,12 @@ class ValidasiCpcl extends Model
 
     public function keluarga_penerima()
     {
-        return $this->belongsTo(KeluargaPenerima::class);
+        return $this->belongsTo(KeluargaPenerima::class, 'keluarga_penerima_id')->withTrashed();
+    }
+
+    public function keluargaPenerima()
+    {
+        return $this->keluarga_penerima();
     }
 
     public function pendamping()

@@ -48,8 +48,18 @@
 
                 <div class="flex flex-col gap-space-xs">
                     <label for="satuan" class="font-label-md text-text-primary">Satuan Kuantitas <span class="text-error">*</span></label>
-                    <input type="text" name="satuan" id="satuan" value="{{ old('satuan', $jenisBibit->satuan) }}" required
+                    <select name="satuan" id="satuan" required
                         class="w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle">
+                        @php
+                            $currSatuan = old('satuan', $jenisBibit->satuan);
+                            $satuanOptions = ['Polybag', 'KG', 'LT', 'Unit', 'Batang', 'Pohon', 'Biji', 'Gram', 'Paket', 'Sak'];
+                        @endphp
+                        @foreach($satuanOptions as $opt)
+                            <option value="{{ $opt }}" {{ strcasecmp($currSatuan, $opt) === 0 ? 'selected' : '' }}>
+                                {{ $opt }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
 

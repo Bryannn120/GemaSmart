@@ -26,9 +26,44 @@
         <strong>Informasi Kemitraan:</strong><br>
         Universitas: <strong>{{ $kampus->nama_universitas ?? 'Universitas Teknologi Sumbawa' }}</strong> |
         PIC: <strong>{{ $kampus->pic_name ?? '-' }} ({{ $kampus->pic_contact ?? '-' }})</strong><br>
-        Wilayah Binaan: <strong>{{ $kampus->wilayah_binaan ?? 'Seluruh Wilayah Sumbawa' }}</strong> |
+        Wilayah Binaan: <strong>{{ $kampus->wilayah_binaan ?? 'Seluruh Wilayah Sumbawa' }}</strong><br>
+        Periode Laporan: <strong>{{ $periodInfo['label'] ?? 'Semua Periode' }}</strong> |
         Dicetak pada: <strong>{{ now()->format('d M Y H:i') }} WITA</strong>
     </div>
+
+    @if(isset($penyalurans) && $penyalurans->count() > 0)
+    <h4 style="margin-bottom: 5px; color: #00450d;">Realisasi Penyaluran Bantuan ({{ $periodInfo['label'] ?? 'Periode Ini' }}):</h4>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 5%;">No</th>
+                <th style="width: 15%;">Tgl Penyaluran</th>
+                <th style="width: 25%;">Penerima</th>
+                <th style="width: 25%;">Item / Bantuan</th>
+                <th style="width: 15%;">Jumlah</th>
+                <th style="width: 15%;">Nilai (Rp)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($penyalurans as $idx => $pen)
+            <tr>
+                <td>{{ $idx + 1 }}</td>
+                <td>{{ \Carbon\Carbon::parse($pen->tgl_penyaluran)->format('d/m/Y') }}</td>
+                <td><strong>{{ $pen->keluargaPenerima->kepala_keluarga ?? '-' }}</strong></td>
+                <td>{{ $pen->itemBantuan->nama_item ?? '-' }}</td>
+                <td>{{ number_format($pen->jumlah, 0) }} {{ $pen->satuan }}</td>
+                <td>
+                    @if($pen->jenis === 'uang')
+                        Rp {{ number_format($pen->nominal_uang, 0, ',', '.') }}
+                    @else
+                        Rp {{ number_format($pen->jumlah * ($pen->itemBantuan->nominal_satuan ?? 0), 0, ',', '.') }}
+                    @endif
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    @endif
 
     <h4 style="margin-bottom: 5px; color: #00450d;">Daftar Mahasiswa / Kader Pendamping:</h4>
     <table>

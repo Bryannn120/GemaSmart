@@ -12,13 +12,29 @@ class TugasValidasiController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $validasis = ValidasiCpcl::with(['keluarga_penerima.wilayah', 'validator'])
-            ->where('pendamping_id', auth()->id())
-            ->latest()
-            ->get();
-        return view('dashboard.pendamping.tugas-validasi.index', compact('validasis'));
+        $search = $request->query('search');
+        $query = ValidasiCpcl::with(['keluarga_penerima.wilayah.parent', 'validator'])
+            ->where('pendamping_id', auth()->id());
+
+        if ($request->filled('search')) {
+            $searchTerm = trim($search);
+            $query->whereHas('keluarga_penerima', function ($kp) use ($searchTerm) {
+                $kp->where('kepala_keluarga', 'like', "%{$searchTerm}%")
+                    ->orWhere('nik', 'like', "%{$searchTerm}%")
+                    ->orWhere('no_kk', 'like', "%{$searchTerm}%")
+                    ->orWhereHas('wilayah', function ($w) use ($searchTerm) {
+                        $w->where('nama', 'like', "%{$searchTerm}%")
+                            ->orWhereHas('parent', function ($p) use ($searchTerm) {
+                                $p->where('nama', 'like', "%{$searchTerm}%");
+                            });
+                    });
+            });
+        }
+
+        $validasis = $query->latest('tgl_survei')->latest('id')->get();
+        return view('dashboard.pendamping.tugas-validasi.index', compact('validasis', 'search'));
     }
 
     /**
@@ -59,8 +75,7 @@ class TugasValidasiController extends Controller
      */
     public function show(string $id)
     {
-        $validasi = ValidasiCpcl::with(['keluarga_penerima.wilayah', 'validator'])->findOrFail($id);
-        return view('dashboard.pendamping.tugas-validasi.show', compact('validasi'));
+        return redirect()->route('pendamping.tugas-validasi.edit', $id);
     }
 
     /**

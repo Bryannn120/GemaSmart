@@ -18,10 +18,38 @@
     </div>
 
     @if(session('success'))
-        <div class="bg-status-verified-surface text-primary p-space-md rounded-xl font-body-sm border border-primary/20">
-            {{ session('success') }}
+        <div class="bg-status-verified-surface text-primary p-space-md rounded-xl font-body-sm border border-primary/20 flex items-center gap-2 shadow-sm">
+            <span class="material-symbols-outlined text-[20px]">check_circle</span>
+            <span>{{ session('success') }}</span>
         </div>
     @endif
+
+    <!-- Search Bar -->
+    <div class="bg-canvas-bg rounded-2xl p-space-md shadow-sm border border-border-light flex flex-col sm:flex-row items-center justify-between gap-space-md">
+        <form action="{{ route('pendamping.tugas-validasi.index') }}" method="GET" class="w-full flex items-center gap-space-sm">
+            <div class="flex-1 relative">
+                <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-text-secondary text-[20px]">search</span>
+                <input type="text" name="search" id="searchValidasi" value="{{ request('search') }}"
+                    placeholder="Cari nama keluarga penerima, NIK, atau wilayah (desa/kecamatan)..."
+                    class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-border-medium bg-surface-subtle focus:bg-white text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                @if(request('search'))
+                    <a href="{{ route('pendamping.tugas-validasi.index') }}" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-primary" title="Hapus pencarian">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
+                    </a>
+                @endif
+            </div>
+            <button type="submit" class="px-space-md py-2.5 rounded-xl bg-primary text-white font-label-md text-xs font-semibold hover:bg-gov-green-dark transition-colors shadow-sm flex items-center gap-1.5 shrink-0">
+                <span class="material-symbols-outlined text-[16px]">search</span>
+                <span>Cari</span>
+            </button>
+            @if(request('search'))
+                <a href="{{ route('pendamping.tugas-validasi.index') }}" class="px-space-md py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-text-secondary hover:text-text-primary font-label-md text-xs font-semibold transition-colors border border-border-light flex items-center gap-1 shrink-0">
+                    <span class="material-symbols-outlined text-[16px]">refresh</span>
+                    <span>Reset</span>
+                </a>
+            @endif
+        </form>
+    </div>
 
     <div class="bg-canvas-bg rounded-xl shadow-sm border border-border-light flex flex-col overflow-hidden">
         <div class="overflow-x-auto">
@@ -40,7 +68,7 @@
                     @forelse ($validasis as $validasi)
                     <tr class="hover:bg-surface-subtle transition-colors group">
                         <td class="py-3.5 px-4 font-semibold text-text-primary">{{ \Carbon\Carbon::parse($validasi->tgl_survei)->format('d M Y') }}</td>
-                        <td class="py-3.5 px-4 text-text-primary">{{ $validasi->keluarga_penerima->nama ?? '-' }}</td>
+                        <td class="py-3.5 px-4 text-text-primary">{{ $validasi->keluarga_penerima->kepala_keluarga ?? $validasi->keluarga_penerima->nama ?? '-' }}</td>
                         <td class="py-3.5 px-4 text-text-primary">{{ $validasi->keluarga_penerima->wilayah->nama ?? '-' }}</td>
                         <td class="py-3.5 px-4">
                             @if ($validasi->status_kelayakan == 'layak')

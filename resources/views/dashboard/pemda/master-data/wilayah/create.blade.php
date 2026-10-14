@@ -54,16 +54,16 @@
 
                 <div class="flex flex-col gap-space-xs">
                     <label for="parent_id" class="font-label-md text-text-primary">Parent / Induk Kecamatan (Jika Desa)</label>
-                    <div class="relative">
-                        <select name="parent_id" id="parent_id"
-                            class="appearance-none w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle cursor-pointer">
-                            <option value="">-- Pilih Induk (Opsional) --</option>
-                            @foreach ($parents as $p)
-                                <option value="{{ $p->id }}" {{ old('parent_id') == $p->id ? 'selected' : '' }}>{{ $p->nama }}</option>
-                            @endforeach
-                        </select>
-                        <span class="material-symbols-outlined absolute right-3 top-3 text-text-secondary pointer-events-none">expand_more</span>
-                    </div>
+                    @include('components.searchable-select', [
+                        'name' => 'parent_id',
+                        'id' => 'parent_id',
+                        'value' => old('parent_id'),
+                        'options' => $parents,
+                        'placeholder' => '-- Pilih Induk Kecamatan (Opsional) --',
+                        'searchPlaceholder' => 'Ketik nama kecamatan...',
+                        'required' => false,
+                        'icon' => 'apartment'
+                    ])
                 </div>
             </div>
 

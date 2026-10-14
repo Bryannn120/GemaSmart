@@ -29,7 +29,7 @@
                 <!-- KeluargaPenerima is typically read-only on edit, so just displaying it but omitting from update or using hidden -->
                 <div class="flex flex-col gap-space-xs">
                     <label class="font-label-md text-text-primary">KeluargaPenerima (CPCL)</label>
-                    <input type="text" value="{{ $validasi->keluarga_penerima->nama ?? '-' }}" disabled
+                    <input type="text" value="{{ $validasi->keluarga_penerima->kepala_keluarga ?? $validasi->keluarga_penerima->nama ?? '-' }}" disabled
                         class="w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium bg-surface-muted text-text-secondary">
                 </div>
                 

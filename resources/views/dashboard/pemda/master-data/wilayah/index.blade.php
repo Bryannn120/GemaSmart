@@ -4,7 +4,7 @@
 <div class="flex flex-col w-full gap-space-xl">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-lg">
         <div class="flex flex-col max-w-2xl">
-            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight">Master Data: Wilayah</h1>
+            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Data Wilayah</h1>
             <p class="font-body-md text-text-secondary mt-1">
                 Kelola data wilayah kecamatan dan desa/kelurahan di Kabupaten Sumbawa.
             </p>

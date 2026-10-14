@@ -8,19 +8,123 @@ use App\Models\KeluargaPenerima;
 use App\Models\Wilayah;
 use App\Models\ProgramBantuan;
 use App\Models\User;
+use App\Models\AuditLog;
+use App\Services\DataPenerimaExportImportService;
 use Illuminate\Support\Facades\Hash;
 
 class DataPenerimaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $keluarga_penerimas = KeluargaPenerima::with(['wilayah', 'programBantuan', 'user'])->get();
-        return view('dashboard.pemda.data-penerima.index', compact('keluarga_penerimas'));
+        $tab = $request->query('tab', 'aktif'); // 'aktif', 'mandiri', 'semua'
+        $search = $request->query('search');
+        $wilayahId = $request->query('wilayah_id');
+        $programId = $request->query('program_bantuan_id');
+
+        $query = KeluargaPenerima::with(['wilayah.parent', 'programBantuan', 'user', 'pendamping']);
+
+        if ($tab === 'mandiri') {
+            // Warga yang telah mandiri atau mencapai desil 6 ke atas (Lulus Bantuan)
+            $query->mandiri();
+        } elseif ($tab === 'aktif') {
+            // Default: Penerima Bantuan Aktif (Otomatis menghilangkan yang sudah mandiri atau desil 6+)
+            $query->penerimaAktif();
+        }
+
+        if ($request->filled('search')) {
+            $term = trim($search);
+            $query->where(function ($q) use ($term) {
+                $q->where('kepala_keluarga', 'like', "%{$term}%")
+                  ->orWhere('nik', 'like', "%{$term}%")
+                  ->orWhere('no_kk', 'like', "%{$term}%")
+                  ->orWhere('alamat', 'like', "%{$term}%");
+            });
+        }
+
+        if ($request->filled('wilayah_id')) {
+            $query->where('wilayah_id', $wilayahId);
+        }
+
+        if ($request->filled('program_bantuan_id')) {
+            $query->where('program_bantuan_id', $programId);
+        }
+
+        $keluarga_penerimas = $query->latest('id')->paginate(20)->withQueryString();
+
+        $countAktif = KeluargaPenerima::penerimaAktif()->count();
+        $countMandiri = KeluargaPenerima::mandiri()->count();
+        $totalSemua = KeluargaPenerima::count();
+
+        $wilayahs = Wilayah::where('jenis', 'desa')->where('is_aktif', true)->orderBy('nama')->get();
+        $programs = ProgramBantuan::where('status', 'aktif')->orderBy('nama_program')->get();
+
+        return view('dashboard.pemda.data-penerima.index', compact(
+            'keluarga_penerimas',
+            'tab',
+            'countAktif',
+            'countMandiri',
+            'totalSemua',
+            'wilayahs',
+            'programs',
+            'search',
+            'wilayahId',
+            'programId'
+        ));
+    }
+
+    /**
+     * Ekspor Data Penerima Bantuan ke Excel (.xlsx) atau CSV (.csv).
+     */
+    public function export(Request $request, DataPenerimaExportImportService $service)
+    {
+        $format = $request->query('format', 'xlsx');
+        $tab = $request->query('tab', 'aktif');
+        $wilayahId = $request->query('wilayah_id');
+        $programId = $request->query('program_bantuan_id');
+        $search = $request->query('search');
+
+        return $service->export($format, $tab, $wilayahId, $programId, $search);
+    }
+
+    /**
+     * Download Template Impor Penerima Bantuan (.xlsx / .csv).
+     */
+    public function downloadTemplate(Request $request, DataPenerimaExportImportService $service)
+    {
+        $format = $request->query('format', 'xlsx');
+        return $service->downloadTemplate($format);
+    }
+
+    /**
+     * Impor Data Penerima Bantuan dari file Excel atau CSV.
+     */
+    public function import(Request $request, DataPenerimaExportImportService $service)
+    {
+        $request->validate([
+            'file' => 'required|file|max:10240',
+            'duplicate_mode' => 'required|in:update,skip',
+        ], [
+            'file.required' => 'Silakan pilih file Excel (.xlsx) atau CSV (.csv) untuk diunggah.',
+            'file.max' => 'Ukuran file maksimal adalah 10 MB.',
+            'duplicate_mode.required' => 'Pilih mode penanganan jika data NIK sudah terdaftar.',
+        ]);
+
+        $result = $service->import($request->file('file'), $request->duplicate_mode);
+
+        if ($result['success']) {
+            return redirect()->route('pemda.data-penerima.index')
+                ->with('success', $result['message'])
+                ->with('import_errors', $result['stats']['errors'] ?? []);
+        }
+
+        return redirect()->route('pemda.data-penerima.index')
+            ->with('error', $result['message'])
+            ->with('import_errors', $result['stats']['errors'] ?? []);
     }
 
     public function create()
     {
-        $wilayahs = Wilayah::where('is_aktif', true)->get();
+        $wilayahs = Wilayah::with('parent')->where('is_aktif', true)->orderBy('nama')->get();
         $programs = ProgramBantuan::where('status', 'aktif')->get();
         return view('dashboard.pemda.data-penerima.create', compact('wilayahs', 'programs'));
     }
@@ -47,9 +151,24 @@ class DataPenerimaController extends Controller
         ]);
 
         $validated['user_id'] = $user->id;
-        $validated['status_kemandirian'] = 'Belum Dinilai';
+        $validated['status_kemandirian'] = ($validated['desil'] >= 6) ? 'Mandiri' : 'Belum Dinilai';
 
-        KeluargaPenerima::create($validated);
+        $penerima = KeluargaPenerima::create($validated);
+
+        // Audit Trail
+        AuditLog::record(
+            'Pemda Menambahkan Data Penerima Bantuan',
+            'KeluargaPenerima',
+            $penerima->id,
+            null,
+            [
+                'kepala_keluarga' => $penerima->kepala_keluarga,
+                'no_kk' => $penerima->no_kk,
+                'nik' => $penerima->nik,
+                'desil' => $penerima->desil,
+                'status_validasi' => $penerima->status_validasi,
+            ]
+        );
 
         return redirect()->route('pemda.data-penerima.index')->with('success', 'Data penerima berhasil ditambahkan & Akun berhasil dibuat.');
     }
@@ -63,7 +182,7 @@ class DataPenerimaController extends Controller
     public function edit(string $id)
     {
         $keluarga_penerima = KeluargaPenerima::findOrFail($id);
-        $wilayahs = Wilayah::where('is_aktif', true)->get();
+        $wilayahs = Wilayah::with('parent')->where('is_aktif', true)->orderBy('nama')->get();
         $programs = ProgramBantuan::where('status', 'aktif')->get();
         return view('dashboard.pemda.data-penerima.edit', compact('keluarga_penerima', 'wilayahs', 'programs'));
     }
@@ -71,6 +190,7 @@ class DataPenerimaController extends Controller
     public function update(Request $request, string $id)
     {
         $keluarga_penerima = KeluargaPenerima::findOrFail($id);
+        $dataLama = $keluarga_penerima->toArray();
 
         $validated = $request->validate([
             'no_kk' => 'required|string|size:16|unique:keluarga_penerimas,no_kk,' . $id,
@@ -83,6 +203,12 @@ class DataPenerimaController extends Controller
             'status_validasi' => 'required|in:menunggu_validasi,proses_lapangan,valid,anomali',
         ]);
 
+        if ($validated['desil'] >= 6) {
+            $validated['status_kemandirian'] = 'Mandiri';
+        } elseif ($keluarga_penerima->status_kemandirian === 'Mandiri') {
+            $validated['status_kemandirian'] = 'Tahap Kemandirian';
+        }
+
         $keluarga_penerima->update($validated);
         
         if ($keluarga_penerima->user) {
@@ -92,16 +218,37 @@ class DataPenerimaController extends Controller
             ]);
         }
 
+        // Audit Trail
+        AuditLog::record(
+            'Pemda Memperbarui Data Penerima Bantuan',
+            'KeluargaPenerima',
+            $keluarga_penerima->id,
+            $dataLama,
+            $keluarga_penerima->fresh()->toArray()
+        );
+
         return redirect()->route('pemda.data-penerima.index')->with('success', 'Data penerima berhasil diperbarui.');
     }
 
     public function destroy(string $id)
     {
         $keluarga_penerima = KeluargaPenerima::findOrFail($id);
+        $dataLama = $keluarga_penerima->toArray();
+        $nama = $keluarga_penerima->kepala_keluarga;
+
         if ($keluarga_penerima->user) {
             $keluarga_penerima->user->delete();
         }
         $keluarga_penerima->delete();
+
+        // Audit Trail
+        AuditLog::record(
+            'Pemda Menghapus Data Penerima Bantuan',
+            'KeluargaPenerima',
+            (int) $id,
+            $dataLama,
+            null
+        );
 
         return redirect()->route('pemda.data-penerima.index')->with('success', 'Data penerima berhasil dihapus.');
     }

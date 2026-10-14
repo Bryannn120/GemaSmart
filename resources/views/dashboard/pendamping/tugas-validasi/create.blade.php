@@ -32,7 +32,7 @@
                             class="appearance-none w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle cursor-pointer">
                             <option value="">-- Pilih KeluargaPenerima Menunggu Validasi --</option>
                             @foreach ($keluarga_penerimas as $p)
-                                <option value="{{ $p->id }}" {{ old('keluarga_penerima_id') == $p->id ? 'selected' : '' }}>{{ $p->nama }} ({{ $p->nik }})</option>
+                                <option value="{{ $p->id }}" {{ old('keluarga_penerima_id') == $p->id ? 'selected' : '' }}>{{ $p->kepala_keluarga ?? $p->nama }} (NIK: {{ $p->nik }})</option>
                             @endforeach
                         </select>
                         <span class="material-symbols-outlined absolute right-3 top-3 text-text-secondary pointer-events-none">expand_more</span>

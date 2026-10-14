@@ -23,8 +23,8 @@
             </p>
         </div>
         <div class="flex flex-wrap items-center gap-space-sm">
-            <form action="{{ route('pemda.monitoring.index') }}" method="GET" class="flex items-center gap-2">
-                <select name="kecamatan_id" onchange="this.form.submit()" class="appearance-none font-body-md px-space-md py-2 pr-8 rounded-xl bg-surface-container-high text-text-primary border border-border-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary cursor-pointer transition-shadow">
+            <form action="{{ route('pemda.monitoring.index') }}" method="GET" class="flex items-center gap-2 min-w-[240px]">
+                <select name="kecamatan_id" onchange="this.form.submit()" class="searchable-select font-body-md px-space-md py-2 pr-8 rounded-xl bg-surface-container-high text-text-primary border border-border-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary cursor-pointer transition-shadow">
                     <option value="">-- Semua Wilayah Kecamatan --</option>
                     @foreach($kecamatans as $kec)
                         <option value="{{ $kec->id }}" {{ $selectedKecamatan == $kec->id ? 'selected' : '' }}>
@@ -32,9 +32,6 @@
                         </option>
                     @endforeach
                 </select>
-                <div class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2">
-                    <span class="material-symbols-outlined text-[18px] text-text-secondary">expand_more</span>
-                </div>
             </form>
         </div>
     </div>

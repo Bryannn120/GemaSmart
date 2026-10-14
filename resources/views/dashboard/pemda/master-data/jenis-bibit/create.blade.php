@@ -50,9 +50,19 @@
 
                 <div class="flex flex-col gap-space-xs">
                     <label for="satuan" class="font-label-md text-text-primary">Satuan Kuantitas <span class="text-error">*</span></label>
-                    <input type="text" name="satuan" id="satuan" value="{{ old('satuan', 'Pohon') }}" required
-                        class="w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle"
-                        placeholder="Ex: Pohon, Batang, Polybag">
+                    <select name="satuan" id="satuan" required
+                        class="w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle">
+                        <option value="Polybag" {{ old('satuan') == 'Polybag' ? 'selected' : '' }}>Polybag</option>
+                        <option value="KG" {{ old('satuan') == 'KG' ? 'selected' : '' }}>KG (Kilogram)</option>
+                        <option value="LT" {{ old('satuan') == 'LT' ? 'selected' : '' }}>LT (Liter)</option>
+                        <option value="Unit" {{ old('satuan') == 'Unit' ? 'selected' : '' }}>Unit</option>
+                        <option value="Batang" {{ old('satuan') == 'Batang' ? 'selected' : '' }}>Batang</option>
+                        <option value="Pohon" {{ old('satuan', 'Pohon') == 'Pohon' ? 'selected' : '' }}>Pohon</option>
+                        <option value="Biji" {{ old('satuan') == 'Biji' ? 'selected' : '' }}>Biji / Butir</option>
+                        <option value="Gram" {{ old('satuan') == 'Gram' ? 'selected' : '' }}>Gram</option>
+                        <option value="Paket" {{ old('satuan') == 'Paket' ? 'selected' : '' }}>Paket</option>
+                        <option value="Sak" {{ old('satuan') == 'Sak' ? 'selected' : '' }}>Sak / Karung</option>
+                    </select>
                 </div>
             </div>
 

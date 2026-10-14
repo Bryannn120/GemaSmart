@@ -26,6 +26,7 @@
         <strong>Informasi Pendampingan:</strong><br>
         Total Pendamping Terdaftar: <strong>{{ $pendampings->count() }} Orang</strong> |
         Total Log/Laporan Monitoring: <strong>{{ $laporans->count() }} Kegiatan</strong><br>
+        Periode Laporan: <strong>{{ $periodInfo['label'] ?? 'Semua Periode' }}</strong> |
         Dicetak pada: <strong>{{ now()->format('d M Y H:i') }} WITA</strong>
     </div>
 

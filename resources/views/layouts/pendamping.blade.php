@@ -45,14 +45,18 @@
                 <a href="{{ route('dashboard.pendamping') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg transition-colors {{ request()->routeIs('dashboard.pendamping') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary font-label-lg text-label-lg' }}">
                     <span class="material-symbols-outlined text-[20px]">home</span><span>Beranda</span>
                 </a>
-                <a href="{{ route('pendamping.tugas-validasi.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg {{ request()->routeIs('pendamping.tugas-validasi.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
-                    <span class="material-symbols-outlined text-[20px]">assignment</span><span>Tugas Validasi</span>
-                </a>
+                {{-- Menu Tugas Validasi dinonaktifkan sementara sesuai instruksi --}}
                 <a href="{{ route('pendamping.lapor.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg {{ request()->routeIs('pendamping.lapor.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
                     <span class="material-symbols-outlined text-[20px]">eco</span><span>Lapor Tumbuh Kembang</span>
                 </a>
                 <a href="{{ route('pendamping.keluarga_penerima.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg {{ request()->routeIs('pendamping.keluarga_penerima.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
                     <span class="material-symbols-outlined text-[20px]">group</span><span>Keluarga Penerima Binaan</span>
+                </a>
+                <a href="{{ route('pendamping.penyaluran-bantuan.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg {{ request()->routeIs('pendamping.penyaluran-bantuan.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
+                    <span class="material-symbols-outlined text-[20px]">volunteer_activism</span><span>Penyaluran Bantuan</span>
+                </a>
+                <a href="{{ route('pendamping.kemandirian.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg {{ request()->routeIs('pendamping.kemandirian.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
+                    <span class="material-symbols-outlined text-[20px]">query_stats</span><span>Monitoring Kemandirian</span>
                 </a>
                 <a href="{{ route('profile.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg {{ request()->routeIs('profile.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
                     <span class="material-symbols-outlined text-[20px]">settings</span><span>Pengaturan Akun</span>
@@ -123,5 +127,6 @@
             if (closeBtn) closeBtn.addEventListener('click', toggleSidebar);
         });
     </script>
+    @include('components.searchable-select-script')
 </body>
 </html>

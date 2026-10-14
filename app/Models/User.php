@@ -19,15 +19,35 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'nim_nip',
+        'fakultas_prodi',
         'email',
+        'no_hp',
         'password',
         'role',
         'kampus_id',
+        'status_keaktifan',
+        'desa_penugasan',
     ];
 
     public function kampus()
     {
         return $this->belongsTo(KampusMitra::class, 'kampus_id');
+    }
+
+    public function keluargaPenerimas()
+    {
+        return $this->hasMany(KeluargaPenerima::class, 'pendamping_id');
+    }
+
+    public function laporanTumbuhKembangs()
+    {
+        return $this->hasMany(LaporanTumbuhKembang::class, 'pendamping_id');
+    }
+
+    public function penyaluranBantuans()
+    {
+        return $this->hasMany(PenyaluranBantuan::class, 'pendamping_id');
     }
 
     /**

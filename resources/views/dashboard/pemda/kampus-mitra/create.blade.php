@@ -82,6 +82,20 @@
                 </div>
             </div>
 
+            <div class="flex flex-col gap-space-xs p-space-md rounded-xl bg-gov-green-surface/40 border border-primary/20">
+                <label for="dana_bappeda" class="font-label-md text-gov-green-dark font-bold flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+                    <span>Alokasi Dana dari Bappeda ke Kampus (Rp)</span>
+                </label>
+                <div class="relative">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-text-secondary text-sm">Rp</span>
+                    <input type="number" name="dana_bappeda" id="dana_bappeda" value="{{ old('dana_bappeda', 0) }}" min="0" step="any"
+                        class="w-full font-body-md pl-11 pr-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-white font-semibold text-text-primary"
+                        placeholder="Contoh: 500000000">
+                </div>
+                <p class="text-xs text-text-secondary">Uang yang diberikan Bappeda ini akan otomatis dikurangi secara real-time oleh total penyaluran dan penggunaan program bantuan kampus.</p>
+            </div>
+
             <div class="flex items-center justify-end gap-space-sm mt-space-md pt-space-lg border-t border-border-light">
                 <a href="{{ route('pemda.kampus-mitra.index') }}" class="px-space-lg py-2.5 rounded-xl font-label-md font-semibold text-text-secondary hover:bg-surface-variant transition-colors">
                     Batal

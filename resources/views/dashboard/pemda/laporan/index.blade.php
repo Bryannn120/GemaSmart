@@ -10,12 +10,15 @@
                 Pantau laporan kendala langsung dari warga penerima bantuan, statistik program, dan rekapitulasi data.
             </p>
         </div>
-        <div>
-            <a href="{{ route('pemda.laporan.pdf') }}" target="_blank" class="px-space-md py-space-sm rounded-lg bg-status-fraud text-on-error font-label-lg hover:bg-red-800 transition-colors shadow-sm flex items-center gap-2">
+        <div class="flex items-center gap-2">
+            <a href="{{ route('pemda.laporan.pdf', request()->all()) }}" target="_blank" class="px-space-md py-space-sm rounded-lg bg-status-fraud text-on-error font-label-lg hover:bg-red-800 transition-colors shadow-sm flex items-center gap-2">
                 <span class="material-symbols-outlined text-[20px]">picture_as_pdf</span> Cetak PDF Keseluruhan
             </a>
         </div>
     </div>
+
+    <!-- FILTER PERIODE WAKTU (Hari, Minggu, Bulan, Tahun, Rentang Tanggal Kustom) -->
+    <x-period-filter :periodInfo="$periodInfo" label="Pilih Periode Laporan:" />
 
     <!-- TABEL UTAMA: Laporan & Kendala dari Penerima Bantuan -->
     <div class="bg-canvas-bg rounded-xl shadow-sm border border-border-light flex flex-col overflow-hidden">
@@ -28,6 +31,9 @@
                 <p class="font-body-sm text-text-secondary mt-0.5">Daftar keluhan, kendala bibit, dan feedback yang dikirim langsung oleh warga penerima.</p>
             </div>
             <div class="flex items-center gap-2">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-gov-green-surface text-primary border border-primary/20">
+                    Periode: {{ $periodInfo['label'] }}
+                </span>
                 <span class="px-3 py-1 rounded-full text-xs font-bold bg-primary text-on-primary">
                     Total: {{ $laporanWargas->count() }} Laporan
                 </span>
@@ -135,7 +141,10 @@
 
     <!-- Reports Grid / Statistik Dokumen -->
     <div class="flex flex-col gap-3">
-        <h2 class="font-headline-sm font-bold text-text-primary">Dokumen Rekapitulasi & Statistik</h2>
+        <div class="flex items-center justify-between">
+            <h2 class="font-headline-sm font-bold text-text-primary">Dokumen Rekapitulasi &amp; Statistik</h2>
+            <span class="text-xs text-text-secondary font-medium">Berdasarkan {{ $periodInfo['label'] }}</span>
+        </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-space-md">
             <!-- Card 1 -->
             <div class="bg-canvas-bg rounded-xl p-space-lg shadow-sm border border-border-light hover:border-primary transition-colors cursor-pointer group">
@@ -143,8 +152,8 @@
                     <span class="material-symbols-outlined text-[24px]">description</span>
                 </div>
                 <h3 class="font-headline-sm font-semibold text-text-primary group-hover:text-primary transition-colors">Laporan Penyaluran Bibit</h3>
-                <p class="font-body-sm text-text-secondary mt-1 mb-space-md">Total data penyaluran bibit: {{ $totalPenyaluran }} transaksi.</p>
-                <a href="{{ route('pemda.laporan.penyaluran-pdf') }}" target="_blank" class="w-full block text-center py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Unduh PDF</a>
+                <p class="font-body-sm text-text-secondary mt-1 mb-space-md">Data penyaluran periode ini: {{ $totalPenyaluran }} transaksi.</p>
+                <a href="{{ route('pemda.laporan.penyaluran-pdf', request()->all()) }}" target="_blank" class="w-full block text-center py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Unduh PDF</a>
             </div>
 
             <!-- Card 2 -->
@@ -153,8 +162,8 @@
                     <span class="material-symbols-outlined text-[24px]">pie_chart</span>
                 </div>
                 <h3 class="font-headline-sm font-semibold text-text-primary group-hover:text-primary transition-colors">Statistik Tumbuh Kembang</h3>
-                <p class="font-body-sm text-text-secondary mt-1 mb-space-md">Laporan pengamatan tumbuh kembang: {{ $totalLaporan }} data.</p>
-                <a href="{{ route('pemda.laporan.tumbuh-kembang-pdf') }}" target="_blank" class="w-full block text-center py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Unduh PDF</a>
+                <p class="font-body-sm text-text-secondary mt-1 mb-space-md">Laporan pengamatan periode ini: {{ $totalLaporan }} data.</p>
+                <a href="{{ route('pemda.laporan.tumbuh-kembang-pdf', request()->all()) }}" target="_blank" class="w-full block text-center py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Unduh PDF</a>
             </div>
             
             <!-- Card 3 -->
@@ -163,8 +172,8 @@
                     <span class="material-symbols-outlined text-[24px]">rule</span>
                 </div>
                 <h3 class="font-headline-sm font-semibold text-text-primary group-hover:text-primary transition-colors">Laporan Validasi Lapangan</h3>
-                <p class="font-body-sm text-text-secondary mt-1 mb-space-md">Total validasi CPCL lapangan: {{ $totalValidasi }} data keluarga.</p>
-                <a href="{{ route('pemda.laporan.validasi-pdf') }}" target="_blank" class="w-full block text-center py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Unduh PDF</a>
+                <p class="font-body-sm text-text-secondary mt-1 mb-space-md">Total validasi CPCL periode ini: {{ $totalValidasi }} data keluarga.</p>
+                <a href="{{ route('pemda.laporan.validasi-pdf', request()->all()) }}" target="_blank" class="w-full block text-center py-2 bg-surface-container rounded-lg text-text-primary font-label-md font-semibold group-hover:bg-primary group-hover:text-on-primary transition-colors">Unduh PDF</a>
             </div>
         </div>
     </div>

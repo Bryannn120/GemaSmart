@@ -13,7 +13,7 @@
         </p>
     </div>
 
-    @if ($errors->any())
+    @if (isset($errors) && $errors->any())
         <div class="bg-error-container text-on-error-container p-space-md rounded-xl font-body-sm mb-space-md border border-error/20">
             <ul class="list-disc pl-5">
                 @foreach ($errors->all() as $error)
@@ -44,32 +44,48 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
                 <div class="flex flex-col gap-space-xs">
-                    <label for="no_kk" class="font-label-md text-text-primary">No. KK</label>
-                    <input type="text" name="no_kk" id="no_kk" value="{{ old('no_kk') }}"
+                    <label for="no_kk" class="font-label-md text-text-primary">No. KK <span class="text-error">*</span></label>
+                    <input type="text" name="no_kk" id="no_kk" value="{{ old('no_kk') }}" required maxlength="16" minlength="16"
                         class="w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle"
-                        placeholder="Opsional">
+                        placeholder="16 Digit No. Kartu Keluarga">
                 </div>
                 
                 <div class="flex flex-col gap-space-xs">
-                    <label for="desil" class="font-label-md text-text-primary">Desil (Ha)</label>
-                    <input type="number" step="0.01" name="desil" id="desil" value="{{ old('desil') }}"
-                        class="w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle">
+                    <label for="desil" class="font-label-md text-text-primary">Desil Kemiskinan <span class="text-error">*</span></label>
+                    <div class="relative">
+                        <select name="desil" id="desil" required
+                            class="appearance-none w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle cursor-pointer">
+                            @for($d = 1; $d <= 10; $d++)
+                                <option value="{{ $d }}" {{ old('desil', 1) == $d ? 'selected' : '' }}>
+                                    Desil {{ $d }} {{ $d >= 6 ? '• Mandiri (Lulus Bantuan)' : '• Prioritas Penerima Bantuan' }}
+                                </option>
+                            @endfor
+                        </select>
+                        <span class="material-symbols-outlined absolute right-3 top-3 text-text-secondary pointer-events-none">expand_more</span>
+                    </div>
                 </div>
+            </div>
+
+            <div class="flex flex-col gap-space-xs">
+                <label for="alamat" class="font-label-md text-text-primary">Alamat Lengkap / Dusun / RT-RW</label>
+                <textarea name="alamat" id="alamat" rows="2"
+                    class="w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle"
+                    placeholder="Contoh: Dusun Karang Anyar RT 02 / RW 01">{{ old('alamat') }}</textarea>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
                 <div class="flex flex-col gap-space-xs">
-                    <label for="wilayah_id" class="font-label-md text-text-primary">Wilayah <span class="text-error">*</span></label>
-                    <div class="relative">
-                        <select name="wilayah_id" id="wilayah_id" required
-                            class="appearance-none w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle cursor-pointer">
-                            <option value="">-- Pilih Wilayah --</option>
-                            @foreach ($wilayahs as $w)
-                                <option value="{{ $w->id }}" {{ old('wilayah_id') == $w->id ? 'selected' : '' }}>{{ $w->nama }} ({{ $w->kode_wilayah }})</option>
-                            @endforeach
-                        </select>
-                        <span class="material-symbols-outlined absolute right-3 top-3 text-text-secondary pointer-events-none">expand_more</span>
-                    </div>
+                    <label for="wilayah_id" class="font-label-md text-text-primary">Wilayah Desa / Kelurahan <span class="text-error">*</span></label>
+                    @include('components.searchable-select', [
+                        'name' => 'wilayah_id',
+                        'id' => 'wilayah_id',
+                        'value' => old('wilayah_id'),
+                        'options' => $wilayahs,
+                        'placeholder' => '-- Cari / Pilih Wilayah Desa --',
+                        'searchPlaceholder' => 'Ketik nama desa atau kecamatan...',
+                        'required' => true,
+                        'icon' => 'location_on'
+                    ])
                 </div>
 
                 <div class="flex flex-col gap-space-xs">

@@ -19,6 +19,11 @@ class Wilayah extends Model
         return $this->hasMany(KeluargaPenerima::class);
     }
 
+    public function keluargaPenerimas()
+    {
+        return $this->keluarga_penerimas();
+    }
+
     public function parent()
     {
         return $this->belongsTo(Wilayah::class, 'parent_id');

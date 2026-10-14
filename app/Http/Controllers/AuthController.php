@@ -52,6 +52,20 @@ class AuthController extends Controller
             
             // Redirect based on role
             $role = Auth::user()->role ?? 'default';
+
+            // Catat log autentikasi
+            \App\Models\AuditLog::record(
+                'User Login ke Sistem',
+                'Auth',
+                Auth::id(),
+                null,
+                [
+                    'user' => Auth::user()->name,
+                    'email' => Auth::user()->email,
+                    'role' => $role,
+                    'login_via' => filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'no_kk',
+                ]
+            );
             
             return match($role) {
                 'pemda' => redirect()->intended('/dashboard/pemda'),
@@ -70,6 +84,21 @@ class AuthController extends Controller
     
     public function logout(Request $request)
     {
+        if (Auth::check()) {
+            \App\Models\AuditLog::record(
+                'User Logout dari Sistem',
+                'Auth',
+                Auth::id(),
+                null,
+                [
+                    'user' => Auth::user()->name,
+                    'email' => Auth::user()->email,
+                    'role' => Auth::user()->role,
+                ],
+                Auth::id()
+            );
+        }
+
         Auth::logout();
     
         $request->session()->invalidate();

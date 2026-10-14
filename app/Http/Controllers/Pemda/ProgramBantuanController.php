@@ -9,79 +9,62 @@ use App\Models\ProgramBantuan;
 class ProgramBantuanController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of programs created by Kampus (Read-Only for Pemda monitoring).
      */
     public function index()
     {
-        $programs = ProgramBantuan::all();
+        $programs = ProgramBantuan::with(['kampusMitra', 'itemBantuans', 'penyaluranBantuans'])
+            ->withCount(['itemBantuans', 'penyaluranBantuans'])
+            ->latest()
+            ->get();
+
         return view('dashboard.pemda.program-bantuan.index', compact('programs'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display the specified program details.
+     */
+    public function show(string $id)
+    {
+        $program = ProgramBantuan::with([
+            'kampusMitra',
+            'itemBantuans.penyaluranBantuans',
+            'penyaluranBantuans.keluargaPenerima.wilayah'
+        ])->findOrFail($id);
+
+        return view('dashboard.pemda.program-bantuan.show', compact('program'));
+    }
+
+    /**
+     * Pemda cannot create programs. Redirect with notice.
      */
     public function create()
     {
-        return view('dashboard.pemda.program-bantuan.create');
+        return redirect()->route('pemda.program-bantuan.index')
+            ->with('info', 'Program bantuan dirancang dan dibuat oleh pihak Kampus Mitra. Pemda bertindak sebagai pengawas dan monitoring daerah.');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'nama_program' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'pagu_anggaran' => 'required|numeric|min:0',
-            'target_kk' => 'required|integer|min:0',
-            'tahun_anggaran' => 'required|integer|min:2000',
-            'status' => 'required|in:draf,aktif,selesai',
-        ]);
-
-        ProgramBantuan::create($validated);
-
-        return redirect()->route('pemda.program-bantuan.index')->with('success', 'Program Bantuan berhasil ditambahkan.');
+        return redirect()->route('pemda.program-bantuan.index')
+            ->with('info', 'Program bantuan dirancang dan dibuat oleh pihak Kampus Mitra.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        $program = ProgramBantuan::findOrFail($id);
-        return view('dashboard.pemda.program-bantuan.edit', compact('program'));
+        return redirect()->route('pemda.program-bantuan.index')
+            ->with('info', 'Pengubahan program bantuan hanya dapat dilakukan oleh pihak Kampus pembuat program.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        $program = ProgramBantuan::findOrFail($id);
-
-        $validated = $request->validate([
-            'nama_program' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'pagu_anggaran' => 'required|numeric|min:0',
-            'target_kk' => 'required|integer|min:0',
-            'tahun_anggaran' => 'required|integer|min:2000',
-            'status' => 'required|in:draf,aktif,selesai',
-        ]);
-
-        $program->update($validated);
-
-        return redirect()->route('pemda.program-bantuan.index')->with('success', 'Program Bantuan berhasil diperbarui.');
+        return redirect()->route('pemda.program-bantuan.index')
+            ->with('info', 'Pengubahan program bantuan hanya dapat dilakukan oleh pihak Kampus pembuat program.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        $program = ProgramBantuan::findOrFail($id);
-        $program->delete();
-
-        return redirect()->route('pemda.program-bantuan.index')->with('success', 'Program Bantuan berhasil dihapus.');
+        return redirect()->route('pemda.program-bantuan.index')
+            ->with('info', 'Program bantuan dikelola oleh pihak Kampus Mitra.');
     }
 }

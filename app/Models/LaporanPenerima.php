@@ -15,6 +15,11 @@ class LaporanPenerima extends Model
 
     public function keluargaPenerima()
     {
-        return $this->belongsTo(KeluargaPenerima::class);
+        return $this->belongsTo(KeluargaPenerima::class, 'keluarga_penerima_id')->withTrashed();
+    }
+
+    public function keluarga_penerima()
+    {
+        return $this->keluargaPenerima();
     }
 }

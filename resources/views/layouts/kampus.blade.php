@@ -45,8 +45,8 @@
                 <a href="{{ route('dashboard.kampus') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg transition-colors {{ request()->routeIs('dashboard.kampus') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary font-label-lg text-label-lg' }}">
                     <span class="material-symbols-outlined text-[20px]">dashboard</span><span>Dashboard</span>
                 </a>
-                <a href="{{ route('kampus.pengadaan.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg {{ request()->routeIs('kampus.pengadaan.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : '' }}">
-                    <span class="material-symbols-outlined text-[20px]">receipt_long</span><span>Pengadaan & SPJ</span>
+                <a href="{{ route('kampus.program-bantuan.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg {{ request()->routeIs('kampus.program-bantuan.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : '' }}">
+                    <span class="material-symbols-outlined text-[20px]">inventory_2</span><span>Program Bantuan</span>
                 </a>
                 <a href="{{ route('kampus.pendamping.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg {{ request()->routeIs('kampus.pendamping.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : '' }}">
                     <span class="material-symbols-outlined text-[20px]">how_to_reg</span><span>Tim Pendamping</span>
@@ -55,7 +55,7 @@
                     <span class="material-symbols-outlined text-[20px]">group</span><span>Keluarga Penerima</span>
                 </a>
                 <a href="{{ route('kampus.penyaluran.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg {{ request()->routeIs('kampus.penyaluran.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : '' }}">
-                    <span class="material-symbols-outlined text-[20px]">psychiatry</span><span>Penyaluran Bibit</span>
+                    <span class="material-symbols-outlined text-[20px]">volunteer_activism</span><span>Penyaluran Bantuan</span>
                 </a>
                 <a href="{{ route('kampus.monitoring.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg {{ request()->routeIs('kampus.monitoring.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : '' }}">
                     <span class="material-symbols-outlined text-[20px]">fact_check</span><span>Monitoring & Evaluasi</span>
@@ -139,5 +139,6 @@
             if (closeBtn) closeBtn.addEventListener('click', toggleSidebar);
         });
     </script>
+    @include('components.searchable-select-script')
 </body>
 </html>

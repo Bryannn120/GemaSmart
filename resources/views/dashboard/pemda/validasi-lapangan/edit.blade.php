@@ -30,7 +30,7 @@
             
             <div class="flex flex-col gap-1">
                 <span class="font-label-sm text-text-secondary">Nama KeluargaPenerima (CPCL)</span>
-                <span class="font-body-md text-text-primary">{{ $validasi->keluarga_penerima->nama ?? '-' }} ({{ $validasi->keluarga_penerima->nik ?? '-' }})</span>
+                <span class="font-body-md text-text-primary">{{ $validasi->keluarga_penerima->kepala_keluarga ?? $validasi->keluarga_penerima->nama ?? '-' }} ({{ $validasi->keluarga_penerima->nik ?? '-' }})</span>
             </div>
             
             <div class="flex flex-col gap-1">
