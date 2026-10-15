@@ -4,7 +4,7 @@
 <div class="flex flex-col w-full gap-space-xl">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-lg">
         <div class="flex flex-col max-w-2xl">
-            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight">KeluargaPenerima Binaan Saya</h1>
+            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight">Keluarga Penerima Bantuan</h1>
             <p class="font-body-md text-text-secondary mt-1">
                 Daftar kelompok tani dan nomor kontak yang menjadi tanggung jawab pendampingan Anda di lapangan.
             </p>

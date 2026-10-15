@@ -21,9 +21,9 @@
             </span>
             <span class="text-xs text-text-tertiary">Bantuan Subsidi Ditetapkan Kampus</span>
         </div>
-        <h1 class="font-headline-xl text-headline-xl text-text-primary font-bold">Salurkan Bantuan ke Keluarga Binaan</h1>
+        <h1 class="font-headline-xl text-headline-xl text-text-primary font-bold">Salurkan Bantuan ke Keluarga Penerima Bantuan</h1>
         <p class="font-body-md text-text-secondary text-sm">
-            Catat detail bantuan yang diserahkan kepada keluarga penerima binaan. Anda dapat menyalurkan bantuan bibit, uang modal tunai (beserta peruntukannya), dan barang/alat sekaligus dalam satu kali penyaluran.
+            Catat detail bantuan yang diserahkan kepada keluarga penerima bantuan. Anda dapat menyalurkan bantuan bibit, uang modal tunai (beserta peruntukannya), dan barang/alat sekaligus dalam satu kali penyaluran.
         </p>
     </div>
 
@@ -52,7 +52,7 @@
                 <!-- PILIH KELUARGA PENERIMA (DENGAN SEARCH) -->
                 <div class="flex flex-col gap-1.5">
                     <label class="font-label-sm text-label-sm text-text-secondary font-bold">
-                        Keluarga Penerima Binaan <span class="text-status-error">*</span>
+                        Keluarga Penerima Bantuan <span class="text-status-error">*</span>
                     </label>
 
                     <!-- Filter search box untuk penerima -->
@@ -87,10 +87,19 @@
                     <select name="program_bantuan_id" id="selectProgram" required onchange="onProgramChanged()"
                         class="w-full px-3 py-2.5 rounded-xl border border-border-light bg-canvas-bg text-text-primary text-sm font-medium focus:border-primary focus:outline-none transition-all">
                         <option value="">-- Pilih Program Bantuan Kampus --</option>
+                        @php
+                            $firstProgramWithItems = $programs->first(fn($p) => $p->itemBantuans->count() > 0);
+                        @endphp
                         @foreach ($programs as $prog)
+                            @php
+                                $itemCount = $prog->itemBantuans->count();
+                                $isSelected = old('program_bantuan_id') 
+                                    ? old('program_bantuan_id') == $prog->id 
+                                    : ($firstProgramWithItems && $firstProgramWithItems->id == $prog->id);
+                            @endphp
                             <option value="{{ $prog->id }}" 
-                                {{ (old('program_bantuan_id') == $prog->id || $loop->first) ? 'selected' : '' }}>
-                                {{ $prog->nama_program }} (Tahun {{ $prog->tahun_anggaran }})
+                                {{ $isSelected ? 'selected' : '' }}>
+                                {{ $prog->nama_program }} (Tahun {{ $prog->tahun_anggaran }}) {{ $itemCount === 0 ? '— [Belum ada item subsidi]' : "({$itemCount} item)" }}
                             </option>
                         @endforeach
                     </select>
@@ -208,16 +217,42 @@ function onProgramChanged() {
 }
 
 function addNewItemRow() {
-    const programId = document.getElementById('selectProgram').value;
+    const programSelect = document.getElementById('selectProgram');
+    const programId = programSelect ? programSelect.value : '';
     const items = programItemsData[programId] || [];
+    const container = document.getElementById('itemsContainer');
 
-    if (items.length === 0) {
-        alert('Program yang dipilih belum memiliki rincian item bantuan dari kampus. Harap minta pihak kampus untuk menambahkan item subsidi terlebih dahulu.');
+    if (!programId) {
+        container.innerHTML = `
+            <div class="p-4 rounded-xl border border-dashed border-border-light bg-surface-subtle text-text-secondary text-center text-xs">
+                Silakan pilih Program Bantuan Kampus terlebih dahulu di atas.
+            </div>
+        `;
         return;
     }
 
+    if (items.length === 0) {
+        container.innerHTML = `
+            <div class="p-4 rounded-xl border border-amber-300 bg-amber-50 text-amber-900 flex items-start gap-3 shadow-sm">
+                <span class="material-symbols-outlined text-amber-600 text-[24px]">warning</span>
+                <div class="flex-1">
+                    <p class="font-bold text-sm text-amber-900">Program Belum Memiliki Item Bantuan</p>
+                    <p class="text-xs text-amber-800 mt-1">
+                        Program yang dipilih belum memiliki rincian item bantuan dari kampus. Harap minta pihak kampus untuk menambahkan item subsidi terlebih dahulu melalui menu <strong>Program Bantuan &gt; Tambah Item Subsidi</strong>, atau pilih program bantuan lain yang sudah memiliki item bantuan.
+                    </p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // Hapus banner peringatan / placeholder jika sebelumnya ada
+    const existingPlaceholder = container.querySelector('.border-amber-300, .border-dashed');
+    if (existingPlaceholder) {
+        container.innerHTML = '';
+    }
+
     const index = rowCounter++;
-    const container = document.getElementById('itemsContainer');
 
     const rowDiv = document.createElement('div');
     rowDiv.id = `item-row-${index}`;

@@ -8,10 +8,10 @@
             <div class="flex items-center gap-2 mb-1">
                 <a href="{{ route('kampus.keluarga_penerima.index') }}" class="text-text-secondary hover:text-primary transition-colors flex items-center gap-1 font-body-sm text-sm">
                     <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-                    <span>Kembali ke Daftar Binaan</span>
+                    <span>Kembali ke Daftar Penerima Bantuan</span>
                 </a>
             </div>
-            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Detail Keluarga Penerima Binaan</h1>
+            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Detail Keluarga Penerima Bantuan</h1>
             <p class="font-body-md text-text-secondary mt-1">
                 Informasi profil penerima bantuan, status desil, dan rekam jejak pembinaan oleh kampus.
             </p>

@@ -5,7 +5,7 @@
     <div class="flex flex-col">
         <a href="{{ route('pendamping.lapor.show', $laporan->id) }}" class="inline-flex items-center gap-1 text-text-secondary hover:text-primary mb-space-md font-label-md transition-colors w-fit">
             <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-            <span>Kembali ke Detail & Histori</span>
+            <span>Kembali ke Laporan Kunjungan</span>
         </a>
         <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Update Laporan Kunjungan Lapangan</h1>
         <p class="font-body-md text-text-secondary mt-1">
@@ -28,9 +28,43 @@
             @csrf
             @method('PUT')
 
+            <input type="hidden" name="program_bantuan_id" value="{{ $laporan->program_bantuan_id }}">
+            @if($laporan->penyaluranBantuan)
+                <input type="hidden" name="penyaluran_bantuan_id" value="{{ $laporan->penyaluran_bantuan_id }}">
+                <div class="p-4 rounded-xl border border-primary/20 bg-gov-green-surface/40 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-[20px]">volunteer_activism</span>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-primary text-white">
+                                    {{ $laporan->penyaluranBantuan->jenis }}
+                                </span>
+                                <h4 class="font-bold text-sm text-text-primary">
+                                    {{ $laporan->penyaluranBantuan->itemBantuan->nama_item ?? 'Bantuan' }}
+                                </h4>
+                            </div>
+                            <span class="text-xs text-text-secondary mt-0.5 block">
+                                Program: <strong>{{ $laporan->programBantuan->nama_program ?? ($laporan->penyaluranBantuan->programBantuan->nama_program ?? '-') }}</strong> • Disalurkan: {{ \Carbon\Carbon::parse($laporan->penyaluranBantuan->tgl_penyaluran)->translatedFormat('d F Y') }}
+                            </span>
+                        </div>
+                    </div>
+                    <a href="{{ route('pendamping.penyaluran-bantuan.show', $laporan->penyaluran_bantuan_id) }}" target="_blank" class="text-xs text-primary font-bold hover:underline shrink-0 flex items-center gap-1">
+                        <span>Bukti Penyaluran</span>
+                        <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                    </a>
+                </div>
+            @else
+                <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-blue-700">school</span>
+                    <span>Program Kampus: <strong>{{ $laporan->programBantuan->nama_program ?? '-' }}</strong></span>
+                </div>
+            @endif
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
                 <div class="flex flex-col gap-space-xs">
-                    <label for="keluarga_penerima_id" class="font-label-md text-text-primary">Keluarga Penerima Binaan <span class="text-error">*</span></label>
+                    <label for="keluarga_penerima_id" class="font-label-md text-text-primary">Keluarga Penerima Bantuan <span class="text-error">*</span></label>
                     <div class="relative">
                         <select name="keluarga_penerima_id" id="keluarga_penerima_id" required
                             class="searchable-select appearance-none w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle cursor-pointer">

@@ -167,8 +167,8 @@
                                     {{ $p->keluarga_penerimas_count ?? 0 }} KK Binaan
                                 </span>
                             </div>
-                            <span class="text-xs text-text-secondary block mt-1">
-                                {{ $p->desa_penugasan ? 'Desa: ' . $p->desa_penugasan : 'Desa belum diatur' }}
+                            <span class="text-xs text-text-secondary block mt-1 font-medium text-emerald-800">
+                                📍 {{ $p->assigned_wilayah_label ?: ($p->desa_penugasan ? 'Desa: ' . $p->desa_penugasan : 'Wilayah belum diatur') }}
                             </span>
                         </td>
 

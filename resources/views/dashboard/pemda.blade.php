@@ -281,7 +281,7 @@
                                         <thead class="bg-surface-subtle text-text-secondary font-label-md text-label-md">
                                             <tr>
                                                 <th class="py-2.5 px-3">Kecamatan</th>
-                                                <th class="py-2.5 px-3">Penerima Binaan</th>
+                                                <th class="py-2.5 px-3">Penerima Bantuan</th>
                                                 <th class="py-2.5 px-3">Penyaluran Bantuan</th>
                                                 <th class="py-2.5 px-3">Status</th>
                                                 <th class="py-2.5 px-3 text-right">Aksi</th>

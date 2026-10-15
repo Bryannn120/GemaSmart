@@ -4,14 +4,14 @@
 <div class="flex flex-col w-full gap-space-xl">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-lg">
         <div class="flex flex-col max-w-2xl">
-            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Keluarga Penerima Binaan</h1>
+            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Keluarga Penerima Bantuan</h1>
             <p class="font-body-md text-text-secondary mt-1">
-                Daftar keluarga penerima manfaat program bantuan bibit yang berada dalam wilayah binaan dan pendampingan Anda di lapangan.
+                Daftar keluarga penerima manfaat program bantuan yang berada dalam wilayah pendampingan Anda di lapangan.
             </p>
         </div>
         <div class="flex flex-wrap items-center gap-space-sm">
             <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-gov-green-surface text-primary border border-primary/20">
-                Total: {{ $keluarga_penerimas->count() }} Keluarga Binaan
+                Total: {{ $keluarga_penerimas->count() }} Keluarga Penerima Bantuan
             </span>
             <a href="{{ route('pendamping.keluarga_penerima.create') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-primary hover:bg-gov-green-dark text-white font-label-md text-xs font-bold shadow-sm transition-all">
                 <span class="material-symbols-outlined text-[17px]">person_add</span>
@@ -90,7 +90,6 @@
                         <th class="py-3 px-4 font-semibold">Penghasilan/Bln</th>
                         <th class="py-3 px-4 font-semibold">Desil</th>
                         <th class="py-3 px-4 font-semibold">Kemandirian</th>
-                        <th class="py-3 px-4 font-semibold">Program Bantuan</th>
                         <th class="py-3 px-4 text-right font-semibold">Aksi</th>
                     </tr>
                 </thead>
@@ -143,9 +142,6 @@
                                 </span>
                             @endif
                         </td>
-                        <td class="py-3.5 px-4 text-text-primary text-xs font-medium">
-                            {{ $kp->programBantuan->nama_program ?? '-' }}
-                        </td>
                         <td class="py-3.5 px-4 text-right whitespace-nowrap">
                             <div class="inline-flex items-center gap-1.5">
                                 <a href="{{ route('pendamping.keluarga_penerima.penilaian.create', $kp->id) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-gov-green-surface hover:bg-gov-green text-primary hover:text-white font-label-md text-xs font-semibold transition-colors border border-primary/20" title="Beri Penilaian Desil">
@@ -171,9 +167,9 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="text-center py-12 text-text-tertiary">
+                        <td colspan="7" class="text-center py-12 text-text-tertiary">
                             <span class="material-symbols-outlined text-4xl block mb-2 text-text-tertiary">group_off</span>
-                            Belum ada data keluarga penerima binaan.
+                            Belum ada data keluarga penerima bantuan.
                         </td>
                     </tr>
                     @endforelse

@@ -7,12 +7,12 @@
         <div class="flex items-center gap-2 mb-2">
             <a href="{{ route('pendamping.keluarga_penerima.index') }}" class="inline-flex items-center gap-1 text-text-secondary hover:text-primary font-body-sm text-sm transition-colors w-fit">
                 <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-                <span>Kembali ke Daftar Binaan</span>
+                <span>Kembali ke Daftar Penerima Bantuan</span>
             </a>
         </div>
-        <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Tambah Keluarga Penerima Binaan</h1>
+        <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Tambah Keluarga Penerima Bantuan</h1>
         <p class="font-body-md text-text-secondary mt-1">
-            Daftarkan keluarga penerima manfaat bibit tanaman produktif baru yang berada dalam wilayah pendampingan Anda.
+            Daftarkan keluarga penerima bantuan baru yang berada dalam wilayah pendampingan Anda.
         </p>
     </div>
 

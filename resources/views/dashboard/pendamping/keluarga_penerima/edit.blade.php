@@ -10,7 +10,7 @@
                 <span>Kembali ke Detail Penerima</span>
             </a>
         </div>
-        <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Edit Data Keluarga Penerima Binaan</h1>
+        <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Edit Data Keluarga Penerima Bantuan</h1>
         <p class="font-body-md text-text-secondary mt-1">
             Perbarui data profil, identitas KTP/KK, wilayah, atau alokasi bantuan untuk keluarga {{ $keluarga_penerima->kepala_keluarga }}.
         </p>

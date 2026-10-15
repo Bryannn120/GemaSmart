@@ -22,46 +22,81 @@ class PenyaluranBantuanController extends Controller
         $jenisFilter = $request->query('jenis'); // bibit, uang, barang
         $programFilter = $request->query('program_id');
 
-        $query = PenyaluranBantuan::with([
-            'keluargaPenerima.wilayah.parent',
-            'programBantuan',
-            'itemBantuan',
-            'pendamping'
-        ]);
-
-        if ($request->filled('search')) {
-            $term = trim($search);
-            $query->where(function($q) use ($term) {
-                $q->whereHas('keluargaPenerima', function($kp) use ($term) {
-                    $kp->where('kepala_keluarga', 'like', "%{$term}%")
-                       ->orWhere('nik', 'like', "%{$term}%")
-                       ->orWhere('no_kk', 'like', "%{$term}%");
-                })
-                ->orWhereHas('itemBantuan', function($ib) use ($term) {
-                    $ib->where('nama_item', 'like', "%{$term}%");
-                })
-                ->orWhere('peruntukan', 'like', "%{$term}%")
-                ->orWhere('keterangan', 'like', "%{$term}%");
-            });
-        }
+        $user = Auth::user();
+        $desaIds = $user->getAssignedDesaIds();
 
         $periodInfo = \App\Services\PeriodFilterHelper::parseRequest($request);
         $periode = $periodInfo['periode'] ?? 'semua';
 
-        if ($request->filled('jenis')) {
-            $query->where('jenis', $jenisFilter);
+        // Query Keluarga Penerima yang memiliki catatan penyaluran bantuan (disatukan per keluarga)
+        $query = KeluargaPenerima::with([
+            'wilayah.parent',
+            'penyaluranBantuans' => function($q) use ($jenisFilter, $programFilter, $periodInfo, $request) {
+                $q->where('status', '!=', 'batal');
+                if ($request->filled('jenis')) {
+                    $q->where('jenis', $request->jenis);
+                }
+                if ($request->filled('program_id')) {
+                    $q->where('program_bantuan_id', $request->program_id);
+                }
+                \App\Services\PeriodFilterHelper::applyDateFilter($q, $periodInfo, 'tgl_penyaluran');
+                $q->with(['programBantuan.kampusMitra', 'itemBantuan', 'latestPerkembangan', 'pendamping'])
+                  ->orderBy('tgl_penyaluran', 'desc')
+                  ->orderBy('id', 'desc');
+            },
+            'penyaluranBantuans.programBantuan.kampusMitra',
+            'penyaluranBantuans.itemBantuan',
+            'penyaluranBantuans.latestPerkembangan',
+            'penyaluranBantuans.pendamping'
+        ])->whereHas('penyaluranBantuans', function($q) use ($jenisFilter, $programFilter, $periodInfo, $request) {
+            $q->where('status', '!=', 'batal');
+
+            if ($request->filled('jenis')) {
+                $q->where('jenis', $jenisFilter);
+            }
+
+            if ($request->filled('program_id')) {
+                $q->where('program_bantuan_id', $programFilter);
+            }
+
+            \App\Services\PeriodFilterHelper::applyDateFilter($q, $periodInfo, 'tgl_penyaluran');
+        });
+
+        // Scope territory
+        if (!empty($desaIds)) {
+            $query->where(function($q) use ($user, $desaIds) {
+                $q->where('pendamping_id', $user->id)
+                  ->orWhereIn('wilayah_id', $desaIds);
+            });
+        } else {
+            $query->where('pendamping_id', $user->id);
         }
 
-        if ($request->filled('program_id')) {
-            $query->where('program_bantuan_id', $programFilter);
+        if ($request->filled('search')) {
+            $term = trim($search);
+            $query->where(function($q) use ($term) {
+                $q->where('kepala_keluarga', 'like', "%{$term}%")
+                  ->orWhere('nik', 'like', "%{$term}%")
+                  ->orWhere('no_kk', 'like', "%{$term}%")
+                  ->orWhereHas('wilayah', function($w) use ($term) {
+                      $w->where('nama', 'like', "%{$term}%");
+                  })
+                  ->orWhereHas('penyaluranBantuans.itemBantuan', function($ib) use ($term) {
+                      $ib->where('nama_item', 'like', "%{$term}%");
+                  });
+            });
         }
 
-        \App\Services\PeriodFilterHelper::applyDateFilter($query, $periodInfo, 'tgl_penyaluran');
+        $penerimas = $query->paginate(15)->withQueryString();
 
-        $penyalurans = $query->latest('tgl_penyaluran')->latest('id')->paginate(15)->withQueryString();
-
-        // Rekapitulasi Statistik Penyaluran
-        $allPenyaluran = PenyaluranBantuan::where('status', '!=', 'batal');
+        // Rekapitulasi Statistik Penyaluran Ter-scope
+        $allPenyaluran = PenyaluranBantuan::where('status', '!=', 'batal')
+            ->where(function($q) use ($user, $desaIds) {
+                $q->where('pendamping_id', $user->id);
+                if (!empty($desaIds)) {
+                    $q->orWhereHas('keluargaPenerima', fn($kp) => $kp->whereIn('wilayah_id', $desaIds));
+                }
+            });
         \App\Services\PeriodFilterHelper::applyDateFilter($allPenyaluran, $periodInfo, 'tgl_penyaluran');
         $totalNominalUang = (clone $allPenyaluran)->where('jenis', 'uang')->sum('nominal_uang');
         $totalAlatUnit = (clone $allPenyaluran)->where('jenis', 'barang')->sum('jumlah');
@@ -71,7 +106,7 @@ class PenyaluranBantuanController extends Controller
         $programs = ProgramBantuan::where('status', 'aktif')->orderBy('nama_program')->get();
 
         return view('dashboard.pendamping.penyaluran_bantuan.index', compact(
-            'penyalurans',
+            'penerimas',
             'totalNominalUang',
             'totalAlatUnit',
             'totalBibitDisalurkan',
@@ -90,11 +125,24 @@ class PenyaluranBantuanController extends Controller
      */
     public function create(Request $request)
     {
+        $user = Auth::user();
+        $desaIds = $user->getAssignedDesaIds();
+
         $selectedKeluargaId = $request->query('keluarga_id');
         $selectedKeluarga = $selectedKeluargaId ? KeluargaPenerima::penerimaAktif()->with(['wilayah', 'programBantuan'])->find($selectedKeluargaId) : null;
 
-        // Otomatis kecualikan keluarga yang sudah mandiri atau mencapai desil 6 ke atas
-        $keluarga_penerimas = KeluargaPenerima::penerimaAktif()
+        // Otomatis kecualikan keluarga yang sudah mandiri atau mencapai desil 6 ke atas & scope wilayah binaan
+        $keluargaQuery = KeluargaPenerima::penerimaAktif();
+        if (!empty($desaIds)) {
+            $keluargaQuery->where(function($q) use ($user, $desaIds) {
+                $q->where('pendamping_id', $user->id)
+                  ->orWhereIn('wilayah_id', $desaIds);
+            });
+        } else {
+            $keluargaQuery->where('pendamping_id', $user->id);
+        }
+
+        $keluarga_penerimas = $keluargaQuery
             ->with(['wilayah.parent', 'programBantuan'])
             ->orderBy('kepala_keluarga')
             ->get();
@@ -187,18 +235,75 @@ class PenyaluranBantuanController extends Controller
     }
 
     /**
-     * Display the specified distribution details.
+     * Display the specified distribution details (Keluarga Penerima & Rincian Seluruh Bantuan & Program yang Didapat).
      */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
-        $penyaluran = PenyaluranBantuan::with([
-            'keluargaPenerima.wilayah.parent',
-            'programBantuan.kampusMitra',
-            'itemBantuan',
-            'pendamping'
-        ])->findOrFail($id);
+        $penyaluranSpesifik = null;
 
-        return view('dashboard.pendamping.penyaluran_bantuan.show', compact('penyaluran'));
+        if ($request->query('type') === 'keluarga' || $request->has('keluarga_id')) {
+            $keluargaId = $request->query('keluarga_id', $id);
+            $keluarga = KeluargaPenerima::findOrFail($keluargaId);
+        } else {
+            // Cek apakah $id merujuk ke record PenyaluranBantuan
+            $penyaluran = PenyaluranBantuan::find($id);
+            if ($penyaluran) {
+                $penyaluranSpesifik = $penyaluran;
+                $keluarga = KeluargaPenerima::findOrFail($penyaluran->keluarga_penerima_id);
+            } else {
+                // Fallback cari sebagai ID KeluargaPenerima
+                $keluarga = KeluargaPenerima::findOrFail($id);
+            }
+        }
+
+        // Eager load seluruh relasi keluarga, penyaluran, program, dan riwayat laporan
+        $keluarga->load([
+            'wilayah.parent',
+            'programBantuan.kampusMitra',
+            'penyaluranBantuans' => function($q) {
+                $q->where('status', '!=', 'batal')
+                  ->with([
+                      'programBantuan.kampusMitra',
+                      'itemBantuan',
+                      'pendamping',
+                      'latestPerkembangan',
+                      'laporanTumbuhKembangs' => function($lq) {
+                          $lq->with('pendamping')->orderBy('tanggal_lapor', 'desc');
+                      }
+                  ])
+                  ->orderBy('tgl_penyaluran', 'desc')
+                  ->orderBy('id', 'desc');
+            }
+        ]);
+
+        // Daftar program unik yang didapatkan keluarga ini (dari binaan & item penyaluran)
+        $programsReceived = collect([$keluarga->programBantuan])
+            ->merge($keluarga->penyaluranBantuans->map(fn($p) => $p->programBantuan))
+            ->filter()
+            ->unique('id')
+            ->values();
+
+        // Seluruh riwayat kunjungan & monitoring tumbuh kembang keluarga ini
+        $riwayatLaporan = \App\Models\LaporanTumbuhKembang::with(['pendamping', 'penyaluranBantuan.itemBantuan'])
+            ->where('keluarga_penerima_id', $keluarga->id)
+            ->orderBy('tanggal_lapor', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        // Rekap total bantuan yang diterima keluarga ini
+        $totalNominalUang = $keluarga->penyaluranBantuans->where('jenis', 'uang')->sum('nominal_uang');
+        $totalBibit = $keluarga->penyaluranBantuans->where('jenis', 'bibit')->sum('jumlah');
+        $totalBarang = $keluarga->penyaluranBantuans->where('jenis', 'barang')->sum('jumlah');
+
+        return view('dashboard.pendamping.penyaluran_bantuan.show', compact(
+            'keluarga',
+            'programsReceived',
+            'riwayatLaporan',
+            'penyaluranSpesifik',
+            'totalNominalUang',
+            'totalBibit',
+            'totalBarang'
+        ));
     }
 
     /**

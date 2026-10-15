@@ -91,7 +91,7 @@
         </tbody>
     </table>
 
-    <h4 style="margin-bottom: 5px; color: #00450d;">Keluarga Penerima Binaan:</h4>
+    <h4 style="margin-bottom: 5px; color: #00450d;">Keluarga Penerima Bantuan:</h4>
     <table>
         <thead>
             <tr>

@@ -14,26 +14,52 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $userId = Auth::id();
+        $user = Auth::user();
+        $desaIds = $user->getAssignedDesaIds();
 
-        // Statistik Utama
-        $totalBinaan = KeluargaPenerima::penerimaAktif()->count();
-        $totalMandiri = KeluargaPenerima::mandiri()->count();
-        $totalPenilaian = PenilaianKemandirian::where('pendamping_id', $userId)->count();
-        if ($totalPenilaian === 0) {
-            $totalPenilaian = PenilaianKemandirian::count(); // Fallback jika belum di-assign spesifik
-        }
-        $totalLaporanKirim = LaporanTumbuhKembang::where('pendamping_id', $userId)->count();
-        if ($totalLaporanKirim === 0) {
-            $totalLaporanKirim = LaporanTumbuhKembang::count();
+        // Scope keluarga binaan pendamping
+        $keluargaScope = KeluargaPenerima::query();
+        if (!empty($desaIds)) {
+            $keluargaScope->where(function($q) use ($user, $desaIds) {
+                $q->where('pendamping_id', $user->id)
+                  ->orWhereIn('wilayah_id', $desaIds);
+            });
+        } else {
+            $keluargaScope->where('pendamping_id', $user->id);
         }
 
-        // Statistik Penyaluran Bantuan oleh Pendamping
-        $penyaluranQuery = PenyaluranBantuan::where('pendamping_id', $userId);
-        if ($penyaluranQuery->count() === 0) {
-            $penyaluranQuery = PenyaluranBantuan::query();
-        }
-        $totalPenyaluran = $penyaluranQuery->count();
+        $totalBinaan = (clone $keluargaScope)->penerimaAktif()->count();
+        $totalMandiri = (clone $keluargaScope)->mandiri()->count();
+
+        // Statistik Penilaian Kemandirian
+        $penilaianQuery = PenilaianKemandirian::with(['keluargaPenerima.wilayah'])->where(function($q) use ($user, $desaIds) {
+            $q->where('pendamping_id', $user->id);
+            if (!empty($desaIds)) {
+                $q->orWhereHas('keluargaPenerima', fn($kp) => $kp->whereIn('wilayah_id', $desaIds));
+            }
+        });
+        $totalPenilaian = (clone $penilaianQuery)->count();
+        $penilaianTerbaru = (clone $penilaianQuery)->latest()->take(5)->get();
+
+        // Statistik Laporan Tumbuh Kembang
+        $laporQuery = LaporanTumbuhKembang::with('keluarga_penerima.wilayah')->where(function($q) use ($user, $desaIds) {
+            $q->where('pendamping_id', $user->id);
+            if (!empty($desaIds)) {
+                $q->orWhereHas('keluarga_penerima', fn($kp) => $kp->whereIn('wilayah_id', $desaIds));
+            }
+        });
+        $totalLaporanKirim = (clone $laporQuery)->count();
+        $aktivitasTerakhir = (clone $laporQuery)->latest()->take(5)->get();
+
+        // Statistik Penyaluran Bantuan
+        $penyaluranQuery = PenyaluranBantuan::where(function($q) use ($user, $desaIds) {
+            $q->where('pendamping_id', $user->id);
+            if (!empty($desaIds)) {
+                $q->orWhereHas('keluargaPenerima', fn($kp) => $kp->whereIn('wilayah_id', $desaIds));
+            }
+        });
+
+        $totalPenyaluran = (clone $penyaluranQuery)->count();
         $totalUangDisalurkan = (clone $penyaluranQuery)->where('jenis', 'uang')->sum('nominal_uang') ?? 0;
         $totalBibitDisalurkan = (clone $penyaluranQuery)->where('jenis', 'bibit')->sum('jumlah') ?? 0;
         $totalBarangDisalurkan = (clone $penyaluranQuery)->where('jenis', 'barang')->sum('jumlah') ?? 0;
@@ -46,26 +72,12 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Riwayat Penilaian Desil Terakhir oleh Pendamping
-        $penilaianQuery = PenilaianKemandirian::with(['keluargaPenerima.wilayah']);
-        if (PenilaianKemandirian::where('pendamping_id', $userId)->exists()) {
-            $penilaianQuery->where('pendamping_id', $userId);
-        }
-        $penilaianTerbaru = $penilaianQuery->latest()->take(5)->get();
-
         // Keluarga Binaan untuk Akses Cepat Penilaian (Hanya yang masih aktif / butuh intervensi)
-        $keluargaBinaanCepat = KeluargaPenerima::penerimaAktif()
+        $keluargaBinaanCepat = (clone $keluargaScope)->penerimaAktif()
             ->with('wilayah')
             ->latest()
             ->take(5)
             ->get();
-
-        // Aktivitas Terakhir Laporan Tumbuh Kembang
-        $laporQuery = LaporanTumbuhKembang::with('keluarga_penerima');
-        if (LaporanTumbuhKembang::where('pendamping_id', $userId)->exists()) {
-            $laporQuery->where('pendamping_id', $userId);
-        }
-        $aktivitasTerakhir = $laporQuery->latest()->take(5)->get();
 
         return view('dashboard.pendamping', compact(
             'totalBinaan',

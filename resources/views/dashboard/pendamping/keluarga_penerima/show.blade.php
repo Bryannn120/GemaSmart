@@ -8,12 +8,12 @@
             <div class="flex items-center gap-2 mb-1">
                 <a href="{{ route('pendamping.keluarga_penerima.index') }}" class="text-text-secondary hover:text-primary transition-colors flex items-center gap-1 font-body-sm text-sm">
                     <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-                    <span>Kembali ke Daftar Binaan</span>
+                    <span>Kembali ke Daftar Penerima Bantuan</span>
                 </a>
             </div>
-            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Detail Keluarga Penerima Binaan</h1>
+            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Detail Keluarga Penerima Bantuan</h1>
             <p class="font-body-md text-text-secondary mt-1">
-                Informasi profil lengkap, status bantuan bibit, dan riwayat pendampingan lapangan.
+                Informasi profil lengkap, status bantuan, dan riwayat pendampingan lapangan.
             </p>
         </div>
         <div class="flex flex-wrap items-center gap-space-sm">
@@ -32,15 +32,15 @@
                 <span class="material-symbols-outlined text-[18px]">rate_review</span>
                 <span>+ Input Penilaian Desil</span>
             </a>
-            <a href="{{ route('pendamping.lapor.create') }}" class="inline-flex items-center gap-space-xs px-space-md py-2 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md font-semibold hover:bg-gov-green-dark transition-colors shadow-sm">
-                <span class="material-symbols-outlined text-[18px]">eco</span>
-                <span>Lapor Tumbuh Kembang</span>
+            <a href="{{ route('pendamping.lapor.create', ['keluarga_id' => $keluarga_penerima->id]) }}" class="inline-flex items-center gap-space-xs px-space-md py-2 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md font-semibold hover:bg-gov-green-dark transition-colors shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">assignment</span>
+                <span>+ Laporan Kunjungan</span>
             </a>
             <a href="{{ route('pendamping.keluarga_penerima.edit', $keluarga_penerima->id) }}" class="inline-flex items-center gap-space-xs px-space-md py-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-text-primary font-label-md text-label-md font-semibold transition-colors border border-border-light shadow-sm">
                 <span class="material-symbols-outlined text-[18px]">edit</span>
                 <span>Edit</span>
             </a>
-            <form action="{{ route('pendamping.keluarga_penerima.destroy', $keluarga_penerima->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data penerima binaan ini? Tindakan ini tidak dapat dibatalkan.');" class="inline">
+            <form action="{{ route('pendamping.keluarga_penerima.destroy', $keluarga_penerima->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data penerima bantuan ini? Tindakan ini tidak dapat dibatalkan.');" class="inline">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="inline-flex items-center gap-space-xs px-space-md py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-label-md text-label-md font-semibold transition-colors border border-red-200 shadow-sm">
@@ -151,28 +151,6 @@
 
         <!-- Kolom Kanan: Rincian Bantuan & Riwayat -->
         <div class="lg:col-span-2 flex flex-col gap-space-lg">
-            <!-- Kartu Program Bantuan -->
-            <div class="bg-canvas-bg rounded-xl shadow-sm border border-border-light p-space-lg">
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="material-symbols-outlined text-primary text-[22px]">inventory_2</span>
-                    <h3 class="font-bold text-text-primary text-base">Program Bantuan Bibit</h3>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                    <div class="p-3 bg-surface-muted rounded-lg">
-                        <span class="text-text-tertiary text-xs block">Nama Program</span>
-                        <span class="text-text-primary font-semibold">{{ $keluarga_penerima->programBantuan->nama_program ?? 'Program Bantuan Bibit Sumbawa' }}</span>
-                    </div>
-                    <div class="p-3 bg-surface-muted rounded-lg">
-                        <span class="text-text-tertiary text-xs block">Tahun Anggaran</span>
-                        <span class="text-text-primary font-semibold">{{ $keluarga_penerima->programBantuan->tahun_anggaran ?? '2026' }}</span>
-                    </div>
-                    <div class="sm:col-span-2 p-3 bg-surface-muted rounded-lg">
-                        <span class="text-text-tertiary text-xs block">Deskripsi & Target Sasaran</span>
-                        <p class="text-text-secondary text-xs mt-0.5">{{ $keluarga_penerima->programBantuan->deskripsi ?? 'Bantuan bibit tanaman produktif untuk peningkatan pendapatan per bulan, peningkatan desil, dan pengentasan kemiskinan keluarga binaan.' }}</p>
-                    </div>
-                </div>
-            </div>
-
             <!-- Kartu Bantuan yang Telah Diterima Keluarga (Uang, Alat, Bibit) -->
             <div class="bg-canvas-bg rounded-xl shadow-sm border border-border-light p-space-lg flex flex-col gap-space-md">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-border-light gap-2">
@@ -289,10 +267,16 @@
                                     {{ $bantuan->pendamping->name ?? 'Pendamping' }}
                                 </td>
                                 <td class="py-2.5 px-3 text-right">
-                                    <a href="{{ route('pendamping.penyaluran-bantuan.show', $bantuan->id) }}" class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-muted hover:bg-surface-subtle text-primary font-semibold text-[11px] transition-colors">
-                                        <span class="material-symbols-outlined text-[14px]">receipt_long</span>
-                                        <span>Bukti</span>
-                                    </a>
+                                    <div class="flex items-center justify-end gap-1">
+                                        <a href="{{ route('pendamping.lapor.create', ['penyaluran_id' => $bantuan->id, 'keluarga_id' => $keluarga_penerima->id]) }}" class="inline-flex items-center gap-1 px-2 py-1 rounded bg-gov-green-surface hover:bg-primary text-primary hover:text-white font-semibold text-[11px] transition-all">
+                                            <span class="material-symbols-outlined text-[14px]">edit_note</span>
+                                            <span>Update</span>
+                                        </a>
+                                        <a href="{{ route('pendamping.penyaluran-bantuan.show', $bantuan->id) }}" class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-muted hover:bg-surface-subtle text-text-secondary hover:text-primary font-semibold text-[11px] transition-colors">
+                                            <span class="material-symbols-outlined text-[14px]">receipt_long</span>
+                                            <span>Bukti</span>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             @endforeach

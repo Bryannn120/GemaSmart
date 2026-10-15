@@ -19,10 +19,22 @@ class KeluargaPenerimaController extends Controller
      */
     public function index(Request $request)
     {
+        $user = Auth::user();
+        $desaIds = $user->getAssignedDesaIds();
         $search = $request->query('search');
         $tab = $request->query('tab', 'aktif'); // 'aktif' atau 'mandiri'
 
         $baseQuery = KeluargaPenerima::with(['wilayah.parent', 'programBantuan']);
+
+        // Scope hanya keluarga di wilayah binaan pendamping ini
+        if (!empty($desaIds)) {
+            $baseQuery->where(function($q) use ($user, $desaIds) {
+                $q->where('pendamping_id', $user->id)
+                  ->orWhereIn('wilayah_id', $desaIds);
+            });
+        } else {
+            $baseQuery->where('pendamping_id', $user->id);
+        }
 
         if ($request->filled('search')) {
             $searchTerm = trim($search);
@@ -66,7 +78,14 @@ class KeluargaPenerimaController extends Controller
      */
     public function create()
     {
-        $wilayahs = Wilayah::with('parent')->where('is_aktif', true)->orderBy('nama')->get();
+        $user = Auth::user();
+        $desaIds = $user->getAssignedDesaIds();
+
+        $wilayahsQuery = Wilayah::with('parent')->where('is_aktif', true)->where('jenis', 'desa');
+        if (!empty($desaIds)) {
+            $wilayahsQuery->whereIn('id', $desaIds);
+        }
+        $wilayahs = $wilayahsQuery->orderBy('nama')->get();
         $programs = ProgramBantuan::where('status', 'aktif')->orderBy('nama_program')->get();
 
         return view('dashboard.pendamping.keluarga_penerima.create', compact('wilayahs', 'programs'));
@@ -124,7 +143,7 @@ class KeluargaPenerimaController extends Controller
         // Catat Audit Trail
         AuditLog::create([
             'user_id' => Auth::id(),
-            'aksi' => 'Tambah Data Keluarga Penerima Binaan',
+            'aksi' => 'Tambah Data Keluarga Penerima Bantuan',
             'model' => 'KeluargaPenerima',
             'model_id' => $penerima->id,
             'data_lama' => null,
@@ -133,7 +152,7 @@ class KeluargaPenerimaController extends Controller
         ]);
 
         return redirect()->route('pendamping.keluarga_penerima.index')
-            ->with('success', "Keluarga penerima {$penerima->kepala_keluarga} berhasil ditambahkan ke daftar binaan.");
+            ->with('success', "Keluarga penerima {$penerima->kepala_keluarga} berhasil ditambahkan.");
     }
 
     /**
@@ -221,7 +240,7 @@ class KeluargaPenerimaController extends Controller
         // Catat Audit Trail
         AuditLog::create([
             'user_id' => Auth::id(),
-            'aksi' => 'Update Data Keluarga Penerima Binaan',
+            'aksi' => 'Update Data Keluarga Penerima Bantuan',
             'model' => 'KeluargaPenerima',
             'model_id' => $keluarga_penerima->id,
             'data_lama' => $dataLama,
@@ -252,7 +271,7 @@ class KeluargaPenerimaController extends Controller
         // Catat Audit Trail
         AuditLog::create([
             'user_id' => Auth::id(),
-            'aksi' => 'Hapus Data Keluarga Penerima Binaan',
+            'aksi' => 'Hapus Data Keluarga Penerima Bantuan',
             'model' => 'KeluargaPenerima',
             'model_id' => (int) $id,
             'data_lama' => $dataLama,

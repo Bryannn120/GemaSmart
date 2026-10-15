@@ -88,6 +88,7 @@ Route::middleware(['auth', 'role:pendamping'])->group(function () {
         Route::post('/keluarga_penerima-binaan/{id}/penilaian', [\App\Http\Controllers\Pendamping\PenilaianKemandirianController::class, 'store'])->name('keluarga_penerima.penilaian.store');
         Route::get('/monitoring-kemandirian', [\App\Http\Controllers\Pendamping\MonitoringKemandirianController::class, 'index'])->name('kemandirian.index');
         Route::resource('/penyaluran-bantuan', \App\Http\Controllers\Pendamping\PenyaluranBantuanController::class)->names('penyaluran-bantuan');
+        Route::get('/pantau-penyaluran', [\App\Http\Controllers\Pendamping\PantauPenyaluranController::class, 'index'])->name('pantau-penyaluran.index');
         Route::get('/penyaluran-bantuan-items/{programId}', [\App\Http\Controllers\Pendamping\PenyaluranBantuanController::class, 'getItemsByProgram'])->name('penyaluran-bantuan.items');
     });
 });

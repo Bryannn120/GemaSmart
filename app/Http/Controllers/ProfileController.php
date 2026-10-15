@@ -10,11 +10,14 @@ class ProfileController extends Controller
 {
     public function index()
     {
-        // Menentukan layout mana yang akan dipakai berdasarkan role user
-        $role = auth()->user()->role;
+        $user = auth()->user();
+        $role = $user->role;
         $layout = 'layouts.' . $role; // misal: layouts.pemda, layouts.kampus
 
-        return view('profile.index', compact('layout', 'role'));
+        $assignedDesas = $role === 'pendamping' ? $user->getAssignedDesasCollection() : collect();
+        $totalBinaan = $role === 'pendamping' ? $user->keluargaPenerimas()->count() : 0;
+
+        return view('profile.index', compact('layout', 'role', 'user', 'assignedDesas', 'totalBinaan'));
     }
 
     public function updatePassword(Request $request)

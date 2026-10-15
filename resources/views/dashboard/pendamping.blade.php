@@ -6,7 +6,7 @@
         <div class="flex flex-col max-w-2xl">
             <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Halo, {{ Auth::user()->name }} 👋</h1>
             <p class="font-body-md text-text-secondary mt-1">
-                Selamat bertugas! Salurkan bantuan program kampus (uang modal, alat, bibit), kelola binaan, evaluasi desil kemandirian, dan laporkan tumbuh kembang.
+                Selamat bertugas! Salurkan bantuan program kampus (uang modal, alat, bibit), pantau keluarga penerima bantuan, buat laporan kunjungan, dan evaluasi desil kemandirian.
             </p>
         </div>
         <div class="flex flex-wrap items-center gap-space-sm">
@@ -15,8 +15,8 @@
                 <span>+ Salurkan Bantuan</span>
             </a>
             <a href="{{ route('pendamping.lapor.create') }}" class="inline-flex items-center gap-space-xs px-space-md py-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-text-primary font-label-md text-label-md font-semibold transition-colors border border-border-light shadow-sm">
-                <span class="material-symbols-outlined text-[18px]">eco</span>
-                <span>Buat Laporan Bibit</span>
+                <span class="material-symbols-outlined text-[18px]">add_location_alt</span>
+                <span>+ Buat Laporan Kunjungan</span>
             </a>
             <a href="{{ route('pendamping.kemandirian.index') }}" class="inline-flex items-center gap-space-xs px-space-md py-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-text-primary font-label-md text-label-md font-semibold transition-colors border border-border-light shadow-sm">
                 <span class="material-symbols-outlined text-[18px]">query_stats</span>
@@ -24,6 +24,89 @@
             </a>
         </div>
     </div>
+
+    <!-- BANNER WILAYAH DAMPINGAN (DAERAH YANG DIDAMPINGI) -->
+    @php
+        $currPendamping = Auth::user();
+        $assignedDesas = $currPendamping->getAssignedDesasCollection();
+        $totalKkWilayah = $currPendamping->keluargaPenerimas()->count();
+    @endphp
+    <div class="bg-gradient-to-r from-gov-green-dark via-primary to-emerald-900 text-white rounded-2xl p-space-lg shadow-md flex flex-col lg:flex-row lg:items-center justify-between gap-4 border border-white/10">
+        <div class="flex items-start sm:items-center gap-3.5">
+            <div class="w-12 h-12 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/20 shadow-xs">
+                <span class="material-symbols-outlined text-[28px] text-white">location_on</span>
+            </div>
+            <div class="flex flex-col">
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                    <span class="px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[11px] font-bold uppercase tracking-wider backdrop-blur-sm border border-white/20">
+                        Wilayah Tugas Dampingan
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-[11px] text-emerald-200">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span>Aktif Bertugas</span>
+                    </span>
+                </div>
+                <h3 class="font-bold text-base sm:text-lg text-white tracking-tight">
+                    {{ $currPendamping->assigned_wilayah_label ?: 'Wilayah Kabupaten Sumbawa' }}
+                </h3>
+                @if($assignedDesas->isNotEmpty())
+                    <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                        <span class="text-xs text-white/80 mr-1 font-medium">Desa Binaan:</span>
+                        @foreach($assignedDesas as $d)
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-white/15 text-white text-[11px] font-semibold border border-white/20 backdrop-blur-xs">
+                                <span class="material-symbols-outlined text-[12px] text-emerald-300">pin_drop</span>
+                                <span>Desa {{ $d->nama }}</span>
+                            </span>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </div>
+        <div class="flex items-center gap-3 self-start lg:self-auto shrink-0 bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/15">
+            <div class="text-right">
+                <span class="text-[11px] text-white/80 block font-medium">Beban Dampingan</span>
+                <span class="text-base font-bold text-white">{{ $totalKkWilayah }} Keluarga Penerima Bantuan</span>
+            </div>
+            <a href="{{ route('pendamping.keluarga_penerima.index') }}" class="p-2 rounded-lg bg-white text-primary hover:bg-emerald-50 transition-colors shadow-sm" title="Lihat Daftar Keluarga Penerima Bantuan di Wilayah Ini">
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </a>
+        </div>
+    </div>
+
+    @php
+        $desaIds = $currPendamping->getAssignedDesaIds();
+        $unvisitedKkCount = \App\Models\KeluargaPenerima::where(function($q) use ($currPendamping, $desaIds) {
+            $q->where('pendamping_id', $currPendamping->id);
+            if (!empty($desaIds)) {
+                $q->orWhereIn('wilayah_id', $desaIds);
+            }
+        })->whereHas('penyaluranBantuans', function($q) {
+            $q->where('status', '!=', 'batal')->whereDoesntHave('laporanTumbuhKembangs');
+        })->count();
+    @endphp
+
+    @if($unvisitedKkCount > 0)
+        <!-- Alert Tugas: Bantuan Belum Pernah Dikunjungi -->
+        <div class="bg-gradient-to-r from-amber-500/15 via-amber-50 to-orange-50 border border-amber-300 rounded-2xl p-space-md shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <span class="material-symbols-outlined text-[22px]">tour</span>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm text-amber-950">
+                        {{ $unvisitedKkCount }} Keluarga Baru Disalurkan Bantuan & Belum Pernah Dikunjungi
+                    </h4>
+                    <p class="text-xs text-amber-800">
+                        Segera jadwalkan kunjungan pertama untuk memantau kondisi bantuan yang telah diserahkan di lapangan.
+                    </p>
+                </div>
+            </div>
+            <a href="{{ route('pendamping.pantau-penyaluran.index') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shrink-0 self-start sm:self-auto shadow-sm">
+                <span>Pantau Penyaluran</span>
+                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </a>
+        </div>
+    @endif
 
     <!-- 4 KPI Cards Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
@@ -73,16 +156,16 @@
             <span class="text-label-sm text-text-secondary mt-2">Penilaian Kemandirian Ekonomi</span>
         </a>
 
-        <!-- Card 4: Laporan Tumbuh Kembang -->
+        <!-- Card 4: Laporan Kunjungan -->
         <a href="{{ route('pendamping.lapor.index') }}" class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm border border-border-light flex flex-col justify-between hover:border-primary/40 transition-colors">
             <div>
                 <div class="flex items-center justify-between mb-2">
-                    <span class="font-label-md text-label-md text-text-secondary uppercase">Laporan Tumbuh Bibit</span>
-                    <span class="material-symbols-outlined text-status-verified">send</span>
+                    <span class="font-label-md text-label-md text-text-secondary uppercase">Laporan Kunjungan</span>
+                    <span class="material-symbols-outlined text-status-verified">assignment</span>
                 </div>
-                <span class="font-headline-xl text-headline-xl text-status-verified font-bold">{{ $totalLaporanKirim ?? 0 }} Dikirim</span>
+                <span class="font-headline-xl text-headline-xl text-status-verified font-bold">{{ $totalLaporanKirim ?? 0 }} Kunjungan</span>
             </div>
-            <span class="text-label-sm text-text-secondary mt-2">Monitoring Rutin Tanaman</span>
+            <span class="text-label-sm text-text-secondary mt-2">Monitoring Rutin Lapangan</span>
         </a>
     </div>
 
@@ -241,12 +324,12 @@
             </div>
         </div>
 
-        <!-- Aktivitas Laporan Tumbuh Kembang -->
+        <!-- Aktivitas Laporan Kunjungan -->
         <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-border-light p-space-lg flex flex-col">
             <div class="flex items-center justify-between mb-space-md pb-2 border-b border-border-light">
                 <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary text-[22px]">history</span>
-                    <h2 class="font-headline-sm text-headline-sm text-text-primary font-bold">Laporan Tumbuh Kembang Terakhir</h2>
+                    <span class="material-symbols-outlined text-primary text-[22px]">assignment</span>
+                    <h2 class="font-headline-sm text-headline-sm text-text-primary font-bold">Laporan Kunjungan Terakhir</h2>
                 </div>
                 <a href="{{ route('pendamping.lapor.index') }}" class="text-xs text-primary font-semibold hover:underline">
                     Kelola Laporan
@@ -257,7 +340,7 @@
                 @forelse ($aktivitasTerakhir as $akt)
                 <div class="py-3 flex items-start gap-3 first:pt-0 last:pb-0">
                     <div class="w-8 h-8 rounded-full bg-gov-green-surface text-primary flex items-center justify-center shrink-0 mt-0.5">
-                        <span class="material-symbols-outlined text-[16px]">eco</span>
+                        <span class="material-symbols-outlined text-[16px]">location_on</span>
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between">
@@ -273,7 +356,7 @@
                 @empty
                 <div class="text-center py-8 text-text-tertiary text-sm">
                     <span class="material-symbols-outlined text-3xl block mb-1">pending_actions</span>
-                    Belum ada riwayat laporan tumbuh kembang.
+                    Belum ada riwayat laporan kunjungan.
                 </div>
                 @endforelse
             </div>
@@ -281,7 +364,7 @@
             <div class="mt-4 pt-3 border-t border-border-light flex justify-between items-center">
                 <span class="text-xs text-text-secondary">Siap melakukan monitoring lapangan?</span>
                 <a href="{{ route('pendamping.lapor.create') }}" class="text-xs font-bold text-primary hover:underline">
-                    + Input Laporan Tumbuh Kembang
+                    + Input Laporan Kunjungan
                 </a>
             </div>
         </div>

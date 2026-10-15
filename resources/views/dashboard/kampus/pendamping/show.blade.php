@@ -112,7 +112,17 @@
                 </div>
                 <div>
                     <span class="text-text-tertiary block font-medium">Desa / Wilayah Penugasan:</span>
-                    <span class="text-text-primary font-bold">{{ $pendamping->desa_penugasan ?? 'Belum ditentukan' }}</span>
+                    <span class="text-emerald-800 font-bold block">{{ $pendamping->assigned_wilayah_label ?: ($pendamping->desa_penugasan ?? 'Belum ditentukan') }}</span>
+                    @php $showDesas = $pendamping->getAssignedDesasCollection(); @endphp
+                    @if($showDesas->isNotEmpty())
+                        <div class="flex flex-wrap gap-1 mt-1.5">
+                            @foreach($showDesas as $d)
+                                <span class="px-2 py-0.5 rounded bg-surface-muted text-[10px] font-semibold text-text-primary border border-border-light">
+                                    📍 Desa {{ $d->nama }}
+                                </span>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
                 <div>
                     <span class="text-text-tertiary block font-medium">Kampus Mitra:</span>
@@ -125,12 +135,12 @@
             </div>
         </div>
 
-        <!-- Tabel Daftar Keluarga Penerima Binaan -->
+        <!-- Tabel Daftar Keluarga Penerima Bantuan -->
         <div class="lg:col-span-2 bg-canvas-bg rounded-2xl shadow-sm border border-border-light flex flex-col overflow-hidden">
             <div class="p-space-md border-b border-border-light flex items-center justify-between bg-surface-subtle">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary text-[20px]">diversity_3</span>
-                    <h3 class="font-bold text-sm text-text-primary">Daftar Keluarga Penerima Binaan</h3>
+                    <h3 class="font-bold text-sm text-text-primary">Daftar Keluarga Penerima Bantuan</h3>
                 </div>
                 <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800">
                     {{ $pendamping->keluargaPenerimas->count() }} KK Terhubung

@@ -4,7 +4,7 @@
 <div class="flex flex-col w-full gap-space-xl">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-lg">
         <div class="flex flex-col max-w-2xl">
-            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Data Keluarga Penerima Binaan</h1>
+            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Data Keluarga Penerima Bantuan</h1>
             <p class="font-body-md text-text-secondary mt-1">
                 Daftar keluarga penerima manfaat bantuan bibit yang didampingi oleh kampus berdasarkan Surat Keputusan (SK).
             </p>
@@ -114,7 +114,7 @@
                         <td colspan="8" class="py-12 text-center text-text-secondary">
                             <div class="flex flex-col items-center justify-center gap-2">
                                 <span class="material-symbols-outlined text-[48px] text-border-medium">group_off</span>
-                                <p class="text-base font-semibold">Belum ada data keluarga penerima binaan.</p>
+                                <p class="text-base font-semibold">Belum ada data keluarga penerima bantuan.</p>
                             </div>
                         </td>
                     </tr>

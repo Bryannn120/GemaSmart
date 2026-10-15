@@ -11,8 +11,25 @@ class LaporanTumbuhKembang extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'keluarga_penerima_id', 'pendamping_id', 'tanggal_lapor', 'status_kondisi', 'catatan', 'foto_url'
+        'keluarga_penerima_id',
+        'program_bantuan_id',
+        'penyaluran_bantuan_id',
+        'pendamping_id',
+        'tanggal_lapor',
+        'status_kondisi',
+        'catatan',
+        'foto_url'
     ];
+
+    public function programBantuan()
+    {
+        return $this->belongsTo(ProgramBantuan::class, 'program_bantuan_id')->withTrashed();
+    }
+
+    public function program_bantuan()
+    {
+        return $this->programBantuan();
+    }
 
     public function keluarga_penerima()
     {
@@ -22,6 +39,11 @@ class LaporanTumbuhKembang extends Model
     public function keluargaPenerima()
     {
         return $this->keluarga_penerima();
+    }
+
+    public function penyaluranBantuan()
+    {
+        return $this->belongsTo(PenyaluranBantuan::class, 'penyaluran_bantuan_id')->withTrashed();
     }
 
     public function pendamping()

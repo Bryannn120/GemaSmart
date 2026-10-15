@@ -20,42 +20,66 @@ class MonitoringKemandirianController extends Controller
         $statusFilter = $request->query('status'); // all, mandiri, tahap_kemandirian, penurunan
         $wilayahId = $request->query('wilayah_id');
 
-        // 1. Data Statistik Utama & Agregasi
-        $totalBinaan = KeluargaPenerima::count();
-        $totalMandiri = KeluargaPenerima::where('desil', '>=', 6)->count();
-        $totalTahap = KeluargaPenerima::where('desil', '<', 6)
+        $user = auth()->user();
+        $desaIds = $user->getAssignedDesaIds();
+
+        // 1. Data Statistik Utama & Agregasi (Ter-scope ke wilayah binaan pendamping)
+        $baseKeluarga = KeluargaPenerima::query();
+        if (!empty($desaIds)) {
+            $baseKeluarga->where(function($q) use ($user, $desaIds) {
+                $q->where('pendamping_id', $user->id)
+                  ->orWhereIn('wilayah_id', $desaIds);
+            });
+        } else {
+            $baseKeluarga->where('pendamping_id', $user->id);
+        }
+
+        $totalBinaan = (clone $baseKeluarga)->count();
+        $totalMandiri = (clone $baseKeluarga)->where('desil', '>=', 6)->count();
+        $totalTahap = (clone $baseKeluarga)->where('desil', '<', 6)
             ->where('status_kemandirian', '!=', 'Penurunan Desil')
             ->count();
-        $totalPenurunan = KeluargaPenerima::where('status_kemandirian', 'Penurunan Desil')->count();
-        $totalKunjungan = PenilaianKemandirian::count();
+        $totalPenurunan = (clone $baseKeluarga)->where('status_kemandirian', 'Penurunan Desil')->count();
+
+        $totalKunjungan = PenilaianKemandirian::where(function($q) use ($user, $desaIds) {
+            $q->where('pendamping_id', $user->id);
+            if (!empty($desaIds)) {
+                $q->orWhereHas('keluargaPenerima', fn($kp) => $kp->whereIn('wilayah_id', $desaIds));
+            }
+        })->count();
 
         $persenMandiri = $totalBinaan > 0 ? round(($totalMandiri / $totalBinaan) * 100, 1) : 0;
         $persenTahap = $totalBinaan > 0 ? round(($totalTahap / $totalBinaan) * 100, 1) : 0;
         $persenPenurunan = $totalBinaan > 0 ? round(($totalPenurunan / $totalBinaan) * 100, 1) : 0;
 
-        $rataRataPenghasilan = KeluargaPenerima::where('penghasilan_perbulan', '>', 0)->avg('penghasilan_perbulan') ?? 0;
+        $rataRataPenghasilan = (clone $baseKeluarga)->where('penghasilan_perbulan', '>', 0)->avg('penghasilan_perbulan') ?? 0;
 
-        // 2. Data Grafik
-        // A. Distribusi Per Tingkatan Desil (Desil 1 s.d. Desil 10)
+        // 2. Data Grafik (Ter-scope)
         $distribusiDesil = [];
         for ($d = 1; $d <= 10; $d++) {
-            $distribusiDesil[$d] = KeluargaPenerima::where('desil', $d)->count();
+            $distribusiDesil[$d] = (clone $baseKeluarga)->where('desil', $d)->count();
         }
 
-        // B. Tren Kunjungan Evaluasi (Periode, Rata-rata Skor, dan Rata-rata Pendapatan)
+        // B. Tren Kunjungan Evaluasi
         $trenKunjungan = PenilaianKemandirian::select(
                 'periode',
                 DB::raw('COUNT(*) as total_asesmen'),
                 DB::raw('AVG(total_skor) as avg_skor'),
                 DB::raw('AVG(penghasilan_perbulan) as avg_penghasilan')
             )
+            ->where(function($q) use ($user, $desaIds) {
+                $q->where('pendamping_id', $user->id);
+                if (!empty($desaIds)) {
+                    $q->orWhereHas('keluargaPenerima', fn($kp) => $kp->whereIn('wilayah_id', $desaIds));
+                }
+            })
             ->groupBy('periode')
             ->orderByRaw('MIN(created_at) ASC')
             ->take(8)
             ->get();
 
-        // 3. Tabel 1: Rekapitulasi Status Kemandirian Keluarga Binaan
-        $keluargaQuery = KeluargaPenerima::with([
+        // 3. Tabel 1: Rekapitulasi Status Kemandirian Keluarga Binaan Ter-scope
+        $keluargaQuery = (clone $baseKeluarga)->with([
             'wilayah.parent',
             'programBantuan',
             'penilaianKemandirians' => function($q) {
@@ -91,14 +115,24 @@ class MonitoringKemandirianController extends Controller
 
         $keluargaList = $keluargaQuery->latest('id')->get();
 
-        // 4. Tabel 2: Riwayat / Histori Penilaian Desil Dari Tiap Kunjungan
+        // 4. Tabel 2: Riwayat Penilaian Desil Ter-scope
         $historiKunjungan = PenilaianKemandirian::with(['keluargaPenerima.wilayah', 'pendamping'])
+            ->where(function($q) use ($user, $desaIds) {
+                $q->where('pendamping_id', $user->id);
+                if (!empty($desaIds)) {
+                    $q->orWhereHas('keluargaPenerima', fn($kp) => $kp->whereIn('wilayah_id', $desaIds));
+                }
+            })
             ->latest()
             ->take(30)
             ->get();
 
-        // Daftar Wilayah untuk filter
-        $wilayahs = Wilayah::with('parent')->where('jenis', 'desa')->orderBy('nama')->get();
+        // Daftar Wilayah untuk filter (terbatas pada desa binaan)
+        $wilayahsQuery = Wilayah::with('parent')->where('jenis', 'desa');
+        if (!empty($desaIds)) {
+            $wilayahsQuery->whereIn('id', $desaIds);
+        }
+        $wilayahs = $wilayahsQuery->orderBy('nama')->get();
 
         return view('dashboard.pendamping.kemandirian.index', compact(
             'totalBinaan',

@@ -7,17 +7,17 @@
         <div class="flex flex-col">
             <a href="{{ route('pendamping.lapor.index') }}" class="inline-flex items-center gap-1 text-text-secondary hover:text-primary mb-2 font-label-md transition-colors w-fit">
                 <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-                <span>Kembali ke Daftar Laporan</span>
+                <span>Kembali ke Laporan Kunjungan</span>
             </a>
-            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Histori Kunjungan & Perkembangan Bibit</h1>
+            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Histori Laporan Kunjungan</h1>
             <p class="font-body-md text-text-secondary mt-1">
-                Laporan pemantauan tumbuh kembang keluarga binaan: <span class="font-semibold text-text-primary">{{ $laporan->keluarga_penerima->kepala_keluarga ?? '-' }}</span>
+                Laporan kunjungan keluarga penerima bantuan: <span class="font-semibold text-text-primary">{{ $laporan->keluarga_penerima->kepala_keluarga ?? '-' }}</span>
             </p>
         </div>
         <div class="flex flex-wrap items-center gap-space-sm">
-            <a href="{{ route('pendamping.lapor.create', ['keluarga_id' => $laporan->keluarga_penerima_id]) }}" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md font-semibold hover:bg-gov-green-dark transition-colors shadow-sm">
+            <a href="{{ route('pendamping.lapor.create', ['program_id' => $laporan->program_bantuan_id, 'penyaluran_id' => $laporan->penyaluran_bantuan_id, 'keluarga_id' => $laporan->keluarga_penerima_id]) }}" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md font-semibold hover:bg-gov-green-dark transition-colors shadow-sm">
                 <span class="material-symbols-outlined text-[18px]">add_location_alt</span>
-                <span>+ Catat Kunjungan Baru</span>
+                <span>+ Catat Kunjungan Baru Program Ini</span>
             </a>
             <a href="{{ route('pendamping.lapor.edit', $laporan->id) }}" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-text-primary font-label-md text-label-md font-semibold transition-colors border border-border-light shadow-sm">
                 <span class="material-symbols-outlined text-[18px]">edit_note</span>
@@ -65,17 +65,34 @@
 
         <div class="flex items-start gap-space-md border-t md:border-t-0 md:border-l border-border-light md:pl-space-lg pt-space-md md:pt-0">
             <div class="w-10 h-10 rounded-xl bg-secondary-fixed/50 text-secondary flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-[22px]">potted_plant</span>
+                <span class="material-symbols-outlined text-[22px]">volunteer_activism</span>
             </div>
             <div class="flex flex-col min-w-0">
-                <span class="font-label-sm text-text-secondary uppercase tracking-wider text-[11px]">Program Bantuan</span>
-                <span class="font-semibold text-text-primary text-sm truncate">
-                    {{ $laporan->keluarga_penerima->programBantuan->nama_program ?? 'Bantuan Bibit Produktif' }}
-                </span>
-                <div class="flex items-center gap-1.5 mt-1">
-                    <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-status-info-surface text-status-info">
-                        Desil {{ $laporan->keluarga_penerima->desil ?? '-' }}
+                <span class="font-label-sm text-text-secondary uppercase tracking-wider text-[11px]">Bantuan yang Dipantau</span>
+                @if($laporan->penyaluranBantuan)
+                    <span class="font-bold text-text-primary text-sm truncate">
+                        {{ $laporan->penyaluranBantuan->itemBantuan->nama_item ?? 'Bantuan' }}
                     </span>
+                    <span class="text-xs text-text-secondary">
+                        Program: {{ $laporan->penyaluranBantuan->programBantuan->nama_program ?? '-' }}
+                    </span>
+                    <div class="flex items-center gap-2 mt-1">
+                        <a href="{{ route('pendamping.penyaluran-bantuan.show', $laporan->penyaluran_bantuan_id) }}" class="text-[11px] text-primary hover:underline font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">receipt_long</span>
+                            <span>Tanda Terima Penyaluran</span>
+                        </a>
+                    </div>
+                @else
+                    <span class="font-semibold text-text-primary text-sm truncate">
+                        {{ $laporan->keluarga_penerima->programBantuan->nama_program ?? 'Bantuan Kampus' }}
+                    </span>
+                    <div class="flex items-center gap-1.5 mt-1">
+                        <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-status-info-surface text-status-info">
+                            Desil {{ $laporan->keluarga_penerima->desil ?? '-' }}
+                        </span>
+                    </div>
+                @endif
+                <div class="flex items-center gap-1.5 mt-1">
                     <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-gov-green-surface text-primary">
                         Total Kunjungan: {{ $riwayatKunjungan->count() }}x
                     </span>
@@ -275,6 +292,53 @@
                     @endforelse
                 </div>
             </div>
+
+            @if(isset($laporanProgramLain) && $laporanProgramLain->isNotEmpty())
+            <!-- Bukti Program Lain Tidak Ditindih: Daftar Laporan Program Lainnya -->
+            <div class="bg-canvas-bg rounded-2xl shadow-sm border border-border-light overflow-hidden flex flex-col mt-4">
+                <div class="p-space-md bg-surface-subtle border-b border-border-light flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-blue-700 text-[20px]">layers</span>
+                        <div>
+                            <h3 class="font-bold text-xs text-text-primary">Laporan Program Lainnya pada Keluarga Ini (Tersimpan Terpisah)</h3>
+                            <p class="text-[11px] text-text-tertiary">Setiap program memiliki riwayat perkembangan independen dan tidak saling menindih.</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-800 text-[11px] font-bold">
+                        {{ $laporanProgramLain->count() }} Laporan Program Lain
+                    </span>
+                </div>
+                <div class="divide-y divide-border-light p-2">
+                    @foreach($laporanProgramLain as $lapLain)
+                        <div class="p-3 flex items-center justify-between hover:bg-surface-subtle transition-colors rounded-xl">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-text-tertiary text-[20px]">school</span>
+                                <div>
+                                    <span class="font-bold text-xs text-text-primary block">
+                                        {{ $lapLain->programBantuan->nama_program ?? 'Program Bantuan' }}
+                                    </span>
+                                    <span class="text-[11px] text-text-tertiary">
+                                        Item: {{ $lapLain->penyaluranBantuan->itemBantuan->nama_item ?? 'Bantuan' }} • Kunjungan: {{ \Carbon\Carbon::parse($lapLain->tanggal_lapor)->format('d/m/Y') }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                @if($lapLain->status_kondisi === 'normal')
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gov-green-surface text-primary">Normal</span>
+                                @elseif($lapLain->status_kondisi === 'hama')
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700">Hama</span>
+                                @else
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700">Gagal</span>
+                                @endif
+                                <a href="{{ route('pendamping.lapor.show', $lapLain->id) }}" class="px-2.5 py-1 text-xs font-semibold text-primary hover:underline">
+                                    Lihat Detail →
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
         </div>
 
     </div>

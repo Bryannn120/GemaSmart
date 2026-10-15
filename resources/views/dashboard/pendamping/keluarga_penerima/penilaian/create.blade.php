@@ -13,7 +13,7 @@
             </div>
             <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Penilaian Subjektif & Evaluasi Desil</h1>
             <p class="font-body-md text-text-secondary mt-1">
-                Lakukan penginputan indikator sosial ekonomi keluarga penerima binaan untuk evaluasi tingkat desil dan kemandirian secara berkala.
+                Lakukan penginputan indikator sosial ekonomi keluarga penerima bantuan untuk evaluasi tingkat desil dan kemandirian secara berkala.
             </p>
         </div>
         <div class="flex flex-wrap items-center gap-space-sm">

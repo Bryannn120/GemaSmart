@@ -32,28 +32,55 @@
                     <span class="material-symbols-outlined text-[24px]">close</span>
                 </button>
             </div>
-            <div class="p-space-md mx-space-md mt-space-md rounded-xl bg-gov-green-dark/60 flex items-center gap-space-md">
-                <div class="w-9 h-9 rounded-full bg-secondary-fixed flex items-center justify-center shrink-0">
+            <a href="{{ route('profile.index') }}" class="p-space-md mx-space-md mt-space-md rounded-xl bg-gov-green-dark/60 hover:bg-gov-green-dark/90 transition-colors flex items-center gap-space-md group cursor-pointer" title="Lihat Profil & Wilayah Dampingan">
+                <div class="w-9 h-9 rounded-full bg-secondary-fixed flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                     <span class="material-symbols-outlined text-secondary text-[20px]">badge</span>
                 </div>
                 <div class="flex flex-col min-w-0 flex-1">
-                    <span class="font-label-lg text-label-lg text-on-primary font-semibold truncate">{{ Auth::user()->name ?? 'Pendamping' }}</span>
-                    <span class="inline-block px-space-xs py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm mt-0.5 w-fit">Pendamping Kampus</span>
+                    <span class="font-label-lg text-label-lg text-on-primary font-semibold truncate group-hover:text-emerald-300 transition-colors">{{ Auth::user()->name ?? 'Pendamping' }}</span>
+                    <span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm mt-0.5 w-fit truncate max-w-[160px]" title="{{ Auth::user()->assigned_wilayah_label }}">
+                        <span class="material-symbols-outlined text-[12px]">location_on</span>
+                        <span class="truncate">{{ Auth::user()->assigned_wilayah_label ?: 'Pendamping Kampus' }}</span>
+                    </span>
                 </div>
-            </div>
+            </a>
             <nav class="flex flex-col gap-1 px-space-md mt-space-lg">
                 <a href="{{ route('dashboard.pendamping') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg transition-colors {{ request()->routeIs('dashboard.pendamping') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary font-label-lg text-label-lg' }}">
                     <span class="material-symbols-outlined text-[20px]">home</span><span>Beranda</span>
                 </a>
-                {{-- Menu Tugas Validasi dinonaktifkan sementara sesuai instruksi --}}
-                <a href="{{ route('pendamping.lapor.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg {{ request()->routeIs('pendamping.lapor.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
-                    <span class="material-symbols-outlined text-[20px]">eco</span><span>Lapor Tumbuh Kembang</span>
-                </a>
                 <a href="{{ route('pendamping.keluarga_penerima.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg {{ request()->routeIs('pendamping.keluarga_penerima.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
-                    <span class="material-symbols-outlined text-[20px]">group</span><span>Keluarga Penerima Binaan</span>
+                    <span class="material-symbols-outlined text-[20px]">group</span><span>Keluarga Penerima Bantuan</span>
                 </a>
                 <a href="{{ route('pendamping.penyaluran-bantuan.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg {{ request()->routeIs('pendamping.penyaluran-bantuan.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
                     <span class="material-symbols-outlined text-[20px]">volunteer_activism</span><span>Penyaluran Bantuan</span>
+                </a>
+                @php
+                    $currUser = auth()->user();
+                    $userDesaIds = $currUser ? $currUser->getAssignedDesaIds() : [];
+                    $navUnvisitedCount = \App\Models\KeluargaPenerima::where(function($q) use ($currUser, $userDesaIds) {
+                        if ($currUser) {
+                            $q->where('pendamping_id', $currUser->id);
+                            if (!empty($userDesaIds)) {
+                                $q->orWhereIn('wilayah_id', $userDesaIds);
+                            }
+                        }
+                    })->whereHas('penyaluranBantuans', function($q) {
+                        $q->where('status', '!=', 'batal')->whereDoesntHave('laporanTumbuhKembangs');
+                    })->count();
+                @endphp
+                <a href="{{ route('pendamping.pantau-penyaluran.index') }}" class="flex items-center justify-between gap-2 px-space-md py-space-sm rounded-lg {{ request()->routeIs('pendamping.pantau-penyaluran.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
+                    <div class="flex items-center gap-space-md">
+                        <span class="material-symbols-outlined text-[20px]">tour</span>
+                        <span>Pantau Penyaluran</span>
+                    </div>
+                    @if($navUnvisitedCount > 0)
+                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-500 text-white shadow-xs">
+                            {{ $navUnvisitedCount }}
+                        </span>
+                    @endif
+                </a>
+                <a href="{{ route('pendamping.lapor.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg {{ request()->routeIs('pendamping.lapor.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
+                    <span class="material-symbols-outlined text-[20px]">assignment</span><span>Laporan Kunjungan</span>
                 </a>
                 <a href="{{ route('pendamping.kemandirian.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg {{ request()->routeIs('pendamping.kemandirian.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
                     <span class="material-symbols-outlined text-[20px]">query_stats</span><span>Monitoring Kemandirian</span>
@@ -87,19 +114,24 @@
                     <div class="hidden sm:flex items-center gap-space-xs font-body-sm text-body-sm text-text-secondary overflow-hidden">
                         <span class="hover:text-text-primary transition-colors cursor-pointer">Pendamping</span>
                         <span class="material-symbols-outlined text-[14px] text-text-tertiary">chevron_right</span>
-                        <span class="text-text-primary font-semibold truncate">Dashboard</span>
+                        <span class="text-text-primary font-semibold truncate">{{ auth()->user()->assigned_wilayah_label ?? 'Dashboard' }}</span>
                     </div>
                 </div>
                 <div class="flex items-center gap-space-lg">
-                    <div class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors">
+                    <a href="{{ route('profile.index') }}" class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Lihat Akun & Wilayah Dampingan">
                         <div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
                             <span class="material-symbols-outlined text-on-secondary text-[18px]">badge</span>
                         </div>
                         <div class="hidden xl:flex flex-col text-left">
-                            <span class="font-label-md text-label-md text-on-surface">Area: Kec. Utan</span>
-                            <span class="font-label-sm text-label-sm text-text-secondary">Aktif Bertugas</span>
+                            <span class="font-label-md text-label-md text-on-surface font-semibold truncate max-w-[240px]" title="{{ auth()->user()->assigned_wilayah_label ?? 'Wilayah Binaan' }}">
+                                Area: {{ auth()->user()->assigned_wilayah_label ?? 'Wilayah Binaan' }}
+                            </span>
+                            <span class="font-label-sm text-label-sm text-text-secondary flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span class="truncate max-w-[150px]">{{ auth()->user()->name ?? 'Kader Pendamping' }}</span>
+                            </span>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </header>

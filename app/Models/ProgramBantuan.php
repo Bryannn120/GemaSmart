@@ -40,4 +40,9 @@ class ProgramBantuan extends Model
     {
         return $this->hasMany(KeluargaPenerima::class);
     }
+
+    public function laporanTumbuhKembangs()
+    {
+        return $this->hasMany(LaporanTumbuhKembang::class);
+    }
 }

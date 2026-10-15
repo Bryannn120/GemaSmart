@@ -51,4 +51,14 @@ class PenyaluranBantuan extends Model
     {
         return $this->belongsTo(User::class, 'pendamping_id');
     }
+
+    public function laporanTumbuhKembangs()
+    {
+        return $this->hasMany(LaporanTumbuhKembang::class, 'penyaluran_bantuan_id')->orderBy('tanggal_lapor', 'desc');
+    }
+
+    public function latestPerkembangan()
+    {
+        return $this->hasOne(LaporanTumbuhKembang::class, 'penyaluran_bantuan_id')->latestOfMany('tanggal_lapor');
+    }
 }

@@ -276,9 +276,9 @@ class PeriodFilterHelper
     }
 
     /**
-     * Apply date range filter to an Eloquent Builder.
+     * Apply date range filter to an Eloquent Builder or Relation.
      */
-    public static function applyFilter(Builder $query, array $periodInfo, string $column = 'created_at'): Builder
+    public static function applyFilter($query, array $periodInfo, string $column = 'created_at')
     {
         if (!empty($periodInfo['start']) && !empty($periodInfo['end'])) {
             $query->whereBetween($column, [$periodInfo['start'], $periodInfo['end']]);
@@ -289,7 +289,7 @@ class PeriodFilterHelper
     /**
      * Apply date range filter to a date-only column (e.g. 'tgl_penyaluran', 'tanggal_lapor').
      */
-    public static function applyDateFilter(Builder $query, array $periodInfo, string $column): Builder
+    public static function applyDateFilter($query, array $periodInfo, string $column)
     {
         if (!empty($periodInfo['start_date']) && !empty($periodInfo['end_date'])) {
             $query->whereBetween($column, [$periodInfo['start_date'], $periodInfo['end_date']]);
