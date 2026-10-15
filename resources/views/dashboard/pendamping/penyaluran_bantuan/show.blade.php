@@ -1,5 +1,70 @@
 @extends('layouts.pendamping')
 
+@push('styles')
+<style>
+@media print {
+    /* Sembunyikan elemen dashboard & navigasi */
+    #sidebar, #sidebar-overlay, header, .print\:hidden {
+        display: none !important;
+    }
+
+    body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-family: 'Times New Roman', Times, serif !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    main {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        background: transparent !important;
+    }
+
+    .lg\:pl-\[260px\] {
+        padding-left: 0 !important;
+    }
+
+    #surat-bukti-serah-terima {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        page-break-after: avoid;
+        page-break-inside: avoid;
+    }
+
+    table.bast-table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+    }
+
+    table.bast-table th, table.bast-table td {
+        border: 1px solid #000000 !important;
+        color: #000000 !important;
+        padding: 4px 6px !important;
+    }
+
+    table.bast-table thead th {
+        background-color: #f1f5f9 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    @page {
+        size: A4 portrait;
+        margin: 12mm 15mm;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 <div class="flex flex-col w-full gap-space-xl max-w-6xl mx-auto pb-12">
     <!-- Top Action & Navigation (Hidden on Print) -->
@@ -21,9 +86,9 @@
                 <span class="material-symbols-outlined text-[16px]">add_circle</span>
                 <span>+ Salurkan Bantuan Baru</span>
             </a>
-            <button type="button" onclick="window.print()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-border-light bg-surface-subtle hover:bg-canvas-bg text-text-primary text-xs font-semibold shadow-sm transition-all">
+            <button type="button" onclick="window.print()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-primary/20 bg-gov-green-surface hover:bg-primary hover:text-white text-primary text-xs font-bold shadow-sm transition-all">
                 <span class="material-symbols-outlined text-[16px]">print</span>
-                <span>Cetak Rekap & Bukti</span>
+                <span>Cetak Bukti BAST</span>
             </button>
         </div>
     </div>
@@ -36,7 +101,7 @@
     @endif
 
     <!-- 1. HEADER RINGKASAN KELUARGA PENERIMA & STATISTIK BANTUAN -->
-    <div class="bg-canvas-bg rounded-2xl border border-border-light shadow-sm overflow-hidden flex flex-col">
+    <div class="bg-canvas-bg rounded-2xl border border-border-light shadow-sm overflow-hidden flex flex-col print:hidden">
         <!-- Banner Title -->
         <div class="p-space-lg sm:p-space-xl bg-gradient-to-r from-gov-green-dark via-primary to-emerald-800 text-white flex flex-col md:flex-row md:items-center justify-between gap-space-md">
             <div class="flex items-start sm:items-center gap-3">
@@ -132,7 +197,7 @@
     </div>
 
     <!-- 2. PROGRAM-PROGRAM KAMPUS YANG DIDAPAT KELUARGA INI -->
-    <div class="bg-canvas-bg rounded-2xl border border-border-light shadow-sm overflow-hidden flex flex-col">
+    <div class="bg-canvas-bg rounded-2xl border border-border-light shadow-sm overflow-hidden flex flex-col print:hidden">
         <div class="p-space-md sm:p-space-lg border-b border-border-light bg-surface-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div class="flex items-center gap-2.5">
                 <div class="w-9 h-9 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center shrink-0">
@@ -203,7 +268,7 @@
     </div>
 
     <!-- 3. TABEL LENGKAP RINCIAN BANTUAN YANG DITERIMA (Inti Permintaan User) -->
-    <div class="bg-canvas-bg rounded-2xl border border-border-light shadow-sm overflow-hidden flex flex-col">
+    <div class="bg-canvas-bg rounded-2xl border border-border-light shadow-sm overflow-hidden flex flex-col print:hidden">
         <div class="p-space-md sm:p-space-lg border-b border-border-light bg-surface-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="flex items-center gap-2.5">
                 <div class="w-9 h-9 rounded-xl bg-gov-green-surface text-primary flex items-center justify-center shrink-0">
@@ -379,7 +444,7 @@
     </div>
 
     <!-- 4. RIWAYAT MONITORING & KUNJUNGAN LAPANGAN (LAPORAN KUNJUNGAN) -->
-    <div class="bg-canvas-bg rounded-2xl border border-border-light shadow-sm overflow-hidden flex flex-col">
+    <div class="bg-canvas-bg rounded-2xl border border-border-light shadow-sm overflow-hidden flex flex-col print:hidden">
         <div class="p-space-md sm:p-space-lg border-b border-border-light bg-surface-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="flex items-center gap-2.5">
                 <div class="w-9 h-9 rounded-xl bg-gov-green-surface text-primary flex items-center justify-center shrink-0">
@@ -462,88 +527,308 @@
     </div>
 
     <!-- 5. TANDA TERIMA / BERITA ACARA SERAH TERIMA (DAPAT DICETAK LANGSUNG) -->
-    <div class="bg-canvas-bg rounded-2xl border border-border-light shadow-sm overflow-hidden flex flex-col p-6 sm:p-8">
-        <!-- Header Berita Acara -->
-        <div class="border-b-2 border-slate-800 pb-4 mb-6 text-center">
-            <h2 class="text-lg font-bold uppercase tracking-wider text-text-primary">
-                BERITA ACARA SERAH TERIMA BANTUAN
-            </h2>
-            <p class="text-xs text-text-secondary uppercase tracking-wide mt-1">
-                PROGRAM PEMBERDAYAAN DAN SUBSIDI KELUARGA BINAAN PERGURUAN TINGGI
-            </p>
-            <p class="text-[11px] text-text-tertiary mt-0.5">
-                Dokumen Resmi Penyaluran Bantuan & Verifikasi Penerima Manfaat
-            </p>
+    <div class="flex flex-col gap-4">
+        <!-- Action Header Bar (Tampil di Layar Monitor) -->
+        <div class="bg-surface-subtle border border-border-light rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden shadow-xs">
+            <div class="flex items-start sm:items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-xs">
+                    <span class="material-symbols-outlined text-[24px]">assignment_turned_in</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h2 class="font-bold text-text-primary text-base">Surat Bukti Berita Acara Serah Terima (BAST)</h2>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gov-green-surface text-primary border border-primary/20">
+                            Format Resmi Standar Pemkab & Kampus
+                        </span>
+                    </div>
+                    <p class="text-xs text-text-secondary mt-0.5">
+                        Dokumen sah tanda bukti serah terima bantuan antara kader pendamping lapangan dan keluarga penerima manfaat.
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <button type="button" onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-gov-green-dark text-on-primary text-xs font-bold transition-all shadow-sm">
+                    <span class="material-symbols-outlined text-[18px]">print</span>
+                    <span>Cetak Surat Bukti (BAST)</span>
+                </button>
+            </div>
         </div>
 
-        <div class="text-xs text-text-secondary mb-4 leading-relaxed">
-            Pada hari ini telah diserah-terimakan paket bantuan program kemitraan perguruan tinggi kepada keluarga penerima manfaat sebagai berikut:
-        </div>
+        <!-- Lembar Fisik Surat Resmi BAST (Tampil di Layar & Dicetak ke Kertas) -->
+        <div id="surat-bukti-serah-terima" class="bg-white text-slate-900 border border-slate-300 rounded-2xl p-6 sm:p-12 shadow-sm font-serif print:border-none print:shadow-none print:p-0 print:m-0 print:rounded-none max-w-4xl mx-auto w-full">
+            
+            <!-- KOP SURAT RESMI PEMDA SUMBAWA & GEMA SMART -->
+            <div class="flex items-center justify-between gap-4 pb-2 border-b-[3px] border-double border-slate-900 mb-6">
+                <div class="shrink-0 flex items-center justify-center">
+                    <img src="{{ asset('gemas.jpg') }}" alt="Logo Gema Smart Sumbawa" class="h-20 w-auto object-contain">
+                </div>
+                <div class="text-center flex-1 pr-4 sm:pr-8">
+                    <h2 class="text-sm sm:text-base font-bold tracking-wider uppercase text-slate-900 font-sans leading-tight">
+                        PEMERINTAH KABUPATEN SUMBAWA
+                    </h2>
+                    <h3 class="text-xs sm:text-sm font-bold uppercase text-slate-800 font-sans leading-tight mt-0.5">
+                        DINAS PEMBERDAYAAN MASYARAKAT DAN DESA
+                    </h3>
+                    <h4 class="text-xs sm:text-sm font-extrabold uppercase text-emerald-800 font-sans leading-tight mt-0.5">
+                        PROGRAM PEMBERDAYAAN MASYARAKAT "GEMA SMART"
+                    </h4>
+                    <p class="text-[10px] sm:text-[11px] text-slate-600 font-sans leading-tight mt-0.5">
+                        Kolaborasi Pemerintah Daerah Kabupaten Sumbawa Bersama Perguruan Tinggi Mitra
+                    </p>
+                    <p class="text-[9px] sm:text-[10px] text-slate-500 font-sans italic leading-tight mt-1">
+                        Sekretariat: Jl. Garuda No. 1 Sumbawa Besar, NTB (84311) | Email: gemasmart@sumbawakab.go.id
+                    </p>
+                </div>
+            </div>
 
-        <!-- Identitas Penerima -->
-        <div class="grid grid-cols-2 gap-2 text-xs mb-6 bg-surface-subtle p-4 rounded-xl border border-border-light">
-            <div>Nama Kepala Keluarga: <strong class="text-text-primary">{{ $keluarga->kepala_keluarga }}</strong></div>
-            <div>Nomor Kartu Keluarga (KK): <strong class="text-text-primary">{{ $keluarga->no_kk }}</strong></div>
-            <div>Nomor Induk Kependudukan: <strong class="text-text-primary">{{ $keluarga->nik }}</strong></div>
-            <div>Desa / Kelurahan: <strong class="text-text-primary">{{ $keluarga->wilayah->nama ?? '-' }}</strong></div>
-            <div>Tingkat Kesejahteraan: <strong class="text-text-primary">Desil {{ $keluarga->desil ?? '-' }}</strong></div>
-            <div>Status Binaan: <strong class="text-text-primary">{{ $keluarga->is_mandiri ? 'Mandiri' : 'Aktif Binaan' }}</strong></div>
-        </div>
+            <!-- JUDUL & NOMOR SURAT -->
+            <div class="text-center mb-6">
+                <h1 class="text-base sm:text-lg font-bold uppercase tracking-wider underline underline-offset-4 text-slate-900 font-sans">
+                    BERITA ACARA SERAH TERIMA BANTUAN (BAST)
+                </h1>
+                <p class="text-xs font-mono font-semibold text-slate-700 mt-1">
+                    Nomor: {{ date('Y') }}/BAST-GS/{{ $keluarga->wilayah->kode_wilayah ?? '52.04' }}/{{ str_pad($keluarga->id, 4, '0', STR_PAD_LEFT) }}
+                </p>
+            </div>
 
-        <!-- Rincian Serah Terima Barang / Uang -->
-        <table class="w-full text-xs text-left border border-border-light mb-6">
-            <thead class="bg-surface-muted font-bold border-b border-border-light">
-                <tr>
-                    <th class="p-2 border-r border-border-light w-8 text-center">No</th>
-                    <th class="p-2 border-r border-border-light">Program Kampus</th>
-                    <th class="p-2 border-r border-border-light">Jenis & Nama Bantuan</th>
-                    <th class="p-2 border-r border-border-light">Jumlah / Nilai</th>
-                    <th class="p-2">Peruntukan</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-border-light">
-                @forelse($keluarga->penyaluranBantuans as $idx => $item)
+            <!-- MUKADIMAH HARI & TANGGAL -->
+            <div class="text-xs text-slate-800 leading-relaxed text-justify mb-4">
+                Pada hari ini, <strong class="capitalize">{{ \Carbon\Carbon::now()->isoFormat('dddd') }}</strong> tanggal <strong>{{ \Carbon\Carbon::now()->isoFormat('D MMMM Y') }}</strong>, bertempat di <strong>{{ $keluarga->alamat ? $keluarga->alamat . ', ' : '' }}Desa/Kelurahan {{ $keluarga->wilayah->nama ?? 'Sumbawa' }}</strong>, Kecamatan {{ $keluarga->wilayah->parent->nama ?? 'Sumbawa' }}, Kabupaten Sumbawa, Provinsi Nusa Tenggara Barat, kami yang bertanda tangan di bawah ini:
+            </div>
+
+            <!-- KOMPARISI PARA PIHAK -->
+            <div class="text-xs text-slate-800 mb-4 flex flex-col gap-3">
+                <!-- PIHAK PERTAMA -->
+                <div class="pl-2">
+                    <div class="font-bold uppercase text-[11px] tracking-wide mb-1 text-slate-900">
+                        I. PIHAK PERTAMA (Yang Menyerahkan):
+                    </div>
+                    <table class="w-full text-xs">
+                        <tr>
+                            <td class="w-36 py-0.5 text-slate-600">Nama Petugas</td>
+                            <td class="w-3 text-center py-0.5">:</td>
+                            <td class="py-0.5 font-bold text-slate-900">{{ Auth::user()->name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-0.5 text-slate-600">NIP / NIM</td>
+                            <td class="text-center py-0.5">:</td>
+                            <td class="py-0.5 font-mono">{{ Auth::user()->nim_nip ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-0.5 text-slate-600">Jabatan</td>
+                            <td class="text-center py-0.5">:</td>
+                            <td class="py-0.5">Kader Pendamping Lapangan Program Gema Smart</td>
+                        </tr>
+                        <tr>
+                            <td class="py-0.5 text-slate-600">Wilayah Tugas</td>
+                            <td class="text-center py-0.5">:</td>
+                            <td class="py-0.5">{{ Auth::user()->assigned_wilayah_label ?? 'Kabupaten Sumbawa' }}</td>
+                        </tr>
+                    </table>
+                    <p class="text-[11px] text-slate-600 italic mt-0.5">
+                        Bertindak untuk dan atas nama Tim Pendamping Program Gema Smart, yang selanjutnya disebut sebagai <strong>PIHAK PERTAMA</strong>.
+                    </p>
+                </div>
+
+                <!-- PIHAK KEDUA -->
+                <div class="pl-2 pt-2 border-t border-slate-200">
+                    <div class="font-bold uppercase text-[11px] tracking-wide mb-1 text-slate-900">
+                        II. PIHAK KEDUA (Yang Menerima):
+                    </div>
+                    <table class="w-full text-xs">
+                        <tr>
+                            <td class="w-36 py-0.5 text-slate-600">Nama Kepala Keluarga</td>
+                            <td class="w-3 text-center py-0.5">:</td>
+                            <td class="py-0.5 font-bold text-slate-900">{{ $keluarga->kepala_keluarga }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-0.5 text-slate-600">No. Kartu Keluarga (KK)</td>
+                            <td class="text-center py-0.5">:</td>
+                            <td class="py-0.5 font-mono">{{ $keluarga->no_kk }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-0.5 text-slate-600">NIK Kepala Keluarga</td>
+                            <td class="text-center py-0.5">:</td>
+                            <td class="py-0.5 font-mono">{{ $keluarga->nik }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-0.5 text-slate-600">Alamat Domisili</td>
+                            <td class="text-center py-0.5">:</td>
+                            <td class="py-0.5">{{ $keluarga->alamat ?? '-' }}, Desa {{ $keluarga->wilayah->nama ?? '-' }}, Kec. {{ $keluarga->wilayah->parent->nama ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-0.5 text-slate-600">Tingkat Kesejahteraan</td>
+                            <td class="text-center py-0.5">:</td>
+                            <td class="py-0.5 font-semibold text-slate-900">Desil {{ $keluarga->desil ?? '-' }} ({{ $keluarga->status_kemandirian ?? 'Tahap Kemandirian' }})</td>
+                        </tr>
+                    </table>
+                    <p class="text-[11px] text-slate-600 italic mt-0.5">
+                        Bertindak selaku Kepala Keluarga Penerima Manfaat Bantuan, yang selanjutnya disebut sebagai <strong>PIHAK KEDUA</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <!-- KLAUSUL KESEPAKATAN -->
+            <div class="text-xs text-slate-800 leading-relaxed text-justify mb-3">
+                Kedua belah pihak telah bersepakat bahwa <strong>PIHAK PERTAMA</strong> telah menyerahkan bantuan dan <strong>PIHAK KEDUA</strong> menyatakan telah menerima secara langsung, lengkap, dan dalam kondisi baik tanpa dipungut biaya apapun (gratis 100%), dengan rincian paket bantuan sebagai berikut:
+            </div>
+
+            <!-- TABEL RINCIAN SERAH TERIMA BARANG / UANG -->
+            <table class="bast-table w-full text-xs text-left border border-slate-800 mb-4">
+                <thead class="bg-slate-100 font-bold border-b border-slate-800 text-slate-900">
                     <tr>
-                        <td class="p-2 border-r border-border-light text-center">{{ $idx + 1 }}</td>
-                        <td class="p-2 border-r border-border-light">{{ $item->programBantuan->nama_program ?? '-' }}</td>
-                        <td class="p-2 border-r border-border-light font-medium">{{ $item->itemBantuan->nama_item ?? '-' }} ({{ strtoupper($item->jenis) }})</td>
-                        <td class="p-2 border-r border-border-light font-bold">
-                            @if($item->jenis === 'uang')
-                                Rp {{ number_format($item->nominal_uang ?? $item->jumlah, 0, ',', '.') }}
-                            @else
-                                {{ number_format($item->jumlah) }} {{ $item->satuan }}
-                            @endif
+                        <th class="p-2 border-r border-slate-800 w-8 text-center">No</th>
+                        <th class="p-2 border-r border-slate-800">Program Bantuan Kampus</th>
+                        <th class="p-2 border-r border-slate-800">Nama Item & Spesifikasi Bantuan</th>
+                        <th class="p-2 border-r border-slate-800 text-center">Kategori</th>
+                        <th class="p-2 border-r border-slate-800 text-center">Jumlah / Vol</th>
+                        <th class="p-2 border-r border-slate-800 text-right">Nilai / Nominal</th>
+                        <th class="p-2">Peruntukan Dana / Keperluan</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800">
+                    @forelse($keluarga->penyaluranBantuans as $idx => $item)
+                        <tr>
+                            <td class="p-2 border-r border-slate-800 text-center font-semibold">{{ $idx + 1 }}</td>
+                            <td class="p-2 border-r border-slate-800">{{ $item->programBantuan->nama_program ?? 'Program Gema Smart' }}</td>
+                            <td class="p-2 border-r border-slate-800 font-bold text-slate-900">
+                                {{ $item->itemBantuan->nama_item ?? '-' }}
+                            </td>
+                            <td class="p-2 border-r border-slate-800 text-center uppercase text-[10px] font-semibold">
+                                @if($item->jenis === 'bibit')
+                                    Bibit Tanaman
+                                @elseif($item->jenis === 'uang')
+                                    Uang Tunai Modal
+                                @else
+                                    Alat / Sarana
+                                @endif
+                            </td>
+                            <td class="p-2 border-r border-slate-800 text-center font-semibold">
+                                @if($item->jenis === 'uang')
+                                    1 Paket
+                                @else
+                                    {{ number_format($item->jumlah) }} {{ $item->satuan }}
+                                @endif
+                            </td>
+                            <td class="p-2 border-r border-slate-800 text-right font-mono font-bold">
+                                @if($item->jenis === 'uang')
+                                    Rp {{ number_format($item->nominal_uang ?? $item->jumlah, 0, ',', '.') }}
+                                @else
+                                    -
+                                @endif
+                            </td>
+                            <td class="p-2 text-slate-700">
+                                {{ $item->peruntukan ?? ($item->keterangan ?? 'Pemberdayaan produktif keluarga') }}
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="p-4 text-center text-slate-500 italic">Belum ada rincian paket bantuan yang tercatat disalurkan.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+                <tfoot class="bg-slate-50 font-bold border-t-2 border-slate-800 text-slate-900">
+                    <tr>
+                        <td colspan="4" class="p-2 border-r border-slate-800 text-right uppercase text-[11px]">
+                            Akumulasi Bantuan Diserahkan:
                         </td>
-                        <td class="p-2">{{ $item->peruntukan ?? '-' }}</td>
+                        <td class="p-2 border-r border-slate-800 text-center font-mono">
+                            {{ number_format($totalBibit) }} Bibit & {{ number_format($totalBarang) }} Alat
+                        </td>
+                        <td class="p-2 border-r border-slate-800 text-right font-mono text-emerald-800">
+                            Rp {{ number_format($totalNominalUang, 0, ',', '.') }}
+                        </td>
+                        <td class="p-2 text-[11px] text-slate-600 font-normal">
+                            Sah diserahkan 100%
+                        </td>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="p-3 text-center text-text-tertiary">Belum ada item bantuan.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </tfoot>
+            </table>
 
-        <!-- Kolom Tanda Tangan -->
-        <div class="grid grid-cols-2 gap-8 text-center text-xs mt-4 pt-4 border-t border-border-light">
-            <div>
-                <span class="text-text-tertiary block mb-14">Penerima Bantuan,</span>
-                <strong class="text-text-primary underline block">{{ $keluarga->kepala_keluarga }}</strong>
-                <span class="text-text-tertiary">Kepala Keluarga Penerima Manfaat</span>
+            <!-- KETENTUAN DAN KEWAJIBAN -->
+            <div class="text-xs text-slate-800 leading-relaxed mb-6 space-y-1 text-justify">
+                <p><strong>Ketentuan dan Kewajiban Penerima Bantuan:</strong></p>
+                <ol class="list-decimal pl-5 space-y-0.5 text-[11px]">
+                    <li>PIHAK KEDUA berkewajiban merawat, mengelola, dan membudidayakan bantuan yang diterima untuk menunjang peningkatan produktivitas serta taraf ekonomi keluarga.</li>
+                    <li>Bantuan yang diterima tidak diperbolehkan untuk dipindahtangankan, dialihkan, atau diperjualbelikan kepada pihak lain dalam bentuk apapun.</li>
+                    <li>PIHAK KEDUA bersedia menerima pendampingan dan kunjungan pemantauan berkala (*laporan kunjungan lapangan*) dari PIHAK PERTAMA untuk evaluasi perkembangan kemandirian.</li>
+                </ol>
+                <p class="text-[11px] pt-1">
+                    Demikian Berita Acara Serah Terima ini dibuat dengan sebenarnya dalam rangkap secukupnya dan ditandatangani oleh para pihak dengan penuh rasa tanggung jawab.
+                </p>
             </div>
-            <div>
-                <span class="text-text-tertiary block mb-14">Petugas Kader Pendamping,</span>
-                <strong class="text-text-primary underline block">
-                    {{ Auth::user()->name }}
-                </strong>
-                <span class="text-text-tertiary">Kader Pendamping Lapangan</span>
+
+            <!-- TANGGAL DAN KOLOM TANDA TANGAN (3 PIHAK) -->
+            <div class="text-xs text-slate-900">
+                <div class="text-right mb-4 text-slate-800 text-xs">
+                    Sumbawa, {{ \Carbon\Carbon::now()->isoFormat('D MMMM Y') }}
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <!-- PIHAK KEDUA -->
+                    <div class="flex flex-col justify-between h-36">
+                        <div>
+                            <span class="font-bold uppercase text-[11px] block">PIHAK KEDUA</span>
+                            <span class="text-slate-600 text-[10px] block">Yang Menerima Bantuan</span>
+                        </div>
+                        <div>
+                            <strong class="underline block font-bold text-slate-900 uppercase tracking-wide">
+                                {{ $keluarga->kepala_keluarga }}
+                            </strong>
+                            <span class="text-slate-600 text-[10px] font-mono block">NIK: {{ $keluarga->nik }}</span>
+                        </div>
+                    </div>
+
+                    <!-- MENGETAHUI KEPALA DESA / DPL -->
+                    <div class="flex flex-col justify-between h-36">
+                        <div>
+                            <span class="font-bold uppercase text-[11px] block">MENGETAHUI / MENGESAHKAN</span>
+                            <span class="text-slate-600 text-[10px] block">Kepala Desa / Koordinator Tim</span>
+                        </div>
+                        <div>
+                            <span class="underline block font-bold text-slate-900">
+                                ( ...................................................... )
+                            </span>
+                            <span class="text-slate-600 text-[10px] block">NIP/Jabatan: ................................</span>
+                        </div>
+                    </div>
+
+                    <!-- PIHAK PERTAMA -->
+                    <div class="flex flex-col justify-between h-36">
+                        <div>
+                            <span class="font-bold uppercase text-[11px] block">PIHAK PERTAMA</span>
+                            <span class="text-slate-600 text-[10px] block">Yang Menyerahkan Bantuan</span>
+                        </div>
+                        <div>
+                            <strong class="underline block font-bold text-slate-900 uppercase tracking-wide">
+                                {{ Auth::user()->name }}
+                            </strong>
+                            <span class="text-slate-600 text-[10px] font-mono block">NIP/NIM: {{ Auth::user()->nim_nip ?? '-' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER OTENTIKASI & KEAMANAN SISTEM -->
+            <div class="mt-8 pt-3 border-t border-slate-300 flex flex-col sm:flex-row sm:items-center justify-between text-[10px] text-slate-500 font-sans gap-2">
+                <div class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px] text-emerald-700">verified</span>
+                    <span>Dokumen Sah Sistem Informasi Gema Smart Kab. Sumbawa</span>
+                </div>
+                <div class="font-mono text-slate-600">
+                    ID Transaksi: GS-BAST-{{ strtoupper(substr(hash('sha256', $keluarga->id . $keluarga->nik . 'BAST'), 0, 14)) }}
+                </div>
+                <div>
+                    Waktu Cetak: {{ \Carbon\Carbon::now()->isoFormat('D MMMM Y, HH:mm') }} WITA
+                </div>
             </div>
         </div>
 
-        <div class="mt-6 flex justify-end print:hidden">
-            <button type="button" onclick="window.print()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-on-primary hover:bg-gov-green-dark text-xs font-bold transition-all shadow-sm">
-                <span class="material-symbols-outlined text-[16px]">print</span>
-                <span>Cetak Bukti Serah Terima Ini</span>
+        <!-- Tombol Cetak Bawah (Layar Saja) -->
+        <div class="flex justify-end print:hidden pt-2">
+            <button type="button" onclick="window.print()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-gov-green-dark text-on-primary text-xs font-bold transition-all shadow-md">
+                <span class="material-symbols-outlined text-[18px]">print</span>
+                <span>Cetak Dokumen BAST Ini (Ukuran A4)</span>
             </button>
         </div>
     </div>
