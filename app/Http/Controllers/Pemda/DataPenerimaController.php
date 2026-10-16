@@ -20,8 +20,9 @@ class DataPenerimaController extends Controller
         $search = $request->query('search');
         $wilayahId = $request->query('wilayah_id');
         $programId = $request->query('program_bantuan_id');
+        $pendampingFilter = $request->query('pendamping_filter');
 
-        $query = KeluargaPenerima::with(['wilayah.parent', 'programBantuan', 'user', 'pendamping']);
+        $query = KeluargaPenerima::with(['wilayah.parent', 'programBantuan', 'user', 'pendamping.kampus']);
 
         if ($tab === 'mandiri') {
             // Warga yang telah mandiri atau mencapai desil 6 ke atas (Lulus Bantuan)
@@ -37,7 +38,10 @@ class DataPenerimaController extends Controller
                 $q->where('kepala_keluarga', 'like', "%{$term}%")
                   ->orWhere('nik', 'like', "%{$term}%")
                   ->orWhere('no_kk', 'like', "%{$term}%")
-                  ->orWhere('alamat', 'like', "%{$term}%");
+                  ->orWhere('alamat', 'like', "%{$term}%")
+                  ->orWhereHas('pendamping', function($pq) use ($term) {
+                      $pq->where('name', 'like', "%{$term}%");
+                  });
             });
         }
 
@@ -49,14 +53,26 @@ class DataPenerimaController extends Controller
             $query->where('program_bantuan_id', $programId);
         }
 
+        if ($request->filled('pendamping_filter')) {
+            if ($pendampingFilter === 'sudah') {
+                $query->whereNotNull('pendamping_id');
+            } elseif ($pendampingFilter === 'belum') {
+                $query->whereNull('pendamping_id');
+            } elseif (is_numeric($pendampingFilter)) {
+                $query->where('pendamping_id', $pendampingFilter);
+            }
+        }
+
         $keluarga_penerimas = $query->latest('id')->paginate(20)->withQueryString();
 
         $countAktif = KeluargaPenerima::penerimaAktif()->count();
         $countMandiri = KeluargaPenerima::mandiri()->count();
         $totalSemua = KeluargaPenerima::count();
+        $countWithPendamping = KeluargaPenerima::whereNotNull('pendamping_id')->count();
 
         $wilayahs = Wilayah::where('jenis', 'desa')->where('is_aktif', true)->orderBy('nama')->get();
         $programs = ProgramBantuan::where('status', 'aktif')->orderBy('nama_program')->get();
+        $pendampings = User::where('role', 'pendamping')->with('kampus')->orderBy('name')->get();
 
         return view('dashboard.pemda.data-penerima.index', compact(
             'keluarga_penerimas',
@@ -64,11 +80,14 @@ class DataPenerimaController extends Controller
             'countAktif',
             'countMandiri',
             'totalSemua',
+            'countWithPendamping',
             'wilayahs',
             'programs',
+            'pendampings',
             'search',
             'wilayahId',
-            'programId'
+            'programId',
+            'pendampingFilter'
         ));
     }
 
@@ -126,7 +145,8 @@ class DataPenerimaController extends Controller
     {
         $wilayahs = Wilayah::with('parent')->where('is_aktif', true)->orderBy('nama')->get();
         $programs = ProgramBantuan::where('status', 'aktif')->get();
-        return view('dashboard.pemda.data-penerima.create', compact('wilayahs', 'programs'));
+        $pendampings = User::where('role', 'pendamping')->with('kampus')->orderBy('name')->get();
+        return view('dashboard.pemda.data-penerima.create', compact('wilayahs', 'programs', 'pendampings'));
     }
 
     public function store(Request $request)
@@ -139,6 +159,7 @@ class DataPenerimaController extends Controller
             'desil' => 'required|integer|min:1|max:10',
             'wilayah_id' => 'required|exists:wilayahs,id',
             'program_bantuan_id' => 'required|exists:program_bantuans,id',
+            'pendamping_id' => 'nullable|exists:users,id',
             'status_validasi' => 'required|in:menunggu_validasi,proses_lapangan,valid,anomali',
         ]);
 
@@ -175,16 +196,24 @@ class DataPenerimaController extends Controller
 
     public function show(string $id)
     {
-        $keluarga_penerima = KeluargaPenerima::with(['wilayah', 'programBantuan', 'user', 'penilaianKemandirians', 'laporanPenerimas'])->findOrFail($id);
+        $keluarga_penerima = KeluargaPenerima::with([
+            'wilayah.parent', 
+            'programBantuan', 
+            'user', 
+            'penilaianKemandirians', 
+            'laporanPenerimas', 
+            'pendamping.kampus'
+        ])->findOrFail($id);
         return view('dashboard.pemda.data-penerima.show', compact('keluarga_penerima'));
     }
 
     public function edit(string $id)
     {
-        $keluarga_penerima = KeluargaPenerima::findOrFail($id);
+        $keluarga_penerima = KeluargaPenerima::with('pendamping')->findOrFail($id);
         $wilayahs = Wilayah::with('parent')->where('is_aktif', true)->orderBy('nama')->get();
         $programs = ProgramBantuan::where('status', 'aktif')->get();
-        return view('dashboard.pemda.data-penerima.edit', compact('keluarga_penerima', 'wilayahs', 'programs'));
+        $pendampings = User::where('role', 'pendamping')->with('kampus')->orderBy('name')->get();
+        return view('dashboard.pemda.data-penerima.edit', compact('keluarga_penerima', 'wilayahs', 'programs', 'pendampings'));
     }
 
     public function update(Request $request, string $id)
@@ -200,6 +229,7 @@ class DataPenerimaController extends Controller
             'desil' => 'required|integer|min:1|max:10',
             'wilayah_id' => 'required|exists:wilayahs,id',
             'program_bantuan_id' => 'required|exists:program_bantuans,id',
+            'pendamping_id' => 'nullable|exists:users,id',
             'status_validasi' => 'required|in:menunggu_validasi,proses_lapangan,valid,anomali',
         ]);
 

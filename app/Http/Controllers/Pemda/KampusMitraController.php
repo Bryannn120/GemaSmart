@@ -6,20 +6,39 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\KampusMitra;
 use App\Models\User;
+use App\Models\Wilayah;
 use App\Models\AuditLog;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class KampusMitraController extends Controller
 {
     public function index()
     {
-        $kampusMitras = KampusMitra::with('user')->get();
+        $kampusMitras = KampusMitra::with(['user', 'wilayahs'])->get();
         return view('dashboard.pemda.kampus-mitra.index', compact('kampusMitras'));
     }
 
     public function create()
     {
-        return view('dashboard.pemda.kampus-mitra.create');
+        $kecamatans = Wilayah::where('jenis', 'kecamatan')
+            ->where('is_aktif', true)
+            ->with(['children' => function($q) {
+                $q->where('jenis', 'desa')->select('id', 'parent_id', 'nama')->orderBy('nama');
+            }])
+            ->orderBy('nama')
+            ->get();
+
+        // Ambil pemetaan wilayah yang sudah dibina oleh kampus mitra lain
+        $takenWilayahs = DB::table('kampus_wilayahs')
+            ->join('kampus_mitras', 'kampus_wilayahs.kampus_mitra_id', '=', 'kampus_mitras.id')
+            ->whereNull('kampus_mitras.deleted_at')
+            ->select('kampus_wilayahs.wilayah_id', 'kampus_mitras.id as kampus_id', 'kampus_mitras.nama_universitas')
+            ->get()
+            ->keyBy('wilayah_id');
+
+        return view('dashboard.pemda.kampus-mitra.create', compact('kecamatans', 'takenWilayahs'));
     }
 
     public function store(Request $request)
@@ -29,11 +48,39 @@ class KampusMitraController extends Controller
             'email_kampus' => 'required|email|unique:users,email',
             'pic_name' => 'required|string|max:255',
             'pic_contact' => 'nullable|string|max:255',
-            'wilayah_binaan' => 'nullable|string|max:255',
+            'wilayah_ids' => 'required|array|min:1',
+            'wilayah_ids.*' => 'exists:wilayahs,id',
             'mou_berlaku_sampai' => 'nullable|date',
             'status_mou' => 'required|in:aktif,tidak_aktif',
             'dana_bappeda' => 'nullable|numeric|min:0',
+        ], [
+            'nama_universitas.required' => 'Nama universitas / perguruan tinggi wajib diisi.',
+            'email_kampus.required' => 'Email login kampus wajib diisi.',
+            'email_kampus.unique' => 'Email ini sudah digunakan oleh akun lain.',
+            'pic_name.required' => 'Nama PIC / Koordinator wajib diisi.',
+            'wilayah_ids.required' => 'Wajib memilih minimal satu wilayah binaan kecamatan untuk kampus mitra ini.',
+            'wilayah_ids.min' => 'Wajib memilih minimal satu wilayah binaan kecamatan untuk kampus mitra ini.',
         ]);
+
+        // Cek konflik wilayah: pastikan wilayah yang dipilih belum pernah dibina oleh kampus mitra lain
+        $alreadyTaken = DB::table('kampus_wilayahs')
+            ->join('kampus_mitras', 'kampus_wilayahs.kampus_mitra_id', '=', 'kampus_mitras.id')
+            ->join('wilayahs', 'kampus_wilayahs.wilayah_id', '=', 'wilayahs.id')
+            ->whereNull('kampus_mitras.deleted_at')
+            ->whereIn('kampus_wilayahs.wilayah_id', $validated['wilayah_ids'])
+            ->select('wilayahs.nama as nama_wilayah', 'kampus_mitras.nama_universitas')
+            ->get();
+
+        if ($alreadyTaken->isNotEmpty()) {
+            $conflictList = $alreadyTaken->map(fn($item) => "Kec. {$item->nama_wilayah} (sudah dibina oleh {$item->nama_universitas})")->implode(', ');
+            throw ValidationException::withMessages([
+                'wilayah_ids' => "Wilayah berikut tidak dapat dipilih karena sudah menjadi binaan kampus mitra lain: {$conflictList}."
+            ]);
+        }
+
+        // Susun nama wilayah binaan untuk kompatibilitas data
+        $selectedKecamatans = Wilayah::whereIn('id', $validated['wilayah_ids'])->orderBy('nama')->get();
+        $validated['wilayah_binaan'] = $selectedKecamatans->map(fn($k) => 'Kec. ' . $k->nama)->implode(', ');
 
         // Create User account automatically for the new Kampus
         $user = User::create([
@@ -47,6 +94,7 @@ class KampusMitraController extends Controller
         $validated['dana_bappeda'] = $validated['dana_bappeda'] ?? 0;
 
         $kampus = KampusMitra::create($validated);
+        $kampus->wilayahs()->sync($validated['wilayah_ids']);
 
         // Audit Trail
         AuditLog::record(
@@ -59,6 +107,7 @@ class KampusMitraController extends Controller
                 'email' => $validated['email_kampus'],
                 'pic_name' => $kampus->pic_name,
                 'dana_bappeda' => $kampus->dana_bappeda,
+                'wilayah_binaan' => $validated['wilayah_binaan'],
             ]
         );
 
@@ -67,14 +116,45 @@ class KampusMitraController extends Controller
 
     public function show(string $id)
     {
-        $kampusMitra = KampusMitra::with(['user', 'programBantuans'])->findOrFail($id);
+        $kampusMitra = KampusMitra::with(['user', 'programBantuans', 'wilayahs.children'])->findOrFail($id);
         return view('dashboard.pemda.kampus-mitra.show', compact('kampusMitra'));
     }
 
     public function edit(string $id)
     {
-        $kampusMitra = KampusMitra::findOrFail($id);
-        return view('dashboard.pemda.kampus-mitra.edit', compact('kampusMitra'));
+        $kampusMitra = KampusMitra::with('wilayahs')->findOrFail($id);
+        $selectedWilayahIds = $kampusMitra->wilayahs->pluck('id')->toArray();
+
+        // Fallback jika belum pernah tersimpan di pivot
+        if (empty($selectedWilayahIds) && $kampusMitra->wilayah_binaan) {
+            $selectedWilayahIds = Wilayah::where('jenis', 'kecamatan')
+                ->where(function($q) use ($kampusMitra) {
+                    $cleaned = str_replace(['Kec.', 'Kecamatan'], '', $kampusMitra->wilayah_binaan);
+                    foreach (explode(',', $cleaned) as $part) {
+                        $name = trim($part);
+                        if ($name) $q->orWhere('nama', 'like', "%{$name}%");
+                    }
+                })->pluck('id')->toArray();
+        }
+
+        $kecamatans = Wilayah::where('jenis', 'kecamatan')
+            ->where('is_aktif', true)
+            ->with(['children' => function($q) {
+                $q->where('jenis', 'desa')->select('id', 'parent_id', 'nama')->orderBy('nama');
+            }])
+            ->orderBy('nama')
+            ->get();
+
+        // Wilayah yang sudah dibina oleh kampus mitra LAIN (kecuali kampus ini)
+        $takenWilayahs = DB::table('kampus_wilayahs')
+            ->join('kampus_mitras', 'kampus_wilayahs.kampus_mitra_id', '=', 'kampus_mitras.id')
+            ->whereNull('kampus_mitras.deleted_at')
+            ->where('kampus_mitras.id', '!=', $kampusMitra->id)
+            ->select('kampus_wilayahs.wilayah_id', 'kampus_mitras.id as kampus_id', 'kampus_mitras.nama_universitas')
+            ->get()
+            ->keyBy('wilayah_id');
+
+        return view('dashboard.pemda.kampus-mitra.edit', compact('kampusMitra', 'kecamatans', 'takenWilayahs', 'selectedWilayahIds'));
     }
 
     public function update(Request $request, string $id)
@@ -87,15 +167,44 @@ class KampusMitraController extends Controller
             'email_kampus' => 'required|email|unique:users,email,' . $kampusMitra->user_id,
             'pic_name' => 'required|string|max:255',
             'pic_contact' => 'nullable|string|max:255',
-            'wilayah_binaan' => 'nullable|string|max:255',
+            'wilayah_ids' => 'required|array|min:1',
+            'wilayah_ids.*' => 'exists:wilayahs,id',
             'mou_berlaku_sampai' => 'nullable|date',
             'status_mou' => 'required|in:aktif,tidak_aktif',
             'dana_bappeda' => 'nullable|numeric|min:0',
+        ], [
+            'nama_universitas.required' => 'Nama universitas / perguruan tinggi wajib diisi.',
+            'email_kampus.required' => 'Email login kampus wajib diisi.',
+            'email_kampus.unique' => 'Email ini sudah digunakan oleh akun lain.',
+            'pic_name.required' => 'Nama PIC / Koordinator wajib diisi.',
+            'wilayah_ids.required' => 'Wajib memilih minimal satu wilayah binaan kecamatan untuk kampus mitra ini.',
+            'wilayah_ids.min' => 'Wajib memilih minimal satu wilayah binaan kecamatan untuk kampus mitra ini.',
         ]);
 
+        // Cek konflik wilayah: pastikan wilayah yang dipilih belum pernah dibina oleh kampus mitra lain
+        $alreadyTaken = DB::table('kampus_wilayahs')
+            ->join('kampus_mitras', 'kampus_wilayahs.kampus_mitra_id', '=', 'kampus_mitras.id')
+            ->join('wilayahs', 'kampus_wilayahs.wilayah_id', '=', 'wilayahs.id')
+            ->whereNull('kampus_mitras.deleted_at')
+            ->where('kampus_mitras.id', '!=', $kampusMitra->id)
+            ->whereIn('kampus_wilayahs.wilayah_id', $validated['wilayah_ids'])
+            ->select('wilayahs.nama as nama_wilayah', 'kampus_mitras.nama_universitas')
+            ->get();
+
+        if ($alreadyTaken->isNotEmpty()) {
+            $conflictList = $alreadyTaken->map(fn($item) => "Kec. {$item->nama_wilayah} (sudah dibina oleh {$item->nama_universitas})")->implode(', ');
+            throw ValidationException::withMessages([
+                'wilayah_ids' => "Wilayah berikut tidak dapat dipilih karena sudah menjadi binaan kampus mitra lain: {$conflictList}."
+            ]);
+        }
+
+        // Susun nama wilayah binaan
+        $selectedKecamatans = Wilayah::whereIn('id', $validated['wilayah_ids'])->orderBy('nama')->get();
+        $validated['wilayah_binaan'] = $selectedKecamatans->map(fn($k) => 'Kec. ' . $k->nama)->implode(', ');
         $validated['dana_bappeda'] = $validated['dana_bappeda'] ?? 0;
 
         $kampusMitra->update($validated);
+        $kampusMitra->wilayahs()->sync($validated['wilayah_ids']);
         
         if ($kampusMitra->user) {
             $kampusMitra->user->update([

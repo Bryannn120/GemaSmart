@@ -103,17 +103,38 @@
                 </div>
             </div>
 
-            <div class="flex flex-col gap-space-xs">
-                <label for="status_validasi" class="font-label-md text-text-primary">Status Validasi <span class="text-error">*</span></label>
-                <div class="relative">
-                    <select name="status_validasi" id="status_validasi" required
-                        class="appearance-none w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle cursor-pointer">
-                        <option value="menunggu_validasi" {{ old('status_validasi') == 'menunggu_validasi' ? 'selected' : '' }}>Menunggu Validasi</option>
-                        <option value="proses_lapangan" {{ old('status_validasi') == 'proses_lapangan' ? 'selected' : '' }}>Proses Lapangan</option>
-                        <option value="valid" {{ old('status_validasi') == 'valid' ? 'selected' : '' }}>Valid</option>
-                        <option value="anomali" {{ old('status_validasi') == 'anomali' ? 'selected' : '' }}>Anomali</option>
-                    </select>
-                    <span class="material-symbols-outlined absolute right-3 top-3 text-text-secondary pointer-events-none">expand_more</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+                <div class="flex flex-col gap-space-xs">
+                    <label for="pendamping_id" class="font-label-md text-text-primary font-semibold flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[18px] text-primary">support_agent</span>
+                        <span>Pendamping Lapangan (Opsional)</span>
+                    </label>
+                    <div class="relative">
+                        <select name="pendamping_id" id="pendamping_id"
+                            class="appearance-none w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle cursor-pointer">
+                            <option value="">-- Belum Ditugaskan / Tetapkan Nanti --</option>
+                            @foreach ($pendampings as $p)
+                                <option value="{{ $p->id }}" {{ old('pendamping_id') == $p->id ? 'selected' : '' }}>
+                                    {{ $p->name }} {{ $p->kampus ? '(' . $p->kampus->nama_universitas . ')' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="material-symbols-outlined absolute right-3 top-3 text-text-secondary pointer-events-none">expand_more</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-space-xs">
+                    <label for="status_validasi" class="font-label-md text-text-primary font-semibold">Status Validasi <span class="text-error">*</span></label>
+                    <div class="relative">
+                        <select name="status_validasi" id="status_validasi" required
+                            class="appearance-none w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle cursor-pointer">
+                            <option value="menunggu_validasi" {{ old('status_validasi') == 'menunggu_validasi' ? 'selected' : '' }}>Menunggu Validasi</option>
+                            <option value="proses_lapangan" {{ old('status_validasi') == 'proses_lapangan' ? 'selected' : '' }}>Proses Lapangan</option>
+                            <option value="valid" {{ old('status_validasi') == 'valid' ? 'selected' : '' }}>Valid</option>
+                            <option value="anomali" {{ old('status_validasi') == 'anomali' ? 'selected' : '' }}>Anomali</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-3 top-3 text-text-secondary pointer-events-none">expand_more</span>
+                    </div>
                 </div>
             </div>
 

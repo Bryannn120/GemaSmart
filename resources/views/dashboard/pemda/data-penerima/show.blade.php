@@ -79,6 +79,40 @@
                     <span class="text-label-md text-text-secondary block">Status Kemandirian</span>
                     <span class="text-body-md text-text-primary font-semibold mt-1 block">{{ $keluarga_penerima->status_kemandirian ?? 'Belum Dinilai' }}</span>
                 </div>
+
+                <div class="pt-3 border-t border-border-light">
+                    <span class="text-label-md text-text-secondary block font-bold mb-1.5 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[18px] text-primary">support_agent</span>
+                        <span>Pendamping Lapangan</span>
+                    </span>
+                    @if ($keluarga_penerima->pendamping)
+                        <div class="p-3 rounded-xl bg-blue-50/70 border border-blue-200 flex flex-col gap-1">
+                            <a href="{{ route('pemda.pendamping.show', $keluarga_penerima->pendamping->id) }}" class="font-bold text-sm text-blue-950 hover:underline">
+                                {{ $keluarga_penerima->pendamping->name }}
+                            </a>
+                            @if($keluarga_penerima->pendamping->kampus)
+                                <span class="text-xs text-blue-800 flex items-center gap-1 font-semibold">
+                                    <span class="material-symbols-outlined text-[14px]">school</span>
+                                    <span>{{ $keluarga_penerima->pendamping->kampus->nama_universitas }}</span>
+                                </span>
+                            @endif
+                            @if($keluarga_penerima->pendamping->no_hp)
+                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $keluarga_penerima->pendamping->no_hp) }}" target="_blank" class="text-xs text-emerald-700 hover:underline flex items-center gap-1 mt-0.5 font-medium">
+                                    <span class="material-symbols-outlined text-[14px]">call</span>
+                                    <span>{{ $keluarga_penerima->pendamping->no_hp }}</span>
+                                </a>
+                            @endif
+                            <span class="text-[11px] text-text-secondary mt-0.5">
+                                {{ $keluarga_penerima->pendamping->email }}
+                            </span>
+                        </div>
+                    @else
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium bg-surface-muted text-text-tertiary italic">
+                            <span class="material-symbols-outlined text-[14px]">person_off</span>
+                            <span>Belum Ada Pendamping</span>
+                        </span>
+                    @endif
+                </div>
             </div>
         </div>
     </div>

@@ -50,9 +50,25 @@
                     <span class="text-text-secondary font-label-md text-label-md block">Email Akun</span>
                     <span class="text-text-primary font-semibold block mt-1">{{ $kampusMitra->user ? $kampusMitra->user->email : '-' }}</span>
                 </div>
-                <div>
-                    <span class="text-text-secondary font-label-md text-label-md block">Wilayah Binaan</span>
-                    <span class="text-text-primary font-semibold block mt-1">{{ $kampusMitra->wilayah_binaan ?? '-' }}</span>
+                <div class="col-span-2">
+                    <span class="text-text-secondary font-label-md text-label-md block mb-1.5">Wilayah Binaan (Kecamatan)</span>
+                    @if($kampusMitra->wilayahs && $kampusMitra->wilayahs->isNotEmpty())
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($kampusMitra->wilayahs as $wilayah)
+                                <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gov-green-surface text-primary border border-primary/20 text-xs font-bold shadow-2xs">
+                                    <span class="material-symbols-outlined text-[16px]">location_on</span>
+                                    <span>Kecamatan {{ $wilayah->nama }}</span>
+                                    @if($wilayah->children && $wilayah->children->isNotEmpty())
+                                        <span class="text-[10px] font-semibold bg-primary/10 text-primary px-1.5 py-0.5 rounded-full ml-0.5">
+                                            {{ $wilayah->children->count() }} Desa
+                                        </span>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <span class="text-text-primary font-semibold block">{{ $kampusMitra->wilayah_binaan ?? '-' }}</span>
+                    @endif
                 </div>
                 <div class="col-span-2">
                     <span class="text-text-secondary font-label-md text-label-md block">MoU Berlaku Sampai</span>

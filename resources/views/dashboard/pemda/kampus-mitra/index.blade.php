@@ -83,7 +83,18 @@
                     <tr class="hover:bg-surface-subtle transition-colors group">
                         <td class="py-3.5 px-4">
                             <span class="font-bold text-text-primary block">{{ $km->nama_universitas }}</span>
-                            <span class="text-xs text-text-tertiary">Wilayah: {{ $km->wilayah_binaan ?? '-' }}</span>
+                            @if($km->wilayahs && $km->wilayahs->isNotEmpty())
+                                <div class="flex flex-wrap gap-1 mt-1">
+                                    @foreach($km->wilayahs as $w)
+                                        <span class="inline-flex items-center gap-0.5 text-[11px] font-semibold bg-gov-green-surface text-primary border border-primary/20 px-2 py-0.5 rounded-md">
+                                            <span class="material-symbols-outlined text-[12px]">location_on</span>
+                                            <span>Kec. {{ $w->nama }}</span>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @else
+                                <span class="text-xs text-text-tertiary">Wilayah: {{ $km->wilayah_binaan ?? '-' }}</span>
+                            @endif
                         </td>
                         <td class="py-3.5 px-4">
                             <span class="font-medium text-text-primary block">{{ $km->pic_name }}</span>

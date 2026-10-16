@@ -101,13 +101,13 @@
     @endif
 
     <!-- Summary Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-lg">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
         <div class="bg-canvas-bg rounded-xl p-space-md shadow-sm border border-border-light flex items-center gap-space-md">
             <div class="w-12 h-12 rounded-xl bg-gov-green-surface flex items-center justify-center text-primary shrink-0">
                 <span class="material-symbols-outlined text-[26px]">how_to_reg</span>
             </div>
             <div>
-                <span class="font-label-sm text-label-sm text-text-secondary font-semibold">Penerima Bantuan Aktif</span>
+                <span class="font-label-sm text-label-sm text-text-secondary font-semibold">Penerima Aktif</span>
                 <span class="font-headline-md text-headline-md text-text-primary font-bold block">{{ number_format($countAktif, 0, ',', '.') }} KK</span>
                 <span class="font-label-xs text-label-xs text-text-tertiary">Desil 1 s/d Desil 5</span>
             </div>
@@ -117,9 +117,19 @@
                 <span class="material-symbols-outlined text-[26px]">workspace_premium</span>
             </div>
             <div>
-                <span class="font-label-sm text-label-sm text-text-secondary font-semibold">Telah Mandiri (Lulus)</span>
+                <span class="font-label-sm text-label-sm text-text-secondary font-semibold">Telah Mandiri</span>
                 <span class="font-headline-md text-headline-md text-emerald-800 font-bold block">{{ number_format($countMandiri, 0, ',', '.') }} KK</span>
                 <span class="font-label-xs text-label-xs text-text-tertiary">Desil 6+ (Otomatis Lulus)</span>
+            </div>
+        </div>
+        <div class="bg-canvas-bg rounded-xl p-space-md shadow-sm border border-border-light flex items-center gap-space-md">
+            <div class="w-12 h-12 rounded-xl bg-status-info-surface flex items-center justify-center text-status-info shrink-0">
+                <span class="material-symbols-outlined text-[26px]">support_agent</span>
+            </div>
+            <div>
+                <span class="font-label-sm text-label-sm text-text-secondary font-semibold">Ada Pendamping</span>
+                <span class="font-headline-md text-headline-md text-status-info font-bold block">{{ number_format($countWithPendamping, 0, ',', '.') }} KK</span>
+                <span class="font-label-xs text-label-xs text-text-tertiary">Didampingi Mahasiswa</span>
             </div>
         </div>
         <div class="bg-canvas-bg rounded-xl p-space-md shadow-sm border border-border-light flex items-center gap-space-md">
@@ -163,7 +173,7 @@
             </div>
 
             <!-- Filter Program Bantuan -->
-            <div class="w-full lg:w-64">
+            <div class="w-full lg:w-60">
                 <label for="program_bantuan_id" class="font-label-sm text-label-sm text-text-secondary block mb-1">Program Bantuan</label>
                 <select id="program_bantuan_id" name="program_bantuan_id" class="w-full py-2 px-3 border border-border-light rounded-xl font-body-sm text-text-primary focus:outline-none focus:border-gov-green focus:ring-1 focus:ring-gov-green">
                     <option value="">-- Semua Program --</option>
@@ -175,13 +185,30 @@
                 </select>
             </div>
 
+            <!-- Filter Pendamping Lapangan -->
+            <div class="w-full lg:w-60">
+                <label for="pendamping_filter" class="font-label-sm text-label-sm text-text-secondary block mb-1">Pendamping Lapangan</label>
+                <select id="pendamping_filter" name="pendamping_filter" class="w-full py-2 px-3 border border-border-light rounded-xl font-body-sm text-text-primary focus:outline-none focus:border-gov-green focus:ring-1 focus:ring-gov-green">
+                    <option value="">-- Semua Status Pendamping --</option>
+                    <option value="sudah" {{ $pendampingFilter === 'sudah' ? 'selected' : '' }}>✅ Sudah Didampingi</option>
+                    <option value="belum" {{ $pendampingFilter === 'belum' ? 'selected' : '' }}>⏳ Belum Didampingi</option>
+                    <optgroup label="Berdasarkan Nama Pendamping">
+                        @foreach($pendampings as $p)
+                            <option value="{{ $p->id }}" {{ $pendampingFilter == $p->id ? 'selected' : '' }}>
+                                {{ $p->name }} {{ $p->kampus ? '(' . $p->kampus->nama_universitas . ')' : '' }}
+                            </option>
+                        @endforeach
+                    </optgroup>
+                </select>
+            </div>
+
             <!-- Tombol Filter & Reset -->
             <div class="flex items-center gap-space-xs w-full lg:w-auto">
                 <button type="submit" class="w-full lg:w-auto inline-flex items-center justify-center gap-1.5 px-space-md py-2 bg-primary-container text-on-primary rounded-xl font-label-md text-label-md font-semibold hover:bg-gov-green-dark transition-colors shadow-sm">
                     <span class="material-symbols-outlined text-[18px]">filter_alt</span>
                     <span>Filter</span>
                 </button>
-                @if($search || $wilayahId || $programId)
+                @if($search || $wilayahId || $programId || $pendampingFilter)
                     <a href="{{ route('pemda.data-penerima.index', ['tab' => $tab]) }}" class="w-full lg:w-auto inline-flex items-center justify-center gap-1 px-3 py-2 border border-border-medium text-text-secondary hover:bg-surface-subtle rounded-xl font-label-md text-label-md transition-colors" title="Reset Filter">
                         <span class="material-symbols-outlined text-[18px]">close</span>
                         <span>Reset</span>
@@ -238,6 +265,7 @@
                         <th class="py-3 px-4 font-semibold">Wilayah</th>
                         <th class="py-3 px-4 font-semibold">Desil &amp; Status</th>
                         <th class="py-3 px-4 font-semibold">Program Bantuan</th>
+                        <th class="py-3 px-4 font-semibold">Pendamping Lapangan</th>
                         <th class="py-3 px-4 font-semibold">Validasi</th>
                         <th class="py-3 px-4 text-right font-semibold">Aksi</th>
                     </tr>
@@ -266,11 +294,39 @@
                             @endif
                         </td>
                         <td class="py-3.5 px-4 text-text-primary text-xs">
-                            <span class="font-medium block">{{ $keluarga_penerima->programBantuan->nama_program ?? '-' }}</span>
-                            @if($keluarga_penerima->pendamping)
-                                <span class="text-[11px] text-text-secondary">Pendamping: {{ $keluarga_penerima->pendamping->name }}</span>
+                            <span class="font-semibold text-text-primary block">{{ $keluarga_penerima->programBantuan->nama_program ?? '-' }}</span>
+                        </td>
+
+                        <!-- Kolom Pendamping Lapangan -->
+                        <td class="py-3.5 px-4">
+                            @if ($keluarga_penerima->pendamping)
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-full bg-status-info-surface text-status-info flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
+                                        <span class="material-symbols-outlined text-[16px]">support_agent</span>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <a href="{{ route('pemda.pendamping.show', $keluarga_penerima->pendamping->id) }}" class="font-bold text-text-primary text-xs hover:text-primary transition-colors block truncate" title="Lihat Profil Pendamping {{ $keluarga_penerima->pendamping->name }}">
+                                            {{ $keluarga_penerima->pendamping->name }}
+                                        </a>
+                                        @if($keluarga_penerima->pendamping->kampus)
+                                            <span class="text-[11px] text-text-tertiary block truncate" title="Asal Kampus: {{ $keluarga_penerima->pendamping->kampus->nama_universitas }}">
+                                                🏛️ {{ $keluarga_penerima->pendamping->kampus->nama_universitas }}
+                                            </span>
+                                        @elseif($keluarga_penerima->pendamping->no_hp)
+                                            <span class="text-[11px] text-text-tertiary font-mono block">
+                                                📞 {{ $keluarga_penerima->pendamping->no_hp }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            @else
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-surface-muted text-text-tertiary border border-border-light">
+                                    <span class="material-symbols-outlined text-[13px]">person_off</span>
+                                    <span>Belum Ditugaskan</span>
+                                </span>
                             @endif
                         </td>
+
                         <td class="py-3.5 px-4">
                             @if ($keluarga_penerima->status_validasi == 'valid')
                                 <span class="inline-flex px-space-sm py-1 rounded-full text-label-sm bg-status-verified-surface text-primary font-bold">Valid</span>
@@ -301,7 +357,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="py-12 text-center text-text-secondary">
+                        <td colspan="8" class="py-12 text-center text-text-secondary">
                             <span class="material-symbols-outlined text-[48px] text-border-medium mb-2 block">inbox</span>
                             <p class="font-body-md font-semibold">Belum ada data penerima bantuan.</p>
                             <p class="font-body-sm text-text-secondary mt-1">Anda dapat menambahkan secara manual atau menggunakan tombol <strong>Impor Data</strong>.</p>

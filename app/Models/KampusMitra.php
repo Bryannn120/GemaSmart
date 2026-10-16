@@ -39,6 +39,11 @@ class KampusMitra extends Model
         return $this->hasMany(User::class, 'kampus_id')->where('role', 'pendamping');
     }
 
+    public function wilayahs()
+    {
+        return $this->belongsToMany(Wilayah::class, 'kampus_wilayahs', 'kampus_mitra_id', 'wilayah_id');
+    }
+
     public function getTotalPenggunaanDanaAttribute()
     {
         $penyalurans = PenyaluranBantuan::where(function($q) {

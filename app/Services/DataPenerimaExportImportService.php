@@ -47,7 +47,10 @@ class DataPenerimaExportImportService
                 $q->where('kepala_keluarga', 'like', "%{$term}%")
                   ->orWhere('nik', 'like', "%{$term}%")
                   ->orWhere('no_kk', 'like', "%{$term}%")
-                  ->orWhere('alamat', 'like', "%{$term}%");
+                  ->orWhere('alamat', 'like', "%{$term}%")
+                  ->orWhereHas('pendamping', function($pq) use ($term) {
+                      $pq->where('name', 'like', "%{$term}%");
+                  });
             });
         }
 
