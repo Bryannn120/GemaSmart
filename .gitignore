@@ -19,3 +19,12 @@ yarn-error.log
 /.vscode
 /scratch
 ~$*
+
+# Android build & local files
+.gradle/
+android/.gradle/
+android/.idea/
+android/build/
+android/app/build/
+android/**/build/
+android/local.properties

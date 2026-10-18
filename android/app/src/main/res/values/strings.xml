@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Gema Smart Sumbawa</string>
+    <string name="server_url">https://gema-smart.my.id/login</string>
+</resources>

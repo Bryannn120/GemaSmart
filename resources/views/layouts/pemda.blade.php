@@ -103,10 +103,14 @@
             </div>
             <div class="flex items-center gap-space-md">
                 <div class="hidden md:flex items-center gap-space-xs bg-status-verified-surface text-primary px-space-md py-1 rounded-full font-label-sm text-label-sm font-semibold"><span class="w-2 h-2 rounded-full bg-status-verified animate-pulse"></span><span>Server Aktif: Sumbawa-Node-01</span></div>
-                <div class="flex items-center gap-space-sm cursor-pointer">
-                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
-                    <span class="material-symbols-outlined text-text-secondary text-[20px]">keyboard_arrow_down</span>
-                </div>
+                <a href="{{ route('profile.index') }}" class="flex items-center gap-space-sm cursor-pointer p-1 rounded-lg hover:bg-surface-subtle transition-colors" title="Pengaturan Akun & Profil">
+                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
+                    <div class="hidden xl:flex flex-col text-left">
+                        <span class="font-label-md text-label-md text-text-primary font-semibold truncate max-w-[150px]">{{ auth()->user()->name ?? 'Administrator' }}</span>
+                        <span class="font-label-sm text-label-sm text-text-secondary">Eksekutif Pemda</span>
+                    </div>
+                    <span class="material-symbols-outlined text-text-secondary text-[18px]">tune</span>
+                </a>
             </div>
         </header>
 

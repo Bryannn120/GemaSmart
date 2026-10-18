@@ -102,16 +102,16 @@
                     <div class="hidden md:flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-muted font-code-dense text-code-dense text-text-secondary">
                         <span class="w-2 h-2 rounded-full bg-status-verified animate-pulse"></span><span>Node-Mitra-02 Online</span>
                     </div>
-                    <div class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors">
+                    <a href="{{ route('profile.index') }}" class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Pengaturan Akun & Profil">
                         <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
                             <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
                         </div>
                         <div class="hidden xl:flex flex-col text-left">
-                            <span class="font-label-md text-label-md text-on-surface">Kampus Central</span>
-                            <span class="font-label-sm text-label-sm text-text-secondary">ID: MITRA-01</span>
+                            <span class="font-label-md text-label-md text-on-surface font-semibold truncate max-w-[150px]">{{ auth()->user()->name ?? 'Kampus Mitra' }}</span>
+                            <span class="font-label-sm text-label-sm text-text-secondary">Akun Kampus Mitra</span>
                         </div>
-                        <span class="material-symbols-outlined text-text-secondary text-[18px]">arrow_drop_down</span>
-                    </div>
+                        <span class="material-symbols-outlined text-text-secondary text-[18px]">tune</span>
+                    </a>
                 </div>
             </div>
         </header>

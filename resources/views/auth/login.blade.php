@@ -5,6 +5,9 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta content="web_blank" name="shell-type"/>
     <title>Gema Smart Sumbawa - Portal Masuk Terpadu</title>
+    <link rel="manifest" href="/manifest.json"/>
+    <meta name="theme-color" content="#00450d"/>
+    <link rel="apple-touch-icon" href="/icon-192.png"/>
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -69,14 +72,14 @@
                             Sistem Monitoring Penyaluran &amp; Pendampingan Bantuan Bibit
                         </p>
                         <p class="font-body-md text-body-md text-text-secondary">
-                            Silakan masukkan email kedinasan/institusi dan kata sandi Anda untuk masuk ke sistem monitoring.
+                            Silakan masukkan email atau Nomor Kartu Keluarga (KK) dan kata sandi Anda untuk masuk ke sistem monitoring.
                         </p>
                     </div>
                     <!-- Notification Banner / Alert -->
                     <div class="mb-6 p-3.5 bg-surface-subtle rounded-md flex items-start gap-3">
                         <span class="material-symbols-outlined text-primary text-[20px] mt-0.5 flex-shrink-0">info</span>
                         <p class="font-body-sm text-body-sm text-text-secondary leading-relaxed">
-                            Akses khusus Aparatur Sipil Negara, Penyuluh Pertanian Lapangan (PPL), serta Petugas Verifikasi terdaftar di wilayah Sumbawa.
+                            Akses khusus petugas pendamping, verifikator, serta keluarga penerima bantuan yang telah terdaftar.
                         </p>
                     </div>
 
@@ -86,10 +89,10 @@
                         
                         <!-- Email / No KK Field -->
                         <div class="space-y-1.5">
-                            <label class="block font-label-lg text-label-lg text-text-primary" for="login">Email Kedinasan atau Nomor KK (Warga)</label>
+                            <label class="block font-label-lg text-label-lg text-text-primary" for="login">Email Petugas atau Nomor KK (Penerima)</label>
                             <div class="relative flex items-center">
                                 <span class="absolute left-3 text-text-tertiary material-symbols-outlined text-[20px] pointer-events-none">account_circle</span>
-                                <input class="w-full h-11 pl-10 pr-3.5 bg-canvas-bg rounded text-body-md font-body-md text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm @error('login') ring-2 ring-error/50 @enderror" id="login" name="login" value="{{ old('login') }}" placeholder="Email ASN / Nomor KK Penerima" required="" type="text"/>
+                                <input class="w-full h-11 pl-10 pr-3.5 bg-canvas-bg rounded text-body-md font-body-md text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm @error('login') ring-2 ring-error/50 @enderror" id="login" name="login" value="{{ old('login') }}" placeholder="Email Petugas / Nomor KK Penerima" required="" type="text"/>
                             </div>
                             @error('login')
                                 <p class="text-error font-body-sm mt-1">{{ $message }}</p>
@@ -160,7 +163,7 @@
                     <div class="hidden mt-4 p-3 bg-gold-surface text-secondary rounded-md shadow-sm flex items-center gap-2.5" id="toastMessage">
                         <span class="material-symbols-outlined text-[20px] text-gold-accent">contact_support</span>
                         <p class="font-body-sm text-body-sm">
-                            Hubungi Admin Pusdatin Distan Sumbawa di <strong>pusdatin@sumbawakab.go.id</strong> atau Ext. 104 untuk reset token.
+                            Hubungi Admin Layanan Bantuan jika Anda membutuhkan bantuan reset akun.
                         </p>
                     </div>
                 </div>
@@ -169,11 +172,11 @@
                 <div class="pt-8 mt-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-text-secondary">
                         <p class="font-body-sm text-body-sm">
-                            Ãƒâ€šÃ‚Â© 2026 Badan Perencanaan Pembangunan Daerah Kabupaten Sumbawa
+                            &copy; 2026 Gema Smart. Seluruh hak cipta dilindungi.
                         </p>
                         <div class="flex items-center gap-1.5 font-label-sm text-label-sm text-text-tertiary">
                             <span class="material-symbols-outlined text-[14px]">lock</span>
-                            <span>Dilindungi Enkripsi AES-256 &amp; UU PDP No. 27/2022</span>
+                            <span>Dilindungi Enkripsi AES-256</span>
                         </div>
                     </div>
                 </div>
@@ -205,13 +208,13 @@
                 <!-- Right Center: Narrative Tagline & Highlights Grid -->
                 <div class="relative z-10 my-auto py-10 max-w-xl">
                     <div class="inline-block mb-3 px-3 py-1 rounded bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
-                        Amanat Perbup Sumbawa No. 18/2024
+                        Sistem Penyaluran Terpadu
                     </div>
                     <h2 class="font-headline-xl text-headline-xl text-white font-bold leading-tight mb-4 tracking-tight">
                         Mewujudkan Distribusi Bantuan Bibit Pertanian yang Transparan, Akuntabel, dan Presisi.
                     </h2>
                     <p class="font-body-lg text-body-lg text-white/90 leading-relaxed mb-8">
-                        Platform terpusat pengawasan rantai pasok bibit tanaman pangan, hortikultura, dan perkebunan untuk menjamin ketepatan sasaran kelompok tani (Poktan).
+                        Platform terpusat pengawasan rantai pasok bibit tanaman pangan, hortikultura, dan perkebunan untuk menjamin ketepatan sasaran penerima manfaat.
                     </p>
                     <!-- 3 Feature Glass Cards -->
                     <div class="space-y-3.5">
@@ -221,7 +224,7 @@
                             </div>
                             <div>
                                 <h3 class="font-headline-sm text-headline-sm text-white mb-0.5">Anti-Duplikasi NIK &amp; KK Terintegrasi</h3>
-                                <p class="font-body-sm text-body-sm text-white/80">Penyelarasan otomatis dengan database Dukcapil dan Simluhtan untuk mencegah penerima bantuan ganda lintas kecamatan.</p>
+                                <p class="font-body-sm text-body-sm text-white/80">Penyelarasan otomatis dengan database kependudukan untuk mencegah penerima bantuan ganda.</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-4 p-4 rounded-lg bg-white/10 backdrop-blur-md hover:bg-white/15 transition-all shadow-md">
@@ -230,7 +233,7 @@
                             </div>
                             <div>
                                 <h3 class="font-headline-sm text-headline-sm text-white mb-0.5">Bukti Penyaluran Geotagging &amp; Tanda Tangan Digital</h3>
-                                <p class="font-body-sm text-body-sm text-white/80">Validasi titik koordinat lahan penerima secara riil saat serah terima bibit fisik disertai e-signature ketua kelompok tani.</p>
+                                <p class="font-body-sm text-body-sm text-white/80">Validasi titik koordinat lahan penerima secara riil saat serah terima bibit fisik disertai bukti tanda tangan digital.</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-4 p-4 rounded-lg bg-white/10 backdrop-blur-md hover:bg-white/15 transition-all shadow-md">
@@ -238,8 +241,8 @@
                                 <span class="material-symbols-outlined text-[22px]">fact_check</span>
                             </div>
                             <div>
-                                <h3 class="font-headline-sm text-headline-sm text-white mb-0.5">Audit Sampling Uji Petik Independen</h3>
-                                <p class="font-body-sm text-body-sm text-white/80">Fitur acak statistik untuk inspeksi berkala kesehatan bibit dan daya tumbuh pasca-tanam oleh Inspektorat Daerah.</p>
+                                <h3 class="font-headline-sm text-headline-sm text-white mb-0.5">Audit Sampling Uji Petik Mandiri</h3>
+                                <p class="font-body-sm text-body-sm text-white/80">Fitur inspeksi berkala kesehatan bibit dan daya tumbuh pasca-tanam untuk memastikan keberhasilan bantuan.</p>
                             </div>
                         </div>
                     </div>
@@ -247,8 +250,8 @@
                 <!-- Right Bottom: Authority Stamp & Regional Context -->
                 <div class="relative z-10 pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-white/80">
                     <div>
-                        <p class="font-label-md text-label-md text-white">Pemerintah Kabupaten Sumbawa</p>
-                        <p class="font-body-sm text-body-sm text-white/70">Badan Perencanaan Pembangunan Daerah ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Nusa Tenggara Barat</p>
+                        <p class="font-label-md text-label-md text-white">Gema Smart Sumbawa</p>
+                        <p class="font-body-sm text-body-sm text-white/70">Sistem Monitoring Penyaluran Bantuan Bibit &bull; Nusa Tenggara Barat</p>
                     </div>
                     <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white text-label-sm font-label-sm">
                         <span class="material-symbols-outlined text-[16px] text-secondary-container">eco</span>
@@ -288,6 +291,13 @@
             // Just show loading state while the form submits to Laravel
             submitBtn.classList.add('opacity-80', 'cursor-wait');
             btnText.textContent = 'Memverifikasi Kredensial...';
+        }
+
+        // Service Worker registration for offline support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+            });
         }
     </script>
 </main>

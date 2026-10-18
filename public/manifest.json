@@ -1,0 +1,25 @@
+{
+  "name": "Gema Smart Sumbawa",
+  "short_name": "GemaSmart",
+  "description": "Sistem Monitoring Penyaluran & Pendampingan Bantuan Bibit Kabupaten Sumbawa",
+  "start_url": "https://gema-smart.my.id/login",
+  "scope": "https://gema-smart.my.id/",
+  "display": "standalone",
+  "background_color": "#00450d",
+  "theme_color": "#00450d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

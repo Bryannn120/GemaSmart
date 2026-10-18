@@ -29,11 +29,23 @@ class DashboardController extends Controller
         $user = Auth::user();
         $keluarga = KeluargaPenerima::where('user_id', $user->id)->firstOrFail();
 
-        LaporanPenerima::create([
+        $laporan = LaporanPenerima::create([
             'keluarga_penerima_id' => $keluarga->id,
             'laporan_teks' => $request->laporan_teks,
             'is_read_by_pemda' => false,
         ]);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Laporan berhasil dikirim dan disinkronkan ke server Pemda.',
+                'laporan' => [
+                    'id' => $laporan->id,
+                    'laporan_teks' => $laporan->laporan_teks,
+                    'created_at' => $laporan->created_at->format('d M Y, H:i'),
+                ]
+            ]);
+        }
 
         return back()->with('success', 'Laporan/feedback Anda berhasil dikirim ke Pemda.');
     }

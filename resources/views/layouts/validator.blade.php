@@ -84,15 +84,16 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-space-lg">
-                    <div class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors">
+                    <a href="{{ route('profile.index') }}" class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Pengaturan Akun & Profil">
                         <div class="w-8 h-8 rounded-full bg-status-info flex items-center justify-center">
                             <span class="material-symbols-outlined text-white text-[18px]">fact_check</span>
                         </div>
                         <div class="hidden xl:flex flex-col text-left">
-                            <span class="font-label-md text-label-md text-on-surface">Validator Wilayah</span>
-                            <span class="font-label-sm text-label-sm text-text-secondary">Siap Bertugas</span>
+                            <span class="font-label-md text-label-md text-on-surface font-semibold truncate max-w-[150px]">{{ auth()->user()->name ?? 'Validator Wilayah' }}</span>
+                            <span class="font-label-sm text-label-sm text-text-secondary">Validator Lapangan</span>
                         </div>
-                    </div>
+                        <span class="material-symbols-outlined text-text-secondary text-[18px]">tune</span>
+                    </a>
                 </div>
             </div>
         </header>

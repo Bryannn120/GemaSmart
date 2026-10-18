@@ -12,6 +12,11 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
         $role = $user->role;
+
+        if ($role === 'penerima') {
+            return redirect()->route('dashboard.penerima');
+        }
+
         $layout = 'layouts.' . $role; // misal: layouts.pemda, layouts.kampus
 
         $assignedDesas = $role === 'pendamping' ? $user->getAssignedDesasCollection() : collect();
