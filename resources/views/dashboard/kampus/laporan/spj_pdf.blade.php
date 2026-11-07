@@ -17,7 +17,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>{{ $kampus->nama_universitas ?? 'KAMPUS MITRA SIBIBIT' }}</h1>
+        <h1>{{ $kampus->nama_universitas ?? 'KAMPUS MITRA GEMASMART' }}</h1>
         <p>Laporan Pertanggungjawaban Keuangan &bull; Pengadaan Bibit Tanaman</p>
         <p style="font-weight:bold; margin-top:8px;">REKAPITULASI SURAT PERTANGGUNGJAWABAN (SPJ)</p>
     </div>
@@ -72,7 +72,7 @@
     </table>
 
     <div class="footer">
-        Dokumen Resmi Pertanggungjawaban Keuangan &bull; Sistem SiBibit Sumbawa
+        Dokumen Resmi Pertanggungjawaban Keuangan &bull; Sistem GemaSmart Sumbawa
     </div>
 </body>
 </html>

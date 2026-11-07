@@ -9,6 +9,12 @@
                 Kelola informasi akun dan keamanan kata sandi Anda.
             </p>
         </div>
+        <div class="flex items-center gap-3">
+            <a href="{{ url('/') }}" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-canvas-bg hover:bg-emerald-50 text-text-secondary hover:text-primary border border-border-light hover:border-emerald-300 font-semibold text-xs transition-colors shadow-xs">
+                <span class="material-symbols-outlined text-[18px] text-primary">stars</span>
+                <span>Kembali ke Profil Inovasi</span>
+            </a>
+        </div>
     </div>
 
     @if (session('success'))

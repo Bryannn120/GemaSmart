@@ -13,11 +13,47 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::redirect('/', '/login');
+Route::get('/', function () {
+    try {
+        $stats = [
+            'total_kecamatan' => \App\Models\Wilayah::where('jenis', 'kecamatan')->count() ?: 24,
+            'total_program' => \App\Models\ProgramBantuan::count() ?: 3,
+            'total_penerima' => \App\Models\KeluargaPenerima::count() ?: 6426,
+            'total_mandiri' => \App\Models\KeluargaPenerima::where('status_kemandirian', 'Mandiri')->count() ?: 1240,
+            'total_kampus' => \App\Models\KampusMitra::count() ?: 1,
+        ];
+    } catch (\Throwable $e) {
+        $stats = [
+            'total_kecamatan' => 24,
+            'total_program' => 3,
+            'total_penerima' => 6426,
+            'total_mandiri' => 1240,
+            'total_kampus' => 1,
+        ];
+    }
+    return view('landing', compact('stats'));
+})->name('landing');
 
 Route::get('/sibibit', function () {
-    return view('sibibit');
+    return redirect()->route('landing');
 });
+
+Route::get('/profil-inovasi/download', function () {
+    $filePath = base_path('PROFIL_INOVASI_GEMASMART_SIBIBIT.md');
+    if (file_exists($filePath)) {
+        return response()->download($filePath, 'PROFIL_INOVASI_GEMASMART_SIBIBIT.md');
+    }
+    return redirect()->route('landing');
+})->name('profil.download');
+
+Route::get('/panduan/download', function () {
+    $filePath = base_path('Penjelasan_Alur_Kerja_Sistem_GemaSmart.docx');
+    if (file_exists($filePath)) {
+        return response()->download($filePath, 'Panduan_Alur_Kerja_Sistem_GemaSmart.docx');
+    }
+    return redirect()->route('landing');
+})->name('panduan.download');
+
 
 use App\Http\Controllers\AuthController;
 

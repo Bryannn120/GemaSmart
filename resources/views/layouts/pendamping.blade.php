@@ -136,6 +136,10 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-space-lg">
+                    <a href="{{ url('/') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-subtle hover:bg-emerald-50 text-text-secondary hover:text-primary border border-border-light hover:border-emerald-300 font-semibold text-xs transition-colors shadow-2xs" title="Lihat Profil Inovasi">
+                        <span class="material-symbols-outlined text-[16px] text-primary">stars</span>
+                        <span>Profil Inovasi</span>
+                    </a>
                     <a href="{{ route('profile.index') }}" class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Lihat Akun & Wilayah Dampingan">
                         <div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
                             <span class="material-symbols-outlined text-on-secondary text-[18px]">badge</span>

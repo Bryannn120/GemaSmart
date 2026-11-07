@@ -17,8 +17,8 @@
 </head>
 <body>
     <div class="header">
-        <h1>{{ $kampus->nama_universitas ?? 'KAMPUS MITRA SIBIBIT' }}</h1>
-        <p>Laporan Aktivitas Pendamping Lapangan &bull; Program SiBibit Gema Smart</p>
+        <h1>{{ $kampus->nama_universitas ?? 'KAMPUS MITRA GEMASMART' }}</h1>
+        <p>Laporan Aktivitas Pendamping Lapangan &bull; Program GemaSmart Sumbawa</p>
         <p style="font-weight:bold; margin-top:8px;">KOMPILASI LOG HARIAN PENDAMPING LAPANGAN</p>
     </div>
 
@@ -73,7 +73,7 @@
     </table>
 
     <div class="footer">
-        Dokumen Resmi Evaluasi Akademik & Pendampingan &bull; SiBibit Sumbawa
+        Dokumen Resmi Evaluasi Akademik & Pendampingan &bull; GemaSmart Sumbawa
     </div>
 </body>
 </html>

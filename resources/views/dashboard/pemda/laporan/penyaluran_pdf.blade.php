@@ -73,7 +73,7 @@
     </table>
 
     <div class="footer">
-        Dokumen Resmi Sistem SiBibit Gema Smart Sumbawa &bull; Dicetak Otomatis
+        Dokumen Resmi Sistem GemaSmart Sumbawa &bull; Dicetak Otomatis
     </div>
 </body>
 </html>

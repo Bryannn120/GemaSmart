@@ -46,6 +46,14 @@
             <div class="w-full lg:w-[48%] xl:w-[45%] flex flex-col justify-between px-6 sm:px-12 md:px-16 lg:px-14 xl:px-20 py-8 lg:py-12 bg-canvas-bg z-10">
                 <!-- Top Section: Header & Identitas Pemda -->
                 <div>
+                    <!-- Back to Profil Inovasi Button -->
+                    <div class="mb-6">
+                        <a id="btn-kembali-profil" href="{{ url('/') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 hover:border-emerald-300 font-bold text-sm transition-all duration-200 group w-fit shadow-xs active:scale-95">
+                            <span class="material-symbols-outlined text-[19px] group-hover:-translate-x-1 transition-transform text-emerald-800">arrow_back</span>
+                            <span>Kembali ke Profil Inovasi</span>
+                        </a>
+                    </div>
+
                     <!-- Emblem & Brand Bar -->
                     <div class="flex items-center gap-3.5 mb-8">
                         <div class="w-24 h-16 rounded-lg bg-surface-subtle p-2 flex items-center justify-center shadow-sm overflow-hidden flex-shrink-0">
@@ -192,17 +200,23 @@
                 <svg class="absolute -right-20 -bottom-20 w-96 h-96 text-white/5 pointer-events-none" fill="currentColor" viewBox="0 0 200 200">
                     <path d="M42,-72C54.9,-66.1,65.6,-54.6,73.1,-41.2C80.6,-27.8,85,-12.5,83.9,2.4C82.8,17.2,76.2,31.7,67.2,43.8C58.3,55.9,46.9,65.7,33.9,71.2C20.8,76.7,6.1,77.9,-8.7,76.1C-23.5,74.3,-38.3,69.5,-50.2,60.8C-62,52,-70.8,39.3,-76.3,25.1C-81.8,10.9,-83.9,-4.8,-79.8,-18.8C-75.7,-32.8,-65.4,-45.1,-52.8,-51.2C-40.2,-57.3,-25.3,-57.2,-11.2,-61.2C2.8,-65.1,16.8,-73.1,30.3,-75.4C43.8,-77.7,56.8,-74.3,42,-72Z" transform="translate(100 100)"></path>
                 </svg>
-                <!-- Right Top: Government Authority Badge -->
-                <div class="relative z-10 flex items-center justify-between">
+                <!-- Right Top: Government Authority Badge & Profil Inovasi Link -->
+                <div class="relative z-10 flex items-center justify-between gap-3">
                     <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md shadow-lg">
                         <div class="w-2.5 h-2.5 rounded-full bg-secondary-container animate-pulse"></div>
                         <span class="font-label-sm text-label-sm tracking-wide uppercase text-secondary-fixed">
                             Sistem Satu Data Penyaluran Bibit Sumbawa
                         </span>
                     </div>
-                    <div class="flex items-center gap-2 text-white/80 font-code-dense text-code-dense">
-                        <span class="material-symbols-outlined text-[16px]">cloud_done</span>
-                        <span>Server Aktif: Sumbawa-Node-01</span>
+                    <div class="flex items-center gap-3">
+                        <a href="{{ url('/') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs font-semibold backdrop-blur-md border border-white/20 transition-all hover:scale-105 shadow-sm" title="Kembali ke Profil Inovasi">
+                            <span class="material-symbols-outlined text-[16px]">stars</span>
+                            <span>Profil Inovasi</span>
+                        </a>
+                        <div class="hidden xl:flex items-center gap-2 text-white/80 font-code-dense text-code-dense">
+                            <span class="material-symbols-outlined text-[16px]">cloud_done</span>
+                            <span>Sumbawa-Node-01</span>
+                        </div>
                     </div>
                 </div>
                 <!-- Right Center: Narrative Tagline & Highlights Grid -->

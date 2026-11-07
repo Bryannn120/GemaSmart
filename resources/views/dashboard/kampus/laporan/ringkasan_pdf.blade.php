@@ -17,7 +17,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>{{ $kampus->nama_universitas ?? 'KAMPUS MITRA SIBIBIT' }}</h1>
+        <h1>{{ $kampus->nama_universitas ?? 'KAMPUS MITRA GEMASMART' }}</h1>
         <p>Koordinator Program Kemitraan &bull; Pemerintah Daerah Kabupaten Sumbawa</p>
         <p style="font-weight:bold; margin-top:8px;">LAPORAN INTERNAL KAMPUS & PENDAMPINGAN LAPANGAN</p>
     </div>
@@ -133,7 +133,7 @@
     </table>
 
     <div class="footer">
-        Dokumen Laporan Internal Kampus &bull; Sistem SiBibit Sumbawa
+        Dokumen Laporan Internal Kampus &bull; Sistem GemaSmart Sumbawa
     </div>
 </body>
 </html>

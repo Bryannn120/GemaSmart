@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Dashboard Penerima Bantuan - SiBibit</title>
+    <title>Dashboard Penerima Bantuan - GemaSmart</title>
     <link rel="manifest" href="/manifest.json"/>
     <meta name="theme-color" content="#00450d"/>
     <link rel="apple-touch-icon" href="/icon-192.png"/>
@@ -37,7 +37,7 @@
             <div class="flex items-center gap-3">
                 <img src="{{ asset('gemas.jpg') }}" alt="Logo" class="h-9 w-auto bg-white p-1 rounded-md shadow-sm"/>
                 <div>
-                    <h1 class="font-bold text-base sm:text-lg leading-tight">SiBibit Sumbawa</h1>
+                    <h1 class="font-bold text-base sm:text-lg leading-tight">GemaSmart Sumbawa</h1>
                     <p class="text-xs text-green-200">Portal Warga Penerima Bantuan</p>
                 </div>
             </div>
@@ -47,6 +47,10 @@
                     <span id="networkDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
                     <span id="networkStatusText" class="text-[11px] hidden sm:inline">Online</span>
                 </span>
+                <a href="{{ url('/') }}" class="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 py-1.5 px-2.5 rounded-lg transition-colors border border-white/10 text-xs font-semibold text-white" title="Kembali ke Profil Inovasi">
+                    <span class="material-symbols-outlined text-[16px]">stars</span>
+                    <span class="hidden sm:inline">Profil Inovasi</span>
+                </a>
                 <a href="#ubah-password" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 py-1.5 px-2.5 rounded-lg transition-colors border border-white/10" title="Klik untuk Pengaturan Akun & Ubah Password">
                     <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">
                         <span class="material-symbols-outlined text-[18px]">person</span>
