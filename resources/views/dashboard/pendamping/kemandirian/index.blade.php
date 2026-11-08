@@ -5,9 +5,9 @@
     <!-- Header Navigasi & Judul Halaman -->
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-lg">
         <div class="flex flex-col max-w-2xl">
-            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Monitoring Kemandirian & Perkembangan Desil</h1>
+            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Monitoring Kemandirian Keluarga Binaan</h1>
             <p class="font-body-md text-text-secondary mt-1">
-                Pantau progres kemandirian keluarga binaan (Desil 6+), proses keluarga menuju mandiri, serta deteksi penurunan tingkat desil dan pendapatan.
+                Pantau progres perkembangan keluarga yang Anda dampingi berdasarkan indikator penilaian, tolak ukur pendapatan, efisiensi pengeluaran, dan surplus ekonomi.
             </p>
         </div>
         <div class="flex flex-wrap items-center gap-space-sm">
@@ -18,16 +18,16 @@
         </div>
     </div>
 
-    <!-- Alert / Banner Aturan Desil Kemandirian -->
+    <!-- Banner Tolak Ukur & Indikator Penilaian Kemandirian -->
     <div class="bg-gradient-to-r from-gov-green-dark to-primary text-white rounded-2xl p-space-lg shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex items-start md:items-center gap-3">
             <div class="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/20">
-                <span class="material-symbols-outlined text-[28px] text-white">workspace_premium</span>
+                <span class="material-symbols-outlined text-[28px] text-white">assessment</span>
             </div>
             <div>
-                <h3 class="font-bold text-base text-white">Standar Batas Kemandirian: Desil 6 ke Atas</h3>
+                <h3 class="font-bold text-base text-white">Indikator Penilaian Kemandirian & Tolak Ukur Ekonomi</h3>
                 <p class="text-xs text-white/85 mt-0.5 max-w-2xl">
-                    Keluarga penerima bantuan bibit dinyatakan <strong>Sudah Mandiri</strong> apabila telah berhasil meningkatkan pendapatan dan aset hingga mencapai <strong>Desil 6 ke atas (Desil 6–10)</strong>. Keluarga pada Desil 1–5 berada dalam <strong>Tahap Kemandirian</strong>.
+                    Keluarga penerima bantuan dinyatakan <strong>Sudah Mandiri</strong> apabila skor indikator penilaian memenuhi standar tolak ukur dan memiliki <strong>surplus finansial positif</strong> (pendapatan melebihi pengeluaran pokok bulanan).
                 </p>
             </div>
         </div>
@@ -59,7 +59,7 @@
                     <span class="font-headline-xl text-headline-xl text-green-700 font-bold">{{ $totalMandiri }} KK</span>
                     <span class="text-xs font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">{{ $persenMandiri }}%</span>
                 </div>
-                <span class="text-label-sm text-text-secondary mt-1 block">Tingkatan Desil 6 s.d. 10</span>
+                <span class="text-label-sm text-text-secondary mt-1 block">Indikator Terpenuhi & Surplus Positif</span>
             </div>
         </a>
 
@@ -76,40 +76,50 @@
                     <span class="font-headline-xl text-headline-xl text-blue-700 font-bold">{{ $totalTahap }} KK</span>
                     <span class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{{ $persenTahap }}%</span>
                 </div>
-                <span class="text-label-sm text-text-secondary mt-1 block">Tingkatan Desil 1 s.d. 5 (Berproses)</span>
+                <span class="text-label-sm text-text-secondary mt-1 block">Proses Pembinaan & Perkembangan</span>
             </div>
         </a>
 
-        <!-- Card 3: Penurunan / Kemunduran Desil -->
-        <a href="{{ route('pendamping.kemandirian.index', ['status' => 'penurunan']) }}" class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm border border-border-light flex flex-col justify-between hover:border-amber-500/50 transition-colors {{ request('status') === 'penurunan' ? 'ring-2 ring-amber-500' : '' }}">
+        <!-- Card 3: Defisit / Perlu Perhatian -->
+        <a href="{{ route('pendamping.kemandirian.index', ['status' => 'defisit']) }}" class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm border border-border-light flex flex-col justify-between hover:border-amber-500/50 transition-colors {{ request('status') === 'defisit' ? 'ring-2 ring-amber-500' : '' }}">
             <div class="flex items-center justify-between mb-2">
-                <span class="font-label-md text-label-md text-text-secondary uppercase">Penurunan Desil</span>
+                <span class="font-label-md text-label-md text-text-secondary uppercase">Butuh Perhatian Khusus</span>
                 <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
                     <span class="material-symbols-outlined text-[20px]">warning</span>
                 </div>
             </div>
             <div>
                 <div class="flex items-baseline gap-2">
-                    <span class="font-headline-xl text-headline-xl text-amber-700 font-bold">{{ $totalPenurunan }} KK</span>
-                    <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">{{ $persenPenurunan }}%</span>
+                    <span class="font-headline-xl text-headline-xl text-amber-700 font-bold">{{ $totalDefisit }} KK</span>
+                    <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">{{ $persenDefisit }}%</span>
                 </div>
-                <span class="text-label-sm text-text-secondary mt-1 block">Taraf Ekonomi Menurun</span>
+                <span class="text-label-sm text-text-secondary mt-1 block">Pengeluaran > Pendapatan / Skor Rendah</span>
             </div>
         </a>
 
-        <!-- Card 4: Rata-rata Pendapatan Bulanan -->
+        <!-- Card 4: Rata-rata Finansial Bulanan -->
         <div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm border border-border-light flex flex-col justify-between">
             <div class="flex items-center justify-between mb-2">
-                <span class="font-label-md text-label-md text-text-secondary uppercase">Rata-rata Pendapatan</span>
+                <span class="font-label-md text-label-md text-text-secondary uppercase">Keuangan Rata-rata</span>
                 <div class="w-8 h-8 rounded-lg bg-gov-green-surface text-primary flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[20px]">payments</span>
+                    <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
                 </div>
             </div>
-            <div>
-                <span class="font-headline-xl text-headline-xl text-text-primary font-bold">
-                    Rp {{ number_format($rataRataPenghasilan, 0, ',', '.') }}
-                </span>
-                <span class="text-label-sm text-text-secondary mt-1 block">Per Bulan / Keluarga Binaan</span>
+            <div class="flex flex-col gap-1">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-text-secondary">Pendapatan:</span>
+                    <span class="font-bold text-text-primary font-mono">Rp {{ number_format($rataRataPendapatan, 0, ',', '.') }}</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-text-secondary">Pengeluaran:</span>
+                    <span class="font-semibold text-rose-600 font-mono">Rp {{ number_format($rataRataPengeluaran, 0, ',', '.') }}</span>
+                </div>
+                <div class="pt-1.5 border-t border-border-light flex items-center justify-between text-xs">
+                    <span class="font-semibold text-text-primary">Surplus Bersih:</span>
+                    <span class="font-bold font-mono {{ $rataRataSurplus >= 0 ? 'text-green-700' : 'text-rose-600' }}">
+                        {{ $rataRataSurplus >= 0 ? '+' : '' }}Rp {{ number_format($rataRataSurplus, 0, ',', '.') }}
+                    </span>
+                </div>
             </div>
         </div>
     </div>
@@ -124,7 +134,7 @@
                         <span class="material-symbols-outlined text-primary text-[20px]">pie_chart</span>
                         <h2 class="font-bold text-text-primary text-base">Proporsi Status Kemandirian</h2>
                     </div>
-                    <span class="text-[11px] text-text-tertiary">Total: {{ $totalBinaan }} KK</span>
+                    <span class="text-[11px] text-text-tertiary">Total: {{ $totalBinaan }} KK Binaan</span>
                 </div>
                 <div class="relative flex items-center justify-center h-64">
                     <canvas id="chart-proporsi-kemandirian"></canvas>
@@ -141,38 +151,38 @@
                     <span class="text-[11px] text-blue-700">Tahap Mandiri</span>
                 </div>
                 <div class="p-2 rounded-lg bg-amber-50">
-                    <span class="text-amber-800 font-bold block text-sm">{{ $totalPenurunan }} KK</span>
-                    <span class="text-[11px] text-amber-700">Penurunan Desil</span>
+                    <span class="text-amber-800 font-bold block text-sm">{{ $totalDefisit }} KK</span>
+                    <span class="text-[11px] text-amber-700">Butuh Perhatian</span>
                 </div>
             </div>
         </div>
 
-        <!-- Grafik 2: Distribusi Jumlah Keluarga per Tingkat Desil (Bar Chart) -->
+        <!-- Grafik 2: Distribusi Berdasarkan Indikator Penilaian Kemandirian (Bar Chart) -->
         <div class="lg:col-span-7 bg-canvas-bg rounded-2xl shadow-sm border border-border-light p-space-lg flex flex-col justify-between">
             <div>
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-border-light mb-4 gap-2">
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-secondary text-[20px]">bar_chart</span>
-                        <h2 class="font-bold text-text-primary text-base">Distribusi Tingkat Desil Keluarga Binaan</h2>
+                        <h2 class="font-bold text-text-primary text-base">Distribusi Indikator Penilaian Kemandirian</h2>
                     </div>
                     <div class="flex items-center gap-2 text-xs">
                         <span class="inline-flex items-center gap-1 text-blue-600 font-medium">
                             <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
-                            Desil 1–5: Tahap Kemandirian
+                            Tahap Pembinaan
                         </span>
                         <span class="inline-flex items-center gap-1 text-green-600 font-semibold">
                             <span class="w-2.5 h-2.5 rounded-full bg-green-600 inline-block"></span>
-                            Desil 6–10: Sudah Mandiri
+                            Mandiri (Skor ≥70)
                         </span>
                     </div>
                 </div>
                 <div class="relative h-64">
-                    <canvas id="chart-distribusi-desil"></canvas>
+                    <canvas id="chart-distribusi-indikator"></canvas>
                 </div>
             </div>
             <div class="mt-4 pt-3 border-t border-border-light flex items-center justify-between text-xs text-text-secondary">
-                <span>Garis pemisah: Desil 6 adalah ambang batas keluarga lulus (graduasi) dari kemiskinan.</span>
-                <span class="font-semibold text-primary">Standar Kemensos / BPS</span>
+                <span>Tolak ukur dinilai dari pendapatan, pengeluaran, surplus finansial, dan kepemilikan aset produktif.</span>
+                <span class="font-semibold text-primary">Indikator Penilaian GemaSmart</span>
             </div>
         </div>
     </div>
@@ -183,8 +193,8 @@
             <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-primary text-[22px]">groups</span>
                 <div>
-                    <h2 class="font-bold text-text-primary text-base">Rekapitulasi Status Kemandirian Keluarga Binaan</h2>
-                    <span class="text-xs text-text-secondary">Daftar keluarga dengan klasifikasi tingkat kemandirian terkini</span>
+                    <h2 class="font-bold text-text-primary text-base">Rekapitulasi Indikator Kemandirian Keluarga Binaan</h2>
+                    <span class="text-xs text-text-secondary">Daftar keluarga yang Anda dampingi dengan rincian pendapatan, pengeluaran, dan tolak ukur kemandirian</span>
                 </div>
             </div>
 
@@ -202,9 +212,9 @@
                     class="px-3 py-1.5 rounded-lg transition-colors {{ request('status') === 'tahap_kemandirian' ? 'bg-blue-600 text-white shadow-sm' : 'text-blue-700 hover:bg-blue-50' }}">
                     Tahap Mandiri ({{ $totalTahap }})
                 </a>
-                <a href="{{ route('pendamping.kemandirian.index', array_merge(request()->query(), ['status' => 'penurunan'])) }}"
-                    class="px-3 py-1.5 rounded-lg transition-colors {{ request('status') === 'penurunan' ? 'bg-amber-600 text-white shadow-sm' : 'text-amber-700 hover:bg-amber-50' }}">
-                    Penurunan Desil ({{ $totalPenurunan }})
+                <a href="{{ route('pendamping.kemandirian.index', array_merge(request()->query(), ['status' => 'defisit'])) }}"
+                    class="px-3 py-1.5 rounded-lg transition-colors {{ request('status') === 'defisit' ? 'bg-amber-600 text-white shadow-sm' : 'text-amber-700 hover:bg-amber-50' }}">
+                    Butuh Perhatian ({{ $totalDefisit }})
                 </a>
             </div>
         </div>
@@ -252,16 +262,17 @@
             @endif
         </form>
 
-        <!-- Tabel Rekapitulasi -->
+        <!-- Tabel Rekapitulasi Kemandirian -->
         <div class="overflow-x-auto rounded-xl border border-border-light">
             <table class="w-full text-left font-body-sm text-body-sm">
                 <thead class="bg-surface-muted text-text-secondary font-label-md text-label-md border-b border-border-light">
                     <tr>
                         <th class="py-3 px-4 font-semibold">Kepala Keluarga</th>
                         <th class="py-3 px-4 font-semibold">Wilayah / Desa</th>
-                        <th class="py-3 px-4 font-semibold">Penghasilan/Bln</th>
-                        <th class="py-3 px-4 font-semibold">Tingkat Desil</th>
-                        <th class="py-3 px-4 font-semibold">Status Kemandirian</th>
+                        <th class="py-3 px-4 font-semibold">Pendapatan / Bln</th>
+                        <th class="py-3 px-4 font-semibold">Pengeluaran / Bln</th>
+                        <th class="py-3 px-4 font-semibold">Surplus / Bersih</th>
+                        <th class="py-3 px-4 font-semibold">Indikator Penilaian</th>
                         <th class="py-3 px-4 font-semibold">Perkembangan</th>
                         <th class="py-3 px-4 font-semibold">Evaluasi Terakhir</th>
                         <th class="py-3 px-4 text-right font-semibold">Aksi</th>
@@ -271,6 +282,10 @@
                     @forelse ($keluargaList as $kl)
                     @php
                         $latestNilai = $kl->penilaianKemandirians->first();
+                        $pendapatanNominal = $kl->pendapatan_perbulan ?: ($kl->penghasilan_perbulan ?: $kl->pendapatan);
+                        $pengeluaranNominal = $kl->pengeluaran_perbulan ?: $kl->pengeluaran;
+                        $surplusNominal = $kl->penghasilan_bersih ?: ($pendapatanNominal - $pengeluaranNominal);
+                        $skorIndikator = $latestNilai ? (int)$latestNilai->total_skor : (int)($kl->desil ? $kl->desil * 10 : 35);
                     @endphp
                     <tr class="hover:bg-surface-subtle transition-colors">
                         <td class="py-3 px-4">
@@ -288,36 +303,57 @@
                             <div>{{ $kl->wilayah->nama ?? 'Sumbawa' }}</div>
                             <span class="text-text-tertiary text-[11px]">{{ $kl->alamat }}</span>
                         </td>
+                        <!-- Pendapatan / Bln -->
                         <td class="py-3 px-4 font-mono text-xs">
-                            @if(($kl->penghasilan_perbulan ?? 0) > 0)
-                                <span class="font-bold text-text-primary">Rp {{ number_format($kl->penghasilan_perbulan, 0, ',', '.') }}</span>
+                            @if($pendapatanNominal > 0)
+                                <span class="font-bold text-text-primary">Rp {{ number_format($pendapatanNominal, 0, ',', '.') }}</span>
                             @else
-                                <span class="text-text-tertiary italic">Belum dinilai</span>
+                                <span class="text-text-tertiary italic">Belum diinput</span>
                             @endif
                         </td>
-                        <td class="py-3 px-4">
-                            <span class="inline-block px-2.5 py-0.5 rounded text-xs font-bold {{ $kl->desil >= 6 ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
-                                Desil {{ $kl->desil }}
-                            </span>
-                        </td>
-                        <td class="py-3 px-4">
-                            @if ($kl->desil >= 6 || $kl->status_kemandirian == 'Mandiri')
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">
-                                    <span class="material-symbols-outlined text-[14px]">verified</span>
-                                    Sudah Mandiri
-                                </span>
-                            @elseif ($kl->status_kemandirian == 'Penurunan Desil')
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
-                                    <span class="material-symbols-outlined text-[14px]">trending_down</span>
-                                    Penurunan Desil
-                                </span>
+                        <!-- Pengeluaran / Bln -->
+                        <td class="py-3 px-4 font-mono text-xs">
+                            @if($pengeluaranNominal > 0)
+                                <span class="font-semibold text-rose-600">Rp {{ number_format($pengeluaranNominal, 0, ',', '.') }}</span>
                             @else
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
-                                    <span class="material-symbols-outlined text-[14px]">hourglass_top</span>
-                                    Tahap Kemandirian
-                                </span>
+                                <span class="text-text-tertiary italic">-</span>
                             @endif
                         </td>
+                        <!-- Surplus / Bersih -->
+                        <td class="py-3 px-4 font-mono text-xs">
+                            @if($pendapatanNominal > 0 || $pengeluaranNominal > 0)
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded font-bold {{ $surplusNominal >= 0 ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-rose-50 text-rose-700 border border-rose-200' }}">
+                                    {{ $surplusNominal >= 0 ? '+' : '' }}Rp {{ number_format($surplusNominal, 0, ',', '.') }}
+                                </span>
+                            @else
+                                <span class="text-text-tertiary italic">-</span>
+                            @endif
+                        </td>
+                        <!-- Indikator Penilaian -->
+                        <td class="py-3 px-4">
+                            <div class="flex flex-col gap-1">
+                                <div class="flex items-center gap-1.5">
+                                    @if ($kl->status_kemandirian == 'Mandiri' || $skorIndikator >= 70 || $kl->desil >= 6)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-green-100 text-green-800">
+                                            <span class="material-symbols-outlined text-[13px]">verified</span>
+                                            Sudah Mandiri
+                                        </span>
+                                    @elseif ($surplusNominal < 0 || $kl->status_kemandirian == 'Penurunan Desil')
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">
+                                            <span class="material-symbols-outlined text-[13px]">warning</span>
+                                            Butuh Perhatian
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800">
+                                            <span class="material-symbols-outlined text-[13px]">hourglass_top</span>
+                                            Tahap Kemandirian
+                                        </span>
+                                    @endif
+                                </div>
+                                <span class="text-[11px] text-text-tertiary font-mono">Skor: <strong>{{ $skorIndikator }}</strong>/100</span>
+                            </div>
+                        </td>
+                        <!-- Perkembangan -->
                         <td class="py-3 px-4">
                             @if ($latestNilai && $latestNilai->status_perkembangan == 'Maju')
                                 <span class="inline-flex items-center gap-0.5 text-green-700 text-xs font-bold">
@@ -336,6 +372,7 @@
                                 </span>
                             @endif
                         </td>
+                        <!-- Evaluasi Terakhir -->
                         <td class="py-3 px-4 text-xs text-text-secondary whitespace-nowrap">
                             @if($latestNilai)
                                 <span>{{ \Carbon\Carbon::parse($latestNilai->created_at)->format('d M Y') }}</span>
@@ -344,11 +381,12 @@
                                 <span class="text-text-tertiary italic">-</span>
                             @endif
                         </td>
+                        <!-- Aksi -->
                         <td class="py-3 px-4 text-right whitespace-nowrap">
                             <div class="inline-flex items-center gap-1">
-                                <a href="{{ route('pendamping.keluarga_penerima.penilaian.create', $kl->id) }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gov-green-surface hover:bg-gov-green text-primary hover:text-white font-label-md text-xs font-semibold transition-colors border border-primary/20" title="Input Penilaian Baru">
+                                <a href="{{ route('pendamping.keluarga_penerima.penilaian.create', $kl->id) }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gov-green-surface hover:bg-gov-green text-primary hover:text-white font-label-md text-xs font-semibold transition-colors border border-primary/20" title="Input Penilaian Indikator">
                                     <span class="material-symbols-outlined text-[14px]">rate_review</span>
-                                    <span>Nilai Desil</span>
+                                    <span>Nilai Indikator</span>
                                 </a>
                                 <a href="{{ route('pendamping.keluarga_penerima.show', $kl->id) }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-text-secondary hover:text-text-primary font-label-md text-xs font-semibold transition-colors border border-border-light" title="Detail Profil">
                                     <span class="material-symbols-outlined text-[14px]">visibility</span>
@@ -359,9 +397,9 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="text-center py-10 text-text-tertiary">
+                        <td colspan="9" class="text-center py-10 text-text-tertiary">
                             <span class="material-symbols-outlined text-4xl block mb-2 text-text-tertiary">group_off</span>
-                            Tidak ada data keluarga yang sesuai dengan kriteria filter.
+                            Tidak ada data keluarga binaan yang sesuai dengan filter.
                         </td>
                     </tr>
                     @endforelse
@@ -370,14 +408,14 @@
         </div>
     </div>
 
-    <!-- Section Tabel 2: Histori Penilaian Desil Dari Tiap Kunjungan -->
+    <!-- Section Tabel 2: Histori Penilaian Kunjungan Lapangan -->
     <div class="bg-canvas-bg rounded-2xl shadow-sm border border-border-light p-space-lg flex flex-col gap-4">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-border-light gap-2">
             <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-secondary text-[22px]">history_edu</span>
                 <div>
-                    <h2 class="font-bold text-text-primary text-base">Histori Penilaian Desil & Update Tiap Kunjungan</h2>
-                    <span class="text-xs text-text-secondary">Log lengkap evaluasi lapangan yang telah diinputkan oleh pendamping</span>
+                    <h2 class="font-bold text-text-primary text-base">Histori Indikator Penilaian & Evaluasi Lapangan</h2>
+                    <span class="text-xs text-text-secondary">Log lengkap evaluasi pendapatan, pengeluaran, dan skor indikator yang telah Anda inputkan</span>
                 </div>
             </div>
             <span class="px-3 py-1 rounded-full text-xs font-bold bg-gov-green-surface text-primary border border-primary/20 self-start sm:self-auto">
@@ -392,15 +430,20 @@
                         <th class="py-3 px-4 font-semibold">Tanggal & Periode</th>
                         <th class="py-3 px-4 font-semibold">Penerima Bantuan</th>
                         <th class="py-3 px-4 font-semibold">Pendamping Penilai</th>
-                        <th class="py-3 px-4 font-semibold">Penghasilan & Kapita</th>
+                        <th class="py-3 px-4 font-semibold">Pendapatan & Pengeluaran</th>
                         <th class="py-3 px-4 font-semibold">Rincian Aset</th>
-                        <th class="py-3 px-4 font-semibold">Perubahan Desil</th>
+                        <th class="py-3 px-4 font-semibold">Skor Indikator</th>
                         <th class="py-3 px-4 font-semibold">Status Hasil</th>
                         <th class="py-3 px-4 font-semibold">Catatan Kunjungan</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-light bg-canvas-bg">
                     @forelse ($historiKunjungan as $hk)
+                    @php
+                        $histInc = $hk->pendapatan_perbulan ?: ($hk->penghasilan_perbulan ?: $hk->pendapatan);
+                        $histExp = $hk->pengeluaran_perbulan ?: $hk->pengeluaran;
+                        $histNet = $hk->penghasilan_bersih ?: ($histInc - $histExp);
+                    @endphp
                     <tr class="hover:bg-surface-subtle transition-colors">
                         <td class="py-3 px-4 whitespace-nowrap">
                             <span class="font-bold text-text-primary block text-xs">{{ \Carbon\Carbon::parse($hk->created_at)->format('d M Y, H:i') }}</span>
@@ -413,13 +456,17 @@
                             <span class="text-text-tertiary text-[11px]">Desa {{ $hk->keluargaPenerima->wilayah->nama ?? 'Sumbawa' }}</span>
                         </td>
                         <td class="py-3 px-4 text-xs text-text-secondary">
-                            {{ $hk->pendamping->name ?? 'Pendamping Lapangan' }}
+                            {{ $hk->pendamping->name ?? 'Anda' }}
                         </td>
+                        <!-- Pendapatan & Pengeluaran -->
                         <td class="py-3 px-4 font-mono text-xs">
-                            <span class="font-bold text-text-primary block">Rp {{ number_format($hk->penghasilan_perbulan ?? 0, 0, ',', '.') }}</span>
-                            @if(($hk->pendapatan_per_kapita ?? 0) > 0)
-                                <span class="text-[11px] text-primary">Rp {{ number_format($hk->pendapatan_per_kapita, 0, ',', '.') }}/kapita</span>
-                            @endif
+                            <div class="flex flex-col gap-0.5">
+                                <span class="text-text-primary font-bold">Masuk: Rp {{ number_format($histInc, 0, ',', '.') }}</span>
+                                <span class="text-rose-600 text-[11px]">Keluar: Rp {{ number_format($histExp, 0, ',', '.') }}</span>
+                                <span class="font-bold text-[11px] {{ $histNet >= 0 ? 'text-green-700' : 'text-rose-600' }}">
+                                    Surplus: {{ $histNet >= 0 ? '+' : '' }}Rp {{ number_format($histNet, 0, ',', '.') }}
+                                </span>
+                            </div>
                         </td>
                         <td class="py-3 px-4 text-xs text-text-secondary">
                             <div class="flex flex-col gap-0.5">
@@ -428,19 +475,16 @@
                                 <span><strong>Kendaraan:</strong> {{ str_replace('_', ' ', $hk->aset_kendaraan ?? '-') }}</span>
                             </div>
                         </td>
+                        <!-- Skor Indikator Penilaian -->
                         <td class="py-3 px-4 whitespace-nowrap">
                             <div class="flex items-center gap-1.5">
-                                @if($hk->desil_sebelumnya)
-                                    <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-gray-100 text-gray-700">
-                                        Desil {{ $hk->desil_sebelumnya }}
-                                    </span>
-                                    <span class="material-symbols-outlined text-[14px] text-text-tertiary">arrow_forward</span>
-                                @endif
-                                <span class="px-2 py-0.5 rounded text-[11px] font-bold {{ ($hk->desil_hasil ?? 1) >= 6 ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
-                                    Desil {{ $hk->desil_hasil ?? '-' }}
+                                <span class="px-2.5 py-1 rounded text-xs font-bold {{ ($hk->total_skor ?? 0) >= 70 ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
+                                    Skor: {{ $hk->total_skor ?? 0 }}/100
                                 </span>
                             </div>
-                            <span class="text-[10px] text-text-tertiary block mt-0.5">Skor: {{ $hk->total_skor ?? 0 }}/100</span>
+                            <span class="text-[11px] text-text-tertiary block mt-0.5">
+                                {{ ($hk->total_skor ?? 0) >= 70 ? 'Mandiri' : 'Tahap Pembinaan' }}
+                            </span>
                         </td>
                         <td class="py-3 px-4 whitespace-nowrap">
                             @if ($hk->status_perkembangan == 'Maju')
@@ -487,9 +531,9 @@
         new Chart(ctxProporsi, {
             type: 'doughnut',
             data: {
-                labels: ['Sudah Mandiri (Desil 6+)', 'Tahap Kemandirian (Desil 1–5)', 'Penurunan Desil'],
+                labels: ['Sudah Mandiri', 'Tahap Kemandirian', 'Butuh Perhatian Khusus'],
                 datasets: [{
-                    data: [{{ $totalMandiri }}, {{ $totalTahap }}, {{ $totalPenurunan }}],
+                    data: [{{ $totalMandiri }}, {{ $totalTahap }}, {{ $totalDefisit }}],
                     backgroundColor: ['#16a34a', '#2563eb', '#d97706'],
                     borderWidth: 2,
                     borderColor: '#ffffff',
@@ -518,32 +562,33 @@
             }
         });
 
-        // 2. Inisialisasi Bar Chart: Distribusi per Tingkat Desil (Desil 1 s/d 10)
-        const ctxDesil = document.getElementById('chart-distribusi-desil').getContext('2d');
-        const labelsDesil = ['Desil 1', 'Desil 2', 'Desil 3', 'Desil 4', 'Desil 5', 'Desil 6', 'Desil 7', 'Desil 8', 'Desil 9', 'Desil 10'];
-        const dataDesil = [
-            {{ $distribusiDesil[1] ?? 0 }},
-            {{ $distribusiDesil[2] ?? 0 }},
-            {{ $distribusiDesil[3] ?? 0 }},
-            {{ $distribusiDesil[4] ?? 0 }},
-            {{ $distribusiDesil[5] ?? 0 }},
-            {{ $distribusiDesil[6] ?? 0 }},
-            {{ $distribusiDesil[7] ?? 0 }},
-            {{ $distribusiDesil[8] ?? 0 }},
-            {{ $distribusiDesil[9] ?? 0 }},
-            {{ $distribusiDesil[10] ?? 0 }}
+        // 2. Inisialisasi Bar Chart: Distribusi Berdasarkan Indikator Penilaian Kemandirian
+        const ctxIndikator = document.getElementById('chart-distribusi-indikator').getContext('2d');
+        const labelsIndikator = [
+            'Perlu Intervensi (≤40)',
+            'Tahap Awal (41–55)',
+            'Berkembang (56–70)',
+            'Mandiri Madya (71–85)',
+            'Mandiri Utama (86–100)'
+        ];
+        const dataIndikator = [
+            {{ $distribusiIndikator['perlu_intervensi'] ?? 0 }},
+            {{ $distribusiIndikator['tahap_awal'] ?? 0 }},
+            {{ $distribusiIndikator['berkembang'] ?? 0 }},
+            {{ $distribusiIndikator['mandiri_madya'] ?? 0 }},
+            {{ $distribusiIndikator['mandiri_utama'] ?? 0 }}
         ];
 
-        // Warna bar: Biru untuk Desil 1-5 (Tahap Kemandirian), Hijau untuk Desil 6-10 (Sudah Mandiri)
-        const barColors = dataDesil.map((val, idx) => idx < 5 ? '#3b82f6' : '#16a34a');
+        // Warna bar: Biru untuk tahap pembinaan, Hijau untuk kategori mandiri (skor >= 71)
+        const barColors = ['#f59e0b', '#3b82f6', '#0ea5e9', '#10b981', '#16a34a'];
 
-        new Chart(ctxDesil, {
+        new Chart(ctxIndikator, {
             type: 'bar',
             data: {
-                labels: labelsDesil,
+                labels: labelsIndikator,
                 datasets: [{
                     label: 'Jumlah Keluarga Binaan',
-                    data: dataDesil,
+                    data: dataIndikator,
                     backgroundColor: barColors,
                     borderRadius: 8,
                     borderSkipped: false
@@ -559,7 +604,9 @@
                     tooltip: {
                         callbacks: {
                             afterLabel: function(context) {
-                                return context.dataIndex >= 5 ? 'Status: Sudah Mandiri' : 'Status: Tahap Kemandirian';
+                                if (context.dataIndex === 0) return 'Status: Defisit / Perlu Intervensi Khusus';
+                                if (context.dataIndex <= 2) return 'Status: Dalam Tahap Kemandirian';
+                                return 'Status: Sudah Mandiri';
                             }
                         }
                     }

@@ -39,33 +39,66 @@ class KeluargaPenerimaSeeder extends Seeder
                 'role' => 'penerima',
             ]);
 
+            $desil = rand(1, 5);
+            $pendapatanBulanan = ($desil * 400000) + rand(300000, 600000);
+            $pengeluaranBulanan = ($desil * 300000) + rand(250000, 500000);
+            $surplusBulanan = $pendapatanBulanan - $pengeluaranBulanan;
+            $statusKemandirian = ($desil >= 6) ? 'Mandiri' : (($surplusBulanan < 0) ? 'Penurunan Desil' : 'Tahap Kemandirian');
+
             $kk = KeluargaPenerima::create([
                 'no_kk' => $noKk,
                 'kepala_keluarga' => 'Kepala Keluarga ' . $i,
                 'nik' => '520401' . str_pad($i, 10, "0", STR_PAD_LEFT),
                 'alamat' => 'Jalan Desa Semamung RT 0' . $i,
-                'desil' => rand(1, 5),
+                'desil' => $desil,
+                'tipe_periode' => 'per_bulan',
+                'pendapatan' => $pendapatanBulanan,
+                'pengeluaran' => $pengeluaranBulanan,
+                'pendapatan_perbulan' => $pendapatanBulanan,
+                'pengeluaran_perbulan' => $pengeluaranBulanan,
+                'penghasilan_bersih' => $surplusBulanan,
+                'penghasilan_perbulan' => $pendapatanBulanan,
                 'wilayah_id' => $desa->id,
                 'program_bantuan_id' => $program->id,
                 'status_validasi' => 'valid',
                 'user_id' => $userPenerima->id,
-                'status_kemandirian' => 'Belum Dinilai',
+                'pendamping_id' => $pendamping ? $pendamping->id : null,
+                'status_kemandirian' => $statusKemandirian,
             ]);
 
             // Buat laporan feedback dari penerima ini
             LaporanPenerima::create([
                 'keluarga_penerima_id' => $kk->id,
-                'laporan_teks' => 'Bibit sudah ditanam, namun butuh pupuk tambahan.',
+                'laporan_teks' => 'Bibit tanaman produktif tumbuh subur dan hasil panen membantu kebutuhan dapur serta menambah penghasilan keluarga.',
                 'is_read_by_pemda' => false,
             ]);
 
             // Buat penilaian kemandirian
+            $jumlahAnak = rand(1, 3);
+            $totalAnggota = $jumlahAnak + 2;
+            $evalInc = $pendapatanBulanan + rand(100000, 300000);
+            $evalExp = $pengeluaranBulanan;
+            $evalSurplus = $evalInc - $evalExp;
+
             $penilaian = PenilaianKemandirian::create([
                 'keluarga_penerima_id' => $kk->id,
                 'pendamping_id' => $pendamping->id,
                 'periode' => 'Q1 2026',
-                'total_skor' => rand(50, 90),
-                'status_perkembangan' => 'Maju'
+                'total_skor' => rand(60, 90),
+                'status_perkembangan' => 'Maju',
+                'tipe_periode' => 'per_bulan',
+                'pendapatan' => $evalInc,
+                'pengeluaran' => $evalExp,
+                'pendapatan_perbulan' => $evalInc,
+                'pengeluaran_perbulan' => $evalExp,
+                'penghasilan_bersih' => $evalSurplus,
+                'penghasilan_perbulan' => $evalInc,
+                'pendapatan_per_kapita' => round($evalInc / $totalAnggota),
+                'jumlah_anak' => $jumlahAnak,
+                'aset_rumah' => 'Semi Permanen',
+                'aset_tanah' => 'Hak Milik',
+                'aset_kendaraan' => 'Sepeda Motor',
+                'catatan' => 'Pertumbuhan bibit sangat baik, hasil panen perdana mulai dipasarkan dan menambah pendapatan harian keluarga.'
             ]);
 
             // Buat tugas validasi CPCL untuk validator

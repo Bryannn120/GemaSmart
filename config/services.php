@@ -31,4 +31,13 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'whatsapp' => [
+        'provider' => env('WHATSAPP_PROVIDER', 'balesotomatis'), // balesotomatis, fonnte, wablas, generic
+        'api_token' => env('WHATSAPP_API_TOKEN', ''),
+        'number_id' => env('WHATSAPP_NUMBER_ID', ''),
+        'gateway_url' => env('WHATSAPP_GATEWAY_URL', 'https://api.balesotomatis.co.id/public/v1/send_personal_message'),
+        'hotline' => env('WHATSAPP_HOTLINE', '0852-3891-2026'),
+        'webhook_secret' => env('WHATSAPP_WEBHOOK_SECRET', ''),
+    ],
+
 ];

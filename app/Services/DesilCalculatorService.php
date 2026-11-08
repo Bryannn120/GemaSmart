@@ -5,55 +5,88 @@ namespace App\Services;
 class DesilCalculatorService
 {
     /**
-     * Hitung penilaian desil dan kemandirian berdasarkan indikator sosial ekonomi keluarga.
+     * Hitung tolak ukur penilaian desil dan kemandirian berdasarkan pendapatan dan pengeluaran
+     * (bisa dipilih basis waktu per bulan atau per hari), serta indikator sosial ekonomi keluarga.
      *
-     * @param float $penghasilanPerbulan
+     * @param float $pendapatan
+     * @param float $pengeluaran
+     * @param string $tipePeriode ('per_bulan' atau 'per_hari')
      * @param int $jumlahAnak
      * @param string $asetRumah (tidak_layak, semi_permanen, permanen)
      * @param string $asetTanah (tidak_ada, sempit, sedang, luas)
      * @param string $asetKendaraan (tidak_ada, motor_tua, motor_layak, mobil)
      * @param int|null $desilSebelumnya
+     * @param float|null $penghasilanPerbulan (legacy compatibility)
      * @return array
      */
     public static function hitung(
-        float $penghasilanPerbulan,
-        int $jumlahAnak,
-        string $asetRumah,
-        string $asetTanah,
-        string $asetKendaraan,
-        ?int $desilSebelumnya = null
+        float $pendapatan = 0,
+        float $pengeluaran = 0,
+        string $tipePeriode = 'per_bulan',
+        int $jumlahAnak = 0,
+        string $asetRumah = 'tidak_layak',
+        string $asetTanah = 'tidak_ada',
+        string $asetKendaraan = 'tidak_ada',
+        ?int $desilSebelumnya = null,
+        ?float $penghasilanPerbulan = null
     ): array {
-        // 1. Total Anggota Keluarga (Kepala Keluarga + Pasangan + Jumlah Anak)
-        $totalAnggota = max(1, $jumlahAnak + 2);
-        $pendapatanPerKapita = $penghasilanPerbulan / $totalAnggota;
+        // Fallback backward compatibility jika pemanggil lama hanya mengirim penghasilanPerbulan
+        if ($pendapatan == 0 && $penghasilanPerbulan !== null && $penghasilanPerbulan > 0) {
+            $pendapatan = $penghasilanPerbulan;
+            $tipePeriode = 'per_bulan';
+        }
 
-        // 2. Base Desil dari Penghasilan Bulanan Keluarga
-        // Mengacu pada standar desil pengeluaran & pendapatan BPS / Kemensos DTSK
-        if ($penghasilanPerbulan < 1000000) {
+        // 1. Normalisasi Pendapatan & Pengeluaran ke Ekuivalen Bulanan & Harian
+        if ($tipePeriode === 'per_hari') {
+            $pendapatanPerhari = $pendapatan;
+            $pengeluaranPerhari = $pengeluaran;
+            $pendapatanPerbulan = $pendapatan * 30;
+            $pengeluaranPerbulan = $pengeluaran * 30;
+        } else {
+            $tipePeriode = 'per_bulan';
+            $pendapatanPerbulan = $pendapatan;
+            $pengeluaranPerbulan = $pengeluaran;
+            $pendapatanPerhari = round($pendapatan / 30, 2);
+            $pengeluaranPerhari = round($pengeluaran / 30, 2);
+        }
+
+        // Sisa Bersih Finansial (Surplus jika > 0, Defisit jika < 0)
+        $penghasilanBersih = $pendapatanPerbulan - $pengeluaranPerbulan;
+        $sisaPerhari = round($penghasilanBersih / 30, 2);
+
+        // 2. Total Anggota Keluarga (Kepala Keluarga + Pasangan + Jumlah Anak)
+        $totalAnggota = max(1, $jumlahAnak + 2);
+        $pendapatanPerKapita = round($pendapatanPerbulan / $totalAnggota, 2);
+        $pengeluaranPerKapita = round($pengeluaranPerbulan / $totalAnggota, 2);
+        $surplusPerKapita = round($penghasilanBersih / $totalAnggota, 2);
+
+        // 3. Base Desil dari Tolak Ukur Pendapatan Bulanan Keluarga
+        // Mengacu pada standar DTSK BPS & Kemensos RI
+        if ($pendapatanPerbulan < 1000000) {
             $baseDesil = 1;
             $kategoriDesil = 'Desil 1 (Sangat Miskin / Ekstrem)';
-        } elseif ($penghasilanPerbulan < 1800000) {
+        } elseif ($pendapatanPerbulan < 1800000) {
             $baseDesil = 2;
             $kategoriDesil = 'Desil 2 (Miskin)';
-        } elseif ($penghasilanPerbulan < 2700000) {
+        } elseif ($pendapatanPerbulan < 2700000) {
             $baseDesil = 3;
             $kategoriDesil = 'Desil 3 (Hampir Miskin)';
-        } elseif ($penghasilanPerbulan < 3800000) {
+        } elseif ($pendapatanPerbulan < 3800000) {
             $baseDesil = 4;
             $kategoriDesil = 'Desil 4 (Rentan Miskin)';
-        } elseif ($penghasilanPerbulan < 5000000) {
+        } elseif ($pendapatanPerbulan < 5000000) {
             $baseDesil = 5;
             $kategoriDesil = 'Desil 5 (Menengah Bawah)';
-        } elseif ($penghasilanPerbulan < 6500000) {
+        } elseif ($pendapatanPerbulan < 6500000) {
             $baseDesil = 6;
             $kategoriDesil = 'Desil 6 (Menengah / Mandiri Awal)';
-        } elseif ($penghasilanPerbulan < 8500000) {
+        } elseif ($pendapatanPerbulan < 8500000) {
             $baseDesil = 7;
             $kategoriDesil = 'Desil 7 (Menengah Mapan)';
-        } elseif ($penghasilanPerbulan < 12000000) {
+        } elseif ($pendapatanPerbulan < 12000000) {
             $baseDesil = 8;
             $kategoriDesil = 'Desil 8 (Menengah Atas)';
-        } elseif ($penghasilanPerbulan < 18000000) {
+        } elseif ($pendapatanPerbulan < 18000000) {
             $baseDesil = 9;
             $kategoriDesil = 'Desil 9 (Mapan)';
         } else {
@@ -61,7 +94,17 @@ class DesilCalculatorService
             $kategoriDesil = 'Desil 10 (Sangat Mapan / Sejahtera)';
         }
 
-        // 3. Evaluasi Skor & Penyesuaian Aset
+        // 4. Penyesuaian Berdasarkan Rasio Pengeluaran & Sisa Finansial (Surplus / Defisit)
+        $penyesuaianKeuangan = 0;
+        if ($penghasilanBersih < -200000 && $baseDesil > 1) {
+            // Defisit lebih dari 200rb per bulan -> rentan terjerat utang, kurangi 1 desil
+            $penyesuaianKeuangan -= 1;
+        } elseif ($penghasilanBersih >= 1500000 && $baseDesil < 10) {
+            // Surplus tabungan kuat di atas 1.5jt per bulan -> tambah 1 desil
+            $penyesuaianKeuangan += 1;
+        }
+
+        // 5. Evaluasi Skor & Penyesuaian Aset
         $poinAset = 0;
 
         // Aset Rumah
@@ -132,20 +175,20 @@ class DesilCalculatorService
                 break;
         }
 
-        // 4. Penyesuaian Desil Berdasarkan Kekayaan Aset & Tanggungan Anak
-        $penyesuaian = 0;
+        // 6. Penyesuaian Desil Berdasarkan Kekayaan Aset & Tanggungan Anak
+        $penyesuaianAset = 0;
         if ($poinAset >= 4) {
-            $penyesuaian += 1; // Aset mewah / lengkap menaikkan +1 desil
+            $penyesuaianAset += 1; // Aset mewah / lengkap menaikkan +1 desil
         } elseif ($poinAset <= -2 && $baseDesil > 2) {
-            $penyesuaian -= 1; // Aset sangat minim mengoreksi -1 desil
+            $penyesuaianAset -= 1; // Aset sangat minim mengoreksi -1 desil
         }
 
         // Tanggungan anak banyak (>= 4) dengan pendapatan per kapita sangat rendah
         if ($jumlahAnak >= 4 && $pendapatanPerKapita < 600000 && $baseDesil > 1) {
-            $penyesuaian -= 1;
+            $penyesuaianAset -= 1;
         }
 
-        $desil = max(1, min(10, $baseDesil + $penyesuaian));
+        $desil = max(1, min(10, $baseDesil + $penyesuaianKeuangan + $penyesuaianAset));
 
         // Update label kategori desil jika ada penyesuaian
         $daftarKategori = [
@@ -162,11 +205,11 @@ class DesilCalculatorService
         ];
         $kategoriDesil = $daftarKategori[$desil] ?? "Desil {$desil}";
 
-        // 5. Total Skor Komposit (0 - 100)
+        // 7. Total Skor Komposit (0 - 100)
         $skorBase = ($desil * 10) - 3;
         $totalSkor = max(10, min(100, round($skorBase + ($poinAset * 1.5))));
 
-        // 6. Status Perkembangan terhadap Desil Sebelumnya
+        // 8. Status Perkembangan terhadap Desil Sebelumnya
         if ($desilSebelumnya !== null && $desilSebelumnya > 0) {
             if ($desil > $desilSebelumnya) {
                 $statusPerkembangan = 'Maju';
@@ -179,7 +222,7 @@ class DesilCalculatorService
             $statusPerkembangan = 'Tetap';
         }
 
-        // 7. Status Kemandirian (Sesuai regulasi: Mandiri jika Desil 6 ke atas)
+        // 9. Status Kemandirian (Sesuai regulasi: Mandiri jika Desil 6 ke atas)
         if ($desil >= 6) {
             $statusKemandirian = 'Mandiri';
         } else {
@@ -191,8 +234,19 @@ class DesilCalculatorService
         }
 
         return [
+            'tipe_periode' => $tipePeriode,
+            'pendapatan' => $pendapatan,
+            'pengeluaran' => $pengeluaran,
+            'pendapatan_perbulan' => $pendapatanPerbulan,
+            'pengeluaran_perbulan' => $pengeluaranPerbulan,
+            'pendapatan_perhari' => $pendapatanPerhari,
+            'pengeluaran_perhari' => $pengeluaranPerhari,
+            'penghasilan_bersih' => $penghasilanBersih,
+            'sisa_perhari' => $sisaPerhari,
             'total_anggota' => $totalAnggota,
-            'pendapatan_per_kapita' => round($pendapatanPerKapita, 2),
+            'pendapatan_per_kapita' => $pendapatanPerKapita,
+            'pengeluaran_per_kapita' => $pengeluaranPerKapita,
+            'surplus_per_kapita' => $surplusPerKapita,
             'skor_pendapatan' => round($skorBase),
             'skor_rumah' => $skorRumah,
             'label_rumah' => $labelRumah,

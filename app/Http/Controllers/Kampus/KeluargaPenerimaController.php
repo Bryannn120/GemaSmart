@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Kampus;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\KeluargaPenerima;
+use App\Models\KampusMitra;
+use App\Services\DataPenerimaExportImportService;
 
 class KeluargaPenerimaController extends Controller
 {
@@ -14,7 +17,8 @@ class KeluargaPenerimaController extends Controller
     public function index(Request $request)
     {
         $tab = $request->query('tab', 'aktif'); // 'aktif' atau 'mandiri'
-        $kampus = \App\Models\KampusMitra::where('user_id', \Illuminate\Support\Facades\Auth::id())->first() ?? \App\Models\KampusMitra::first();
+        $search = $request->query('search');
+        $kampus = KampusMitra::where('user_id', Auth::id())->first() ?? KampusMitra::first();
         
         $baseQuery = KeluargaPenerima::with(['wilayah', 'programBantuan', 'pendamping']);
         if ($kampus) {
@@ -26,6 +30,16 @@ class KeluargaPenerimaController extends Controller
             });
         }
 
+        if ($request->filled('search')) {
+            $term = trim($search);
+            $baseQuery->where(function ($q) use ($term) {
+                $q->where('kepala_keluarga', 'like', "%{$term}%")
+                  ->orWhere('nik', 'like', "%{$term}%")
+                  ->orWhere('no_kk', 'like', "%{$term}%")
+                  ->orWhere('alamat', 'like', "%{$term}%");
+            });
+        }
+
         // Hitung statistik
         $countAktif = (clone $baseQuery)->penerimaAktif()->count();
         $countMandiri = (clone $baseQuery)->mandiri()->count();
@@ -34,18 +48,92 @@ class KeluargaPenerimaController extends Controller
         if ($tab === 'mandiri') {
             $query->mandiri();
         } else {
-            // Otomatis hilangkan penerima yang sudah mandiri atau mencapai desil 6 ke atas
             $query->penerimaAktif();
         }
         
-        $keluarga_penerimas = $query->latest('id')->get();
+        $keluarga_penerimas = $query->latest('id')->paginate(20)->withQueryString();
 
         return view('dashboard.kampus.keluarga_penerima.index', compact(
             'keluarga_penerimas',
             'tab',
+            'search',
             'countAktif',
-            'countMandiri'
+            'countMandiri',
+            'kampus'
         ));
+    }
+
+    /**
+     * Ekspor Data Penerima Binaan Kampus ke Excel (.xlsx) atau CSV (.csv).
+     */
+    public function export(Request $request, DataPenerimaExportImportService $service)
+    {
+        $format = $request->query('format', 'xlsx');
+        $tab = $request->query('tab', 'aktif');
+        $search = $request->query('search');
+
+        $kampus = KampusMitra::where('user_id', Auth::id())->first() ?? KampusMitra::first();
+
+        $context = [
+            'role' => 'kampus',
+            'kampus_id' => $kampus ? $kampus->id : null,
+            'kampus_name' => $kampus ? $kampus->nama_universitas : 'Mitra',
+            'wilayah_binaan' => $kampus ? $kampus->wilayah_binaan : null,
+        ];
+
+        return $service->export($format, $tab, null, null, $search, $context);
+    }
+
+    /**
+     * Download Template Impor Penerima Binaan Kampus.
+     */
+    public function downloadTemplate(Request $request, DataPenerimaExportImportService $service)
+    {
+        $format = $request->query('format', 'xlsx');
+        $kampus = KampusMitra::where('user_id', Auth::id())->first() ?? KampusMitra::first();
+
+        $context = [
+            'role' => 'kampus',
+            'kampus_id' => $kampus ? $kampus->id : null,
+            'kampus_name' => $kampus ? $kampus->nama_universitas : 'Mitra',
+        ];
+
+        return $service->downloadTemplate($format, $context);
+    }
+
+    /**
+     * Impor Data Penerima Bantuan dari Excel/CSV dengan Proteksi Anti-Duplikasi.
+     */
+    public function import(Request $request, DataPenerimaExportImportService $service)
+    {
+        $request->validate([
+            'file' => 'required|file|max:10240',
+            'duplicate_mode' => 'required|in:update,skip',
+        ], [
+            'file.required' => 'Pilih file Excel (.xlsx) atau CSV (.csv) untuk diunggah.',
+            'file.max' => 'Ukuran file maksimal adalah 10 MB.',
+            'duplicate_mode.required' => 'Pilih mode penanganan jika data NIK sudah terdaftar.',
+        ]);
+
+        $kampus = KampusMitra::where('user_id', Auth::id())->first() ?? KampusMitra::first();
+
+        $context = [
+            'role' => 'kampus',
+            'kampus_id' => $kampus ? $kampus->id : null,
+            'kampus_name' => $kampus ? $kampus->nama_universitas : 'Mitra',
+        ];
+
+        $result = $service->import($request->file('file'), $request->duplicate_mode, $context);
+
+        if ($result['success']) {
+            return redirect()->route('kampus.keluarga_penerima.index')
+                ->with('success', $result['message'])
+                ->with('import_errors', $result['stats']['errors'] ?? []);
+        }
+
+        return redirect()->route('kampus.keluarga_penerima.index')
+            ->with('error', $result['message'])
+            ->with('import_errors', $result['stats']['errors'] ?? []);
     }
 
     /**
@@ -55,45 +143,5 @@ class KeluargaPenerimaController extends Controller
     {
         $keluarga_penerima = KeluargaPenerima::with(['wilayah', 'programBantuan', 'pendamping', 'penyaluranBantuans.itemBantuan'])->findOrFail($id);
         return view('dashboard.kampus.keluarga_penerima.show', compact('keluarga_penerima'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

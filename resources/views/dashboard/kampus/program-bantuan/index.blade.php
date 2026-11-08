@@ -14,7 +14,7 @@
             </div>
             <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Program Bantuan Kampus</h1>
             <p class="font-body-md text-text-secondary mt-1">
-                Rancang dan kelola program bantuan subsidi (bibit tanaman produktif, dana modal uang tunai, atau alat/barang) untuk disalurkan oleh kader pendamping lapangan.
+                Rancang dan kelola program bantuan subsidi bibit tanaman produktif serta peralatan tani untuk disalurkan oleh kader pendamping lapangan.
             </p>
         </div>
         <!-- Controls -->
@@ -46,11 +46,11 @@
         </div>
         <div class="bg-canvas-bg rounded-xl p-space-md shadow-sm border border-border-light flex items-center gap-space-md">
             <div class="w-12 h-12 rounded-xl bg-gold-surface flex items-center justify-center text-secondary">
-                <span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+                <span class="material-symbols-outlined text-[24px]">groups</span>
             </div>
             <div>
-                <span class="font-label-md text-label-md text-text-secondary">Total Pagu Anggaran</span>
-                <span class="font-headline-md text-headline-md text-text-primary font-bold block">Rp {{ number_format($totalPagu, 0, ',', '.') }}</span>
+                <span class="font-label-md text-label-md text-text-secondary">Target Penerima</span>
+                <span class="font-headline-md text-headline-md text-text-primary font-bold block">{{ number_format($programs->sum('target_kk')) }} KK</span>
             </div>
         </div>
         <div class="bg-canvas-bg rounded-xl p-space-md shadow-sm border border-border-light flex items-center gap-space-md">
@@ -58,7 +58,7 @@
                 <span class="material-symbols-outlined text-[24px]">category</span>
             </div>
             <div>
-                <span class="font-label-md text-label-md text-text-secondary">Item Subsidi (Bibit/Uang/Alat)</span>
+                <span class="font-label-md text-label-md text-text-secondary">Item Subsidi (Bibit &amp; Alat)</span>
                 <span class="font-headline-md text-headline-md text-text-primary font-bold block">{{ $totalItemBantuan }} Jenis</span>
             </div>
         </div>
@@ -80,7 +80,7 @@
                 <thead class="bg-surface-muted text-text-secondary font-label-md text-label-md border-b border-border-light">
                     <tr>
                         <th class="py-3 px-4 font-semibold">Nama Program</th>
-                        <th class="py-3 px-4 font-semibold">Tahun & Pagu</th>
+                        <th class="py-3 px-4 font-semibold">Tahun Anggaran</th>
                         <th class="py-3 px-4 font-semibold">Target KK</th>
                         <th class="py-3 px-4 font-semibold">Rincian Subsidi Item</th>
                         <th class="py-3 px-4 font-semibold">Status</th>
@@ -100,8 +100,8 @@
                             <p class="text-text-tertiary text-xs mt-0.5 line-clamp-1 pl-10">{{ $program->deskripsi ?? 'Tidak ada deskripsi.' }}</p>
                         </td>
                         <td class="py-3.5 px-4">
-                            <span class="font-bold font-mono text-text-primary block">Rp {{ number_format($program->pagu_anggaran, 0, ',', '.') }}</span>
-                            <span class="text-text-tertiary text-xs">Tahun {{ $program->tahun_anggaran }}</span>
+                            <span class="font-bold text-text-primary block">Tahun {{ $program->tahun_anggaran }}</span>
+                            <span class="text-text-tertiary text-xs">TA Berjalan</span>
                         </td>
                         <td class="py-3.5 px-4 font-mono text-xs">
                             <span class="font-bold text-text-primary">{{ number_format($program->target_kk) }} KK</span>
@@ -112,11 +112,8 @@
                                 <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-green-100 text-green-800">
                                     {{ $program->itemBantuans->where('jenis', 'bibit')->count() }} Bibit
                                 </span>
-                                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800">
-                                    {{ $program->itemBantuans->where('jenis', 'uang')->count() }} Uang
-                                </span>
                                 <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-blue-800">
-                                    {{ $program->itemBantuans->where('jenis', 'barang')->count() }} Alat
+                                    {{ $program->itemBantuans->where('jenis', 'barang')->count() }} Alat/Sarana
                                 </span>
                             </div>
                             <span class="text-text-tertiary text-[11px] block mt-1">Total: {{ $program->item_bantuans_count ?? $program->itemBantuans->count() }} item</span>

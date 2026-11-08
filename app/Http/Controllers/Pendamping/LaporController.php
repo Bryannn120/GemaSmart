@@ -26,16 +26,8 @@ class LaporController extends Controller
         $desaIds = $user->getAssignedDesaIds();
 
         // Ambil ID laporan KUNJUNGAN TERAKHIR per (keluarga_penerima_id, program_bantuan_id)
-        // Ter-scope ke wilayah penugasan pendamping yang sedang login
-        $latestQuery = LaporanTumbuhKembang::query();
-        if (!empty($desaIds)) {
-            $latestQuery->where(function($q) use ($user, $desaIds) {
-                $q->where('pendamping_id', $user->id)
-                  ->orWhereHas('keluarga_penerima', fn($kp) => $kp->whereIn('wilayah_id', $desaIds));
-            });
-        } else {
-            $latestQuery->where('pendamping_id', $user->id);
-        }
+        // Ter-scope hanya ke keluarga yang didampingi oleh pendamping yang sedang login
+        $latestQuery = LaporanTumbuhKembang::where('pendamping_id', $user->id);
 
         $latestReportIds = $latestQuery
             ->selectRaw('MAX(id) as id')
@@ -215,14 +207,7 @@ class LaporController extends Controller
             ->with(['wilayah', 'programBantuan', 'penyaluranBantuans.programBantuan'])
             ->where('status_validasi', 'valid');
 
-        if (!empty($desaIds)) {
-            $keluargaQuery->where(function($q) use ($user, $desaIds) {
-                $q->where('pendamping_id', $user->id)
-                  ->orWhereIn('wilayah_id', $desaIds);
-            });
-        } else {
-            $keluargaQuery->where('pendamping_id', $user->id);
-        }
+        $keluargaQuery->where('pendamping_id', $user->id);
         $keluarga_penerimas = $keluargaQuery->get();
 
         return view('dashboard.pendamping.lapor.create', compact(

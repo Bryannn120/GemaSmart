@@ -21,9 +21,10 @@ use PhpOffice\PhpSpreadsheet\Cell\DataType;
 class DataPenerimaExportImportService
 {
     /**
-     * Ekspor data penerima bantuan ke file Excel (.xlsx) atau CSV (.csv).
+     * Ekspor data penerima bantuan ke file Excel (.xlsx) atau CSV (.csv)
+     * dengan dukungan scoping role (Pemda, Kampus, Pendamping).
      */
-    public function export($format = 'xlsx', $tab = 'aktif', $wilayahId = null, $programId = null, $search = null)
+    public function export($format = 'xlsx', $tab = 'aktif', $wilayahId = null, $programId = null, $search = null, array $context = [])
     {
         $query = KeluargaPenerima::with(['wilayah.parent', 'programBantuan', 'user', 'pendamping', 'kampusMitra']);
 
@@ -31,6 +32,29 @@ class DataPenerimaExportImportService
             $query->mandiri();
         } elseif ($tab === 'aktif') {
             $query->penerimaAktif();
+        }
+
+        // Role-based scoping
+        $role = $context['role'] ?? 'pemda';
+        if ($role === 'kampus' && !empty($context['kampus_id'])) {
+            $kampusId = $context['kampus_id'];
+            $query->where(function ($q) use ($kampusId, $context) {
+                $q->where('kampus_id', $kampusId);
+                if (!empty($context['wilayah_binaan'])) {
+                    $q->orWhereHas('wilayah', function ($w) use ($context) {
+                        $w->where('nama', $context['wilayah_binaan']);
+                    });
+                }
+            });
+        } elseif ($role === 'pendamping' && !empty($context['pendamping_id'])) {
+            $pendId = $context['pendamping_id'];
+            $desaIds = $context['desa_ids'] ?? [];
+            $query->where(function ($q) use ($pendId, $desaIds) {
+                $q->where('pendamping_id', $pendId);
+                if (!empty($desaIds)) {
+                    $q->orWhereIn('wilayah_id', $desaIds);
+                }
+            });
         }
 
         if (!empty($wilayahId)) {
@@ -57,17 +81,27 @@ class DataPenerimaExportImportService
         $penerimas = $query->latest('id')->get();
         $timestamp = date('Y-m-d_H-i-s');
         $tabTitle = ($tab === 'mandiri') ? 'Lulus_Mandiri' : (($tab === 'aktif') ? 'Aktif' : 'Semua');
-        $filename = "Data_Penerima_Bantuan_Bappeda_{$tabTitle}_{$timestamp}." . ($format === 'csv' ? 'csv' : 'xlsx');
+
+        if ($role === 'kampus') {
+            $prefix = 'Data_Penerima_Kampus_' . preg_replace('/[^A-Za-z0-9_]/', '', str_replace(' ', '_', $context['kampus_name'] ?? 'Mitra'));
+        } elseif ($role === 'pendamping') {
+            $prefix = 'Data_Penerima_Pendamping_' . preg_replace('/[^A-Za-z0-9_]/', '', str_replace(' ', '_', $context['pendamping_name'] ?? 'Petugas'));
+        } else {
+            $prefix = 'Data_Penerima_Bantuan_Bappeda';
+        }
+
+        $filename = "{$prefix}_{$tabTitle}_{$timestamp}." . ($format === 'csv' ? 'csv' : 'xlsx');
 
         // Catat Audit Trail
         AuditLog::record(
-            'Bappeda Mengekspor Data Penerima Bantuan',
+            ucfirst($role) . ' Mengekspor Data Penerima Bantuan',
             'KeluargaPenerima',
             null,
             null,
             [
                 'format' => $format,
                 'tab' => $tab,
+                'role' => $role,
                 'total_baris' => $penerimas->count(),
                 'filename' => $filename,
             ]
@@ -77,21 +111,29 @@ class DataPenerimaExportImportService
             return $this->streamCsvExport($penerimas, $filename);
         }
 
-        return $this->streamXlsxExport($penerimas, $filename, $tabTitle);
+        return $this->streamXlsxExport($penerimas, $filename, $tabTitle, $context);
     }
 
     /**
-     * Stream output dalam format Excel (.xlsx) dengan styling rapi khas Bappeda.
+     * Stream output dalam format Excel (.xlsx) dengan styling rapi khas GemaSmart.
      */
-    protected function streamXlsxExport($penerimas, $filename, $tabTitle)
+    protected function streamXlsxExport($penerimas, $filename, $tabTitle, array $context = [])
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Data Penerima Bantuan');
 
+        $role = $context['role'] ?? 'pemda';
+        $subTitleOrg = 'PEMERINTAH KABUPATEN SUMBAWA - BAPPEDA';
+        if ($role === 'kampus') {
+            $subTitleOrg = 'KAMPUS MITRA: ' . strtoupper($context['kampus_name'] ?? 'PERGURUAN TINGGI MITRA');
+        } elseif ($role === 'pendamping') {
+            $subTitleOrg = 'PENDAMPING LAPANGAN: ' . strtoupper($context['pendamping_name'] ?? 'TIM PENDAMPING');
+        }
+
         // Judul Laporan di Sheet
-        $sheet->setCellValue('A1', 'PEMERINTAH KABUPATEN SUMBAWA - BAPPEDA');
-        $sheet->setCellValue('A2', 'DATABASE KELUARGA PENERIMA MANFAAT BANTUAN SOSIAL (' . strtoupper(str_replace('_', ' ', $tabTitle)) . ')');
+        $sheet->setCellValue('A1', $subTitleOrg);
+        $sheet->setCellValue('A2', 'DATABASE KELUARGA PENERIMA MANFAAT BANTUAN (' . strtoupper(str_replace('_', ' ', $tabTitle)) . ')');
         $sheet->setCellValue('A3', 'Diekspor pada: ' . date('d F Y H:i:s') . ' WITA | Total: ' . $penerimas->count() . ' KK');
 
         $sheet->mergeCells('A1:N1');
@@ -113,7 +155,7 @@ class DataPenerimaExportImportService
             'Program Bantuan',
             'Desil',
             'Status Kemandirian',
-            'Penghasilan (Rp)',
+            'Pendapatan/bln (Rp)',
             'Status Validasi',
             'Pendamping Lapangan',
             'Tanggal Terdaftar'
@@ -134,7 +176,7 @@ class DataPenerimaExportImportService
             ],
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '1E3A8A'], // Navy Blue
+                'startColor' => ['rgb' => '00450D'], // Gov Green
             ],
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
@@ -162,7 +204,6 @@ class DataPenerimaExportImportService
             $tglDaftar = $item->created_at ? $item->created_at->format('d/m/Y') : '-';
 
             $sheet->setCellValue('A' . $row, $no);
-            // Simpan NIK dan KK secara eksplisit sebagai STRING untuk mencegah konversi scientific notation di Excel
             $sheet->setCellValueExplicit('B' . $row, (string) ($item->no_kk ?? '-'), DataType::TYPE_STRING);
             $sheet->setCellValueExplicit('C' . $row, (string) ($item->nik ?? '-'), DataType::TYPE_STRING);
             $sheet->setCellValue('D' . $row, $item->kepala_keluarga ?? '-');
@@ -172,22 +213,19 @@ class DataPenerimaExportImportService
             $sheet->setCellValue('H' . $row, $program);
             $sheet->setCellValue('I' . $row, $item->desil ?? 1);
             $sheet->setCellValue('J' . $row, $item->status_kemandirian ?? 'Belum Dinilai');
-            $sheet->setCellValue('K' . $row, (float) ($item->penghasilan_perbulan ?? 0));
+            $sheet->setCellValue('K' . $row, (float) ($item->pendapatan_perbulan ?: ($item->penghasilan_perbulan ?? 0)));
             $sheet->setCellValue('L' . $row, strtoupper($item->status_validasi ?? 'VALID'));
             $sheet->setCellValue('M' . $row, $pendamping);
             $sheet->setCellValue('N' . $row, $tglDaftar);
 
-            // Center align for certain columns
             $sheet->getStyle('A' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle('B' . $row . ':C' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle('I' . $row . ':J' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle('L' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle('N' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-            // Format number untuk penghasilan
             $sheet->getStyle('K' . $row)->getNumberFormat()->setFormatCode('#,##0');
 
-            // Zebra striping
             if ($no % 2 === 0) {
                 $sheet->getStyle('A' . $row . ':N' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('F8FAFC');
             }
@@ -201,7 +239,6 @@ class DataPenerimaExportImportService
             $sheet->getStyle('A5:N' . $lastRow)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('E2E8F0');
         }
 
-        // Auto-fit kolom
         foreach (range(1, 14) as $colIdx) {
             $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIdx);
             $sheet->getColumnDimension($colLetter)->setAutoSize(true);
@@ -224,10 +261,8 @@ class DataPenerimaExportImportService
     {
         return new StreamedResponse(function () use ($penerimas) {
             $handle = fopen('php://output', 'w');
-            // Tulis BOM UTF-8 agar karakter dan simbol dibaca benar oleh Microsoft Excel
             fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
-            // Header CSV
             fputcsv($handle, [
                 'No',
                 'No KK',
@@ -239,7 +274,7 @@ class DataPenerimaExportImportService
                 'Program Bantuan',
                 'Desil',
                 'Status Kemandirian',
-                'Penghasilan Perbulan',
+                'Pendapatan Perbulan',
                 'Status Validasi',
                 'Pendamping',
                 'Tanggal Terdaftar'
@@ -249,7 +284,7 @@ class DataPenerimaExportImportService
             foreach ($penerimas as $item) {
                 fputcsv($handle, [
                     $no++,
-                    "'" . ($item->no_kk ?? ''), // Prefix kutip satu agar tidak terkonversi scientific notation di Excel
+                    "'" . ($item->no_kk ?? ''),
                     "'" . ($item->nik ?? ''),
                     $item->kepala_keluarga ?? '',
                     $item->alamat ?? '',
@@ -258,7 +293,7 @@ class DataPenerimaExportImportService
                     $item->programBantuan->nama_program ?? '',
                     $item->desil ?? 1,
                     $item->status_kemandirian ?? 'Belum Dinilai',
-                    $item->penghasilan_perbulan ?? 0,
+                    $item->pendapatan_perbulan ?: ($item->penghasilan_perbulan ?? 0),
                     $item->status_validasi ?? 'valid',
                     $item->pendamping->name ?? '',
                     $item->created_at ? $item->created_at->format('Y-m-d') : '',
@@ -276,9 +311,10 @@ class DataPenerimaExportImportService
     /**
      * Download template format impor data penerima bantuan (.xlsx atau .csv).
      */
-    public function downloadTemplate($format = 'xlsx')
+    public function downloadTemplate($format = 'xlsx', array $context = [])
     {
-        $filename = "Template_Impor_Penerima_Bantuan_Bappeda." . ($format === 'csv' ? 'csv' : 'xlsx');
+        $role = $context['role'] ?? 'pemda';
+        $filename = "Template_Impor_Penerima_" . ucfirst($role) . "." . ($format === 'csv' ? 'csv' : 'xlsx');
 
         if ($format === 'csv') {
             return new StreamedResponse(function () {
@@ -293,11 +329,11 @@ class DataPenerimaExportImportService
                     'nama_desa',
                     'nama_program',
                     'desil',
-                    'penghasilan_perbulan',
+                    'pendapatan_perbulan',
                     'status_validasi'
                 ]);
 
-                // Baris Contoh 1
+                // Contoh 1
                 fputcsv($handle, [
                     '5204010101900001',
                     '5204010101900001',
@@ -306,20 +342,20 @@ class DataPenerimaExportImportService
                     'Empang Atas',
                     'Pemberdayaan Bibit Jagung Hibrida',
                     '2',
-                    '750000',
+                    '1200000',
                     'valid'
                 ]);
 
-                // Baris Contoh 2
+                // Contoh 2
                 fputcsv($handle, [
                     '5204010101900002',
                     '5204010101900002',
                     'Siti Aminah',
                     'Jl. Lintas Sumbawa RT 03',
                     'Plampang',
-                    'Bantuan Ternak Unggas Rakyat',
+                    'Bantuan Bibit Hortikultura Buah',
                     '3',
-                    '900000',
+                    '1500000',
                     'valid'
                 ]);
 
@@ -331,7 +367,6 @@ class DataPenerimaExportImportService
             ]);
         }
 
-        // Template XLSX dengan Lembar Panduan & Data Referensi
         $spreadsheet = new Spreadsheet();
         
         // Sheet 1: Template Pengisian Data
@@ -346,7 +381,7 @@ class DataPenerimaExportImportService
             'nama_desa',
             'nama_program',
             'desil',
-            'penghasilan_perbulan',
+            'pendapatan_perbulan',
             'status_validasi'
         ];
 
@@ -358,7 +393,7 @@ class DataPenerimaExportImportService
         // Style Header
         $sheet->getStyle('A1:I1')->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
-            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '047857']], // Emerald
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '00450D']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
         ]);
         $sheet->getRowDimension(1)->setRowHeight(26);
@@ -371,7 +406,7 @@ class DataPenerimaExportImportService
         $sheet->setCellValue('E2', 'Empang Atas');
         $sheet->setCellValue('F2', 'Pemberdayaan Bibit Jagung Hibrida');
         $sheet->setCellValue('G2', 2);
-        $sheet->setCellValue('H2', 750000);
+        $sheet->setCellValue('H2', 1200000);
         $sheet->setCellValue('I2', 'valid');
 
         // Contoh Data Baris 3
@@ -380,9 +415,9 @@ class DataPenerimaExportImportService
         $sheet->setCellValue('C3', 'Siti Aminah');
         $sheet->setCellValue('D3', 'Jl. Lintas Sumbawa RT 03');
         $sheet->setCellValue('E3', 'Plampang');
-        $sheet->setCellValue('F3', 'Bantuan Ternak Unggas Rakyat');
+        $sheet->setCellValue('F3', 'Bantuan Bibit Hortikultura Buah');
         $sheet->setCellValue('G3', 3);
-        $sheet->setCellValue('H3', 900000);
+        $sheet->setCellValue('H3', 1500000);
         $sheet->setCellValue('I3', 'valid');
 
         foreach (range(1, 9) as $colIdx) {
@@ -390,7 +425,7 @@ class DataPenerimaExportImportService
             $sheet->getColumnDimension($colLetter)->setAutoSize(true);
         }
 
-        // Sheet 2: Daftar Referensi Wilayah & Program
+        // Sheet 2: Referensi Wilayah & Program
         $refSheet = $spreadsheet->createSheet();
         $refSheet->setTitle('Referensi_Desa_dan_Program');
 
@@ -403,7 +438,12 @@ class DataPenerimaExportImportService
         $refSheet->setCellValue('B2', 'Kecamatan');
         $refSheet->getStyle('A2:B2')->getFont()->setBold(true);
 
-        $desas = Wilayah::where('jenis', 'desa')->with('parent')->where('is_aktif', true)->orderBy('nama')->take(50)->get();
+        $desasQuery = Wilayah::where('jenis', 'desa')->with('parent')->where('is_aktif', true);
+        if ($role === 'pendamping' && !empty($context['desa_ids'])) {
+            $desasQuery->whereIn('id', $context['desa_ids']);
+        }
+        $desas = $desasQuery->orderBy('nama')->take(50)->get();
+
         $r = 3;
         foreach ($desas as $d) {
             $refSheet->setCellValue('A' . $r, $d->nama);
@@ -416,7 +456,7 @@ class DataPenerimaExportImportService
         $refSheet->getStyle('D1')->getFont()->setBold(true);
 
         $refSheet->setCellValue('D2', 'Nama Program');
-        $refSheet->setCellValue('E2', 'Pagu / Target');
+        $refSheet->setCellValue('E2', 'Target KK');
         $refSheet->getStyle('D2:E2')->getFont()->setBold(true);
 
         $programs = ProgramBantuan::where('status', 'aktif')->orderBy('nama_program')->get();
@@ -445,9 +485,10 @@ class DataPenerimaExportImportService
     }
 
     /**
-     * Proses Impor File Excel/CSV Data Penerima Bantuan.
+     * Proses Impor File Excel/CSV Data Penerima Bantuan dengan PROTEKSI ANTI-DUPLIKASI KETAT.
+     * Mencegah duplikasi NIK & No KK baik di dalam file spreadsheet maupun terhadap database.
      */
-    public function import($file, $duplicateMode = 'update')
+    public function import($file, $duplicateMode = 'skip', array $context = [])
     {
         $spreadsheet = IOFactory::load($file->getRealPath());
         $sheet = $spreadsheet->getActiveSheet();
@@ -482,14 +523,14 @@ class DataPenerimaExportImportService
                 $columnMap['nama_program'] = $colLetter;
             } elseif (in_array($normalized, ['desil', 'desilkemiskinan', 'tingkatdesil'])) {
                 $columnMap['desil'] = $colLetter;
-            } elseif (in_array($normalized, ['penghasilan', 'penghasilanperbulan', 'pendapatan', 'gaji'])) {
-                $columnMap['penghasilan_perbulan'] = $colLetter;
+            } elseif (in_array($normalized, ['pendapatan', 'penghasilan', 'penghasilanperbulan', 'pendapatanperbulan', 'gaji'])) {
+                $columnMap['pendapatan_perbulan'] = $colLetter;
             } elseif (in_array($normalized, ['statusvalidasi', 'validasi', 'status'])) {
                 $columnMap['status_validasi'] = $colLetter;
             }
         }
 
-        // Pastikan kolom esensial ditemukan
+        // Validasi kolom wajib
         if (!isset($columnMap['nik']) || !isset($columnMap['kepala_keluarga'])) {
             return [
                 'success' => false,
@@ -498,11 +539,14 @@ class DataPenerimaExportImportService
             ];
         }
 
-        // Cache daftar wilayah dan program untuk mempercepat lookup
         $activeDesas = Wilayah::where('jenis', 'desa')->where('is_aktif', true)->get();
         $activePrograms = ProgramBantuan::where('status', 'aktif')->get();
         $fallbackDesa = $activeDesas->first();
         $fallbackProgram = $activePrograms->first();
+
+        $role = $context['role'] ?? 'pemda';
+        $scopeKampusId = $context['kampus_id'] ?? null;
+        $scopePendampingId = $context['pendamping_id'] ?? null;
 
         $stats = [
             'total' => 0,
@@ -512,11 +556,14 @@ class DataPenerimaExportImportService
             'errors' => [],
         ];
 
+        // SET PENGECEKAN DUPLIKASI DALAM FILE UPLOAD (In-file deduplication)
+        $seenNiksInFile = [];
+        $seenNoKksInFile = [];
+
         DB::beginTransaction();
         try {
-            $line = 2; // Baris kedua pada file
+            $line = 2; // Baris data dimulai dari baris 2
             foreach ($rows as $row) {
-                // Abaikan baris kosong
                 $nikRaw = isset($columnMap['nik']) ? $row[$columnMap['nik']] : null;
                 $namaRaw = isset($columnMap['kepala_keluarga']) ? $row[$columnMap['kepala_keluarga']] : null;
 
@@ -527,22 +574,43 @@ class DataPenerimaExportImportService
 
                 $stats['total']++;
 
-                // Bersihkan NIK & No KK dari format ilmiah (scientific notation)
+                // Bersihkan NIK & No KK
                 $nik = $this->sanitizeNumberString($nikRaw);
                 $noKk = isset($columnMap['no_kk']) ? $this->sanitizeNumberString($row[$columnMap['no_kk']]) : $nik;
                 $kepalaKeluarga = trim((string)$namaRaw);
                 $alamat = isset($columnMap['alamat']) ? trim((string)$row[$columnMap['alamat']]) : '-';
 
                 if (empty($nik) || strlen($nik) < 8) {
-                    $stats['errors'][] = "Baris {$line}: NIK '{$nikRaw}' tidak valid (minimal 8-16 digit).";
+                    $stats['errors'][] = "Baris {$line}: NIK '{$nikRaw}' tidak valid (harus 8-16 digit angka).";
                     $line++;
                     continue;
                 }
 
                 if (empty($kepalaKeluarga)) {
-                    $stats['errors'][] = "Baris {$line}: Nama Kepala Keluarga kosong.";
+                    $stats['errors'][] = "Baris {$line}: Nama Kepala Keluarga tidak boleh kosong.";
                     $line++;
                     continue;
+                }
+
+                // 1. CEK DUPLIKASI DI DALAM FILE (Anti-duplikasi baris yang sama di berkas upload)
+                if (isset($seenNiksInFile[$nik])) {
+                    $prevLine = $seenNiksInFile[$nik];
+                    $stats['skipped']++;
+                    $stats['errors'][] = "Baris {$line}: NIK '{$nik}' duplikat dengan baris {$prevLine} di dalam berkas ini. Dilewati agar data tidak ganda.";
+                    $line++;
+                    continue;
+                }
+                $seenNiksInFile[$nik] = $line;
+
+                if (!empty($noKk) && strlen($noKk) >= 10 && isset($seenNoKksInFile[$noKk])) {
+                    $prevLine = $seenNoKksInFile[$noKk];
+                    $stats['skipped']++;
+                    $stats['errors'][] = "Baris {$line}: Nomor KK '{$noKk}' duplikat dengan baris {$prevLine} di dalam berkas ini. Dilewati agar data tidak ganda.";
+                    $line++;
+                    continue;
+                }
+                if (!empty($noKk) && strlen($noKk) >= 10) {
+                    $seenNoKksInFile[$noKk] = $line;
                 }
 
                 // Lookup Wilayah / Desa
@@ -574,64 +642,104 @@ class DataPenerimaExportImportService
                 // Status Kemandirian Otomatis: Desil 6+ adalah Mandiri
                 $statusKemandirian = ($desil >= 6) ? 'Mandiri' : 'Belum Dinilai';
 
-                // Penghasilan perbulan
-                $penghasilanRaw = isset($columnMap['penghasilan_perbulan']) ? $row[$columnMap['penghasilan_perbulan']] : 0;
-                $penghasilan = (float) preg_replace('/[^0-9.]/', '', (string)$penghasilanRaw);
+                // Pendapatan perbulan
+                $pendapatanRaw = isset($columnMap['pendapatan_perbulan']) ? $row[$columnMap['pendapatan_perbulan']] : 0;
+                $pendapatan = (float) preg_replace('/[^0-9.]/', '', (string)$pendapatanRaw);
 
                 // Status validasi
                 $validasiRaw = isset($columnMap['status_validasi']) ? strtolower(trim((string)$row[$columnMap['status_validasi']])) : 'valid';
                 $statusValidasi = in_array($validasiRaw, ['valid', 'proses_lapangan', 'menunggu_validasi', 'anomali']) ? $validasiRaw : 'valid';
 
-                // Cek apakah data penerima sudah ada sebelumnya berdasarkan NIK atau No KK
-                $existing = KeluargaPenerima::where('nik', $nik)
-                    ->orWhere(function ($q) use ($noKk) {
-                        if (!empty($noKk) && strlen($noKk) >= 10) {
-                            $q->where('no_kk', $noKk);
-                        }
-                    })
-                    ->first();
+                // 2. CEK DUPLIKASI TERHADAP DATABASE SECARA TERPISAH (Termasuk Soft Deleted Records)
+                $existingByNik = KeluargaPenerima::withTrashed()->with('wilayah')->where('nik', $nik)->first();
+                $existingByKk = (!empty($noKk) && strlen($noKk) >= 10)
+                    ? KeluargaPenerima::withTrashed()->with('wilayah')->where('no_kk', $noKk)->first()
+                    : null;
+
+                if ($duplicateMode === 'skip') {
+                    if ($existingByNik) {
+                        $desa = $existingByNik->wilayah ? $existingByNik->wilayah->nama : 'Sumbawa';
+                        $stats['skipped']++;
+                        $stats['errors'][] = "Baris {$line}: NIK '{$nik}' sudah terdaftar atas nama {$existingByNik->kepala_keluarga} (Desa {$desa}). Dilewati demi mencegah duplikasi.";
+                        $line++;
+                        continue;
+                    }
+                    if ($existingByKk) {
+                        $desa = $existingByKk->wilayah ? $existingByKk->wilayah->nama : 'Sumbawa';
+                        $stats['skipped']++;
+                        $stats['errors'][] = "Baris {$line}: Nomor KK '{$noKk}' sudah terdaftar atas nama {$existingByKk->kepala_keluarga} (Desa {$desa}). Dilewati demi mencegah duplikasi.";
+                        $line++;
+                        continue;
+                    }
+                }
+
+                $existing = $existingByNik ?: $existingByKk;
 
                 if ($existing) {
-                    if ($duplicateMode === 'skip') {
+                    // Deteksi konflik silang: NIK milik keluarga A, KK milik keluarga B
+                    if ($existingByNik && $existingByKk && $existingByNik->id !== $existingByKk->id) {
                         $stats['skipped']++;
+                        $stats['errors'][] = "Baris {$line}: Konflik identitas silang — NIK '{$nik}' milik {$existingByNik->kepala_keluarga}, namun No KK '{$noKk}' milik {$existingByKk->kepala_keluarga}. Baris dilewati demi integritas data.";
                         $line++;
                         continue;
                     }
 
-                    // Update data yang sudah ada
-                    $existing->update([
-                        'no_kk' => $noKk,
+                    // Mode update: perbarui data yang ada tanpa membuat entri ganda
+                    if ($existing->trashed()) {
+                        $existing->restore();
+                    }
+
+                    $updateData = [
                         'kepala_keluarga' => $kepalaKeluarga,
                         'alamat' => $alamat ?: $existing->alamat,
                         'wilayah_id' => $wilayahId ?: $existing->wilayah_id,
                         'program_bantuan_id' => $programId ?: $existing->program_bantuan_id,
                         'desil' => $desil,
-                        'penghasilan_perbulan' => $penghasilan > 0 ? $penghasilan : $existing->penghasilan_perbulan,
+                        'penghasilan_perbulan' => $pendapatan > 0 ? $pendapatan : $existing->penghasilan_perbulan,
+                        'pendapatan_perbulan' => $pendapatan > 0 ? $pendapatan : ($existing->pendapatan_perbulan ?: $existing->penghasilan_perbulan),
+                        'pendapatan' => $pendapatan > 0 ? $pendapatan : ($existing->pendapatan ?: $existing->penghasilan_perbulan),
                         'status_kemandirian' => $statusKemandirian,
                         'status_validasi' => $statusValidasi,
-                    ]);
+                    ];
 
-                    // Update nama di User jika terhubung
+                    // Hanya perbarui no_kk jika tidak menyebabkan tabrakan dengan record lain
+                    if (!empty($noKk) && strlen($noKk) >= 10) {
+                        $collisionCheck = KeluargaPenerima::withTrashed()
+                            ->where('no_kk', $noKk)
+                            ->where('id', '!=', $existing->id)
+                            ->exists();
+                        if (!$collisionCheck) {
+                            $updateData['no_kk'] = $noKk;
+                        }
+                    }
+
+                    if ($role === 'pendamping' && $scopePendampingId) {
+                        $updateData['pendamping_id'] = $scopePendampingId;
+                    }
+                    if ($scopeKampusId) {
+                        $updateData['kampus_id'] = $scopeKampusId;
+                    }
+
+                    $existing->update($updateData);
+
                     if ($existing->user) {
                         $existing->user->update(['name' => $kepalaKeluarga]);
                     }
 
                     $stats['updated']++;
                 } else {
-                    // Buat Akun User Penerima Otomatis
+                    // Buat Akun User Penerima Otomatis jika belum ada
                     $userEmail = $nik . '@penerima.com';
-                    $user = User::where('email', $userEmail)->first();
-                    if (!$user) {
-                        $user = User::create([
+                    $user = User::firstOrCreate(
+                        ['email' => $userEmail],
+                        [
                             'name' => $kepalaKeluarga,
-                            'email' => $userEmail,
                             'password' => Hash::make($noKk),
                             'role' => 'penerima',
-                        ]);
-                    }
+                        ]
+                    );
 
-                    // Insert KeluargaPenerima Baru
-                    KeluargaPenerima::create([
+                    $insertData = [
                         'no_kk' => $noKk,
                         'nik' => $nik,
                         'kepala_keluarga' => $kepalaKeluarga,
@@ -639,12 +747,21 @@ class DataPenerimaExportImportService
                         'wilayah_id' => $wilayahId,
                         'program_bantuan_id' => $programId,
                         'desil' => $desil,
-                        'penghasilan_perbulan' => $penghasilan,
+                        'tipe_periode' => 'per_bulan',
+                        'pendapatan' => $pendapatan,
+                        'pengeluaran' => 0,
+                        'pendapatan_perbulan' => $pendapatan,
+                        'pengeluaran_perbulan' => 0,
+                        'penghasilan_bersih' => $pendapatan,
+                        'penghasilan_perbulan' => $pendapatan,
                         'status_kemandirian' => $statusKemandirian,
                         'status_validasi' => $statusValidasi,
                         'user_id' => $user->id,
-                    ]);
+                        'kampus_id' => $scopeKampusId,
+                        'pendamping_id' => $scopePendampingId,
+                    ];
 
+                    KeluargaPenerima::create($insertData);
                     $stats['new']++;
                 }
 
@@ -655,23 +772,24 @@ class DataPenerimaExportImportService
 
             // Catat Audit Log
             AuditLog::record(
-                'Bappeda Mengimpor Data Penerima Bantuan (Excel/CSV)',
+                ucfirst($role) . ' Mengimpor Data Penerima Bantuan (Excel/CSV)',
                 'KeluargaPenerima',
                 null,
                 null,
                 [
+                    'role' => $role,
                     'total_dibaca' => $stats['total'],
                     'sukses_baru' => $stats['new'],
                     'sukses_diperbarui' => $stats['updated'],
                     'dilewati' => $stats['skipped'],
-                    'jumlah_error' => count($stats['errors']),
+                    'jumlah_catatan' => count($stats['errors']),
                     'mode' => $duplicateMode,
                 ]
             );
 
             return [
                 'success' => true,
-                'message' => "Proses impor selesai. Berhasil menambahkan {$stats['new']} data baru dan memperbarui {$stats['updated']} data. " . ($stats['skipped'] > 0 ? "({$stats['skipped']} data dilewati). " : ""),
+                'message' => "Proses impor selesai. Berhasil menambahkan {$stats['new']} data baru dan memperbarui {$stats['updated']} data. " . ($stats['skipped'] > 0 ? "({$stats['skipped']} data dilewati demi mencegah duplikasi). " : ""),
                 'stats' => $stats,
             ];
         } catch (\Throwable $e) {
@@ -692,12 +810,10 @@ class DataPenerimaExportImportService
         if (is_null($value)) return '';
         $str = trim((string)$value);
 
-        // Jika terdeteksi format ilmiah Excel e.g. 5.204E+15
         if (is_numeric($str) && (str_contains(strtoupper($str), 'E+') || str_contains(strtoupper($str), 'E-'))) {
             return number_format((float)$str, 0, '', '');
         }
 
-        // Hilangkan karakter non-numerik seperti kutip, spasi, dash
         return preg_replace('/[^0-9]/', '', $str);
     }
 }

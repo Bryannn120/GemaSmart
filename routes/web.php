@@ -41,7 +41,7 @@ Route::get('/sibibit', function () {
 Route::get('/profil-inovasi/download', function () {
     $filePath = base_path('PROFIL_INOVASI_GEMASMART_SIBIBIT.md');
     if (file_exists($filePath)) {
-        return response()->download($filePath, 'PROFIL_INOVASI_GEMASMART_SIBIBIT.md');
+        return response()->download($filePath, 'PROFIL_INOVASI_GEMASMART.md');
     }
     return redirect()->route('landing');
 })->name('profil.download');
@@ -54,6 +54,10 @@ Route::get('/panduan/download', function () {
     return redirect()->route('landing');
 })->name('panduan.download');
 
+// Pelaporan Mandiri Publik (Tanpa Perlu Login)
+Route::post('/lapor-mandiri', [\App\Http\Controllers\PublicLaporanController::class, 'store'])->name('public.lapor.store');
+Route::get('/lapor-mandiri/cek-nik', [\App\Http\Controllers\PublicLaporanController::class, 'cekNik'])->name('public.lapor.cek_nik');
+Route::get('/penerima/cek-duplikasi', [\App\Http\Controllers\PublicLaporanController::class, 'cekDuplikasiPenerima'])->name('penerima.cek_duplikasi');
 
 use App\Http\Controllers\AuthController;
 
@@ -103,12 +107,15 @@ Route::middleware(['auth', 'role:kampus'])->group(function () {
         Route::delete('/program-bantuan/{programId}/item/{itemId}', [\App\Http\Controllers\Kampus\ProgramBantuanController::class, 'destroyItem'])->name('program-bantuan.item.destroy');
         Route::redirect('/pengadaan', '/kampus/program-bantuan')->name('pengadaan.index');
         Route::resource('/pendamping', \App\Http\Controllers\Kampus\PendampingController::class);
+        Route::get('/keluarga_penerima/export', [\App\Http\Controllers\Kampus\KeluargaPenerimaController::class, 'export'])->name('keluarga_penerima.export');
+        Route::get('/keluarga_penerima/template', [\App\Http\Controllers\Kampus\KeluargaPenerimaController::class, 'downloadTemplate'])->name('keluarga_penerima.template');
+        Route::post('/keluarga_penerima/import', [\App\Http\Controllers\Kampus\KeluargaPenerimaController::class, 'import'])->name('keluarga_penerima.import');
         Route::resource('/keluarga_penerima', \App\Http\Controllers\Kampus\KeluargaPenerimaController::class);
         Route::resource('/penyaluran', \App\Http\Controllers\Kampus\PenyaluranController::class);
         Route::resource('/monitoring', \App\Http\Controllers\Kampus\MonitoringController::class);
         Route::get('/laporan/cetak-pdf', [\App\Http\Controllers\Kampus\LaporanController::class, 'cetakPdf'])->name('laporan.pdf');
-        Route::get('/laporan/spj-pdf', [\App\Http\Controllers\Kampus\LaporanController::class, 'spjPdf'])->name('laporan.spj-pdf');
         Route::get('/laporan/log-pendamping-pdf', [\App\Http\Controllers\Kampus\LaporanController::class, 'logPendampingPdf'])->name('laporan.log-pendamping-pdf');
+        Route::get('/laporan/penerima/{id}', [\App\Http\Controllers\Kampus\LaporanController::class, 'showPenerima'])->name('laporan.penerima.show');
         Route::resource('/laporan', \App\Http\Controllers\Kampus\LaporanController::class);
         Route::resource('/pengaturan', \App\Http\Controllers\Kampus\PengaturanController::class);
     });
@@ -119,6 +126,11 @@ Route::middleware(['auth', 'role:pendamping'])->group(function () {
     Route::prefix('pendamping')->name('pendamping.')->group(function () {
         Route::resource('/tugas-validasi', \App\Http\Controllers\Pendamping\TugasValidasiController::class)->names('tugas-validasi');
         Route::resource('/lapor-tumbuh-kembang', \App\Http\Controllers\Pendamping\LaporController::class)->names('lapor');
+        Route::get('/laporan-penerima', [\App\Http\Controllers\Pendamping\LaporanPenerimaController::class, 'index'])->name('laporan-penerima.index');
+        Route::get('/laporan-penerima/{id}', [\App\Http\Controllers\Pendamping\LaporanPenerimaController::class, 'show'])->name('laporan-penerima.show');
+        Route::get('/keluarga_penerima-binaan/export', [\App\Http\Controllers\Pendamping\KeluargaPenerimaController::class, 'export'])->name('keluarga_penerima.export');
+        Route::get('/keluarga_penerima-binaan/template', [\App\Http\Controllers\Pendamping\KeluargaPenerimaController::class, 'downloadTemplate'])->name('keluarga_penerima.template');
+        Route::post('/keluarga_penerima-binaan/import', [\App\Http\Controllers\Pendamping\KeluargaPenerimaController::class, 'import'])->name('keluarga_penerima.import');
         Route::resource('/keluarga_penerima-binaan', \App\Http\Controllers\Pendamping\KeluargaPenerimaController::class)->names('keluarga_penerima');
         Route::get('/keluarga_penerima-binaan/{id}/penilaian/create', [\App\Http\Controllers\Pendamping\PenilaianKemandirianController::class, 'create'])->name('keluarga_penerima.penilaian.create');
         Route::post('/keluarga_penerima-binaan/{id}/penilaian', [\App\Http\Controllers\Pendamping\PenilaianKemandirianController::class, 'store'])->name('keluarga_penerima.penilaian.store');

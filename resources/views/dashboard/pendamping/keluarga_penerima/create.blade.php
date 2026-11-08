@@ -49,6 +49,7 @@
                         <input type="text" name="nik" id="nik" value="{{ old('nik') }}" required maxlength="16" minlength="16"
                             placeholder="16 digit NIK sesuai KTP"
                             class="w-full px-3.5 py-2.5 rounded-xl border border-border-medium bg-surface-subtle focus:bg-white text-text-primary font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                        <div id="nik-dup-alert" class="hidden text-xs text-status-fraud font-medium mt-1 flex items-start gap-1 p-2 rounded-lg bg-status-fraud-surface border border-status-fraud/20"></div>
                         <span class="text-[11px] text-text-tertiary mt-1 block">Digunakan sebagai username login akun penerima.</span>
                     </div>
 
@@ -59,6 +60,7 @@
                         <input type="text" name="no_kk" id="no_kk" value="{{ old('no_kk') }}" required maxlength="16" minlength="16"
                             placeholder="16 digit Nomor Kartu Keluarga"
                             class="w-full px-3.5 py-2.5 rounded-xl border border-border-medium bg-surface-subtle focus:bg-white text-text-primary font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                        <div id="no-kk-dup-alert" class="hidden text-xs text-status-fraud font-medium mt-1 flex items-start gap-1 p-2 rounded-lg bg-status-fraud-surface border border-status-fraud/20"></div>
                         <span class="text-[11px] text-text-tertiary mt-1 block">Digunakan sebagai password awal akun penerima.</span>
                     </div>
 
@@ -184,7 +186,7 @@
                 <a href="{{ route('pendamping.keluarga_penerima.index') }}" class="w-full sm:w-auto px-space-md py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-text-secondary hover:text-text-primary font-label-md text-xs font-semibold transition-colors text-center">
                     Batal
                 </a>
-                <button type="submit" class="w-full sm:w-auto px-space-xl py-3 rounded-xl bg-primary hover:bg-gov-green-dark text-white font-label-md text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                <button type="submit" id="submit-btn" class="w-full sm:w-auto px-space-xl py-3 rounded-xl bg-primary hover:bg-gov-green-dark text-white font-label-md text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined text-[20px]">person_add</span>
                     <span>Simpan Data Penerima Baru</span>
                 </button>
@@ -192,4 +194,96 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nikInput = document.getElementById('nik');
+    const noKkInput = document.getElementById('no_kk');
+    const nikAlert = document.getElementById('nik-dup-alert');
+    const noKkAlert = document.getElementById('no-kk-dup-alert');
+    const submitBtn = document.getElementById('submit-btn');
+    const form = submitBtn ? submitBtn.closest('form') : null;
+
+    let nikDuplicate = false;
+    let noKkDuplicate = false;
+    let debounceTimer;
+
+    function updateSubmitState() {
+        if (!submitBtn) return;
+        if (nikDuplicate || noKkDuplicate) {
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            submitBtn.title = 'Data NIK atau No. KK sudah terdaftar. Perbaiki sebelum menyimpan.';
+        } else {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            submitBtn.title = '';
+        }
+    }
+
+    function checkDuplication(field, value, alertEl) {
+        if (!value || value.length < 12) {
+            if (field === 'nik') nikDuplicate = false;
+            if (field === 'no_kk') noKkDuplicate = false;
+            alertEl.classList.add('hidden');
+            alertEl.innerHTML = '';
+            updateSubmitState();
+            return;
+        }
+
+        const params = new URLSearchParams();
+        params.append(field, value);
+
+        fetch("{{ route('penerima.cek_duplikasi') }}?" + params.toString())
+            .then(res => res.json())
+            .then(data => {
+                if (data.duplicate) {
+                    if (field === 'nik') nikDuplicate = true;
+                    if (field === 'no_kk') noKkDuplicate = true;
+                    alertEl.innerHTML = `<span class="material-symbols-outlined text-[16px] text-status-fraud shrink-0 mt-0.5">error</span><span class="text-status-fraud font-medium leading-tight">${data.message}</span>`;
+                    alertEl.classList.remove('hidden');
+                } else {
+                    if (field === 'nik') nikDuplicate = false;
+                    if (field === 'no_kk') noKkDuplicate = false;
+                    alertEl.classList.add('hidden');
+                    alertEl.innerHTML = '';
+                }
+                updateSubmitState();
+            })
+            .catch(err => {
+                console.error('Gagal memeriksa duplikasi:', err);
+            });
+    }
+
+    if (nikInput && nikAlert) {
+        nikInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const val = this.value.replace(/\D/g, '');
+            debounceTimer = setTimeout(() => checkDuplication('nik', val, nikAlert), 400);
+        });
+    }
+
+    if (noKkInput && noKkAlert) {
+        noKkInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const val = this.value.replace(/\D/g, '');
+            debounceTimer = setTimeout(() => checkDuplication('no_kk', val, noKkAlert), 400);
+        });
+    }
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (nikDuplicate || noKkDuplicate) {
+                e.preventDefault();
+                alert('Tidak dapat menyimpan: Data NIK atau No. KK sudah terdaftar dalam sistem!');
+                return false;
+            }
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<span class="inline-block animate-spin mr-2">⏳</span> Menyimpan Data...`;
+            }
+        });
+    }
+});
+</script>
 @endsection

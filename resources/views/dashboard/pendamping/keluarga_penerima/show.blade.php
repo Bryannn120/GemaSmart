@@ -96,14 +96,40 @@
 
                 <div class="w-full text-left flex flex-col gap-3 text-sm">
                     <div>
-                        <span class="text-text-tertiary text-xs uppercase font-semibold block">Penghasilan Terkini</span>
-                        <span class="text-text-primary font-bold text-base font-mono">
-                            @if($keluarga_penerima->penghasilan_perbulan > 0)
-                                Rp {{ number_format($keluarga_penerima->penghasilan_perbulan, 0, ',', '.') }} <span class="text-xs font-normal text-text-secondary">/bulan</span>
-                            @else
-                                <span class="text-text-tertiary font-normal text-xs">Belum diinput asesmen</span>
+                        <span class="text-text-tertiary text-xs uppercase font-semibold block">Tolak Ukur Finansial</span>
+                        <div class="flex flex-col gap-1 mt-1">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-text-secondary">Pendapatan:</span>
+                                <span class="font-bold text-text-primary font-mono">
+                                    @if($keluarga_penerima->pendapatan_perbulan > 0 || $keluarga_penerima->penghasilan_perbulan > 0)
+                                        Rp {{ number_format($keluarga_penerima->pendapatan_perbulan ?: $keluarga_penerima->penghasilan_perbulan, 0, ',', '.') }}<span class="text-[10px] text-text-tertiary">/bln</span>
+                                        @if($keluarga_penerima->tipe_periode === 'per_hari' && $keluarga_penerima->pendapatan > 0)
+                                            <span class="text-[10px] text-primary block">(Rp {{ number_format($keluarga_penerima->pendapatan, 0, ',', '.') }}/hr)</span>
+                                        @endif
+                                    @else
+                                        <span class="text-text-tertiary font-normal">Belum diinput</span>
+                                    @endif
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-text-secondary">Pengeluaran:</span>
+                                <span class="font-bold text-text-primary font-mono">
+                                    @if($keluarga_penerima->pengeluaran_perbulan > 0 || $keluarga_penerima->pengeluaran > 0)
+                                        Rp {{ number_format($keluarga_penerima->pengeluaran_perbulan ?: ($keluarga_penerima->pengeluaran * 30), 0, ',', '.') }}<span class="text-[10px] text-text-tertiary">/bln</span>
+                                    @else
+                                        <span class="text-text-tertiary font-normal">-</span>
+                                    @endif
+                                </span>
+                            </div>
+                            @if($keluarga_penerima->penghasilan_bersih != 0 || $keluarga_penerima->pengeluaran_perbulan > 0)
+                            <div class="flex items-center justify-between text-xs pt-1 border-t border-border-light">
+                                <span class="text-text-secondary font-semibold">Sisa Bersih:</span>
+                                <span class="font-bold font-mono {{ $keluarga_penerima->penghasilan_bersih >= 0 ? 'text-emerald-700' : 'text-red-600' }}">
+                                    {{ $keluarga_penerima->penghasilan_bersih >= 0 ? '+' : '' }}Rp {{ number_format($keluarga_penerima->penghasilan_bersih, 0, ',', '.') }}<span class="text-[10px]">/bln</span>
+                                </span>
+                            </div>
                             @endif
-                        </span>
+                        </div>
                     </div>
 
                     <div>
@@ -346,31 +372,42 @@
                             </div>
                         </div>
 
-                        <!-- Parameter Indikator Sosial Ekonomi -->
+                        <!-- Parameter Tolak Ukur & Indikator Sosial Ekonomi -->
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                             <div class="p-2.5 rounded-lg bg-surface-muted">
-                                <span class="text-text-tertiary text-[11px] block">Penghasilan / bln:</span>
-                                <span class="font-bold text-text-primary font-mono">
-                                    Rp {{ number_format($nilai->penghasilan_perbulan ?? 0, 0, ',', '.') }}
+                                <span class="text-text-tertiary text-[11px] block">Pendapatan:</span>
+                                <span class="font-bold text-text-primary font-mono block">
+                                    Rp {{ number_format($nilai->pendapatan_perbulan ?: ($nilai->penghasilan_perbulan ?? 0), 0, ',', '.') }}<span class="text-[10px] text-text-tertiary">/bln</span>
+                                </span>
+                                @if($nilai->tipe_periode === 'per_hari' && $nilai->pendapatan > 0)
+                                    <span class="text-[10px] text-primary font-mono block">Basis harian: Rp {{ number_format($nilai->pendapatan, 0, ',', '.') }}/hr</span>
+                                @endif
+                            </div>
+                            <div class="p-2.5 rounded-lg bg-surface-muted">
+                                <span class="text-text-tertiary text-[11px] block">Pengeluaran & Sisa:</span>
+                                <span class="font-bold text-text-primary font-mono block">
+                                    Rp {{ number_format($nilai->pengeluaran_perbulan ?: (($nilai->pengeluaran ?? 0) * 30), 0, ',', '.') }}<span class="text-[10px] text-text-tertiary">/bln</span>
+                                </span>
+                                @php
+                                    $sisa = $nilai->penghasilan_bersih ?: (($nilai->pendapatan_perbulan ?: $nilai->penghasilan_perbulan) - ($nilai->pengeluaran_perbulan ?: 0));
+                                @endphp
+                                <span class="text-[10px] font-bold font-mono block {{ $sisa >= 0 ? 'text-emerald-700' : 'text-red-600' }}">
+                                    {{ $sisa >= 0 ? 'Surplus' : 'Defisit' }}: {{ $sisa >= 0 ? '+' : '' }}Rp {{ number_format($sisa, 0, ',', '.') }}
                                 </span>
                             </div>
                             <div class="p-2.5 rounded-lg bg-surface-muted">
-                                <span class="text-text-tertiary text-[11px] block">Pendapatan / kapita:</span>
-                                <span class="font-bold text-primary font-mono">
+                                <span class="text-text-tertiary text-[11px] block">Per Kapita / bln:</span>
+                                <span class="font-bold text-primary font-mono block">
                                     Rp {{ number_format($nilai->pendapatan_per_kapita ?? 0, 0, ',', '.') }}
                                 </span>
+                                <span class="text-[10px] text-text-tertiary block capitalize">{{ str_replace('_', ' ', $nilai->aset_rumah ?? 'Rumah Sederhana') }}</span>
                             </div>
                             <div class="p-2.5 rounded-lg bg-surface-muted">
-                                <span class="text-text-tertiary text-[11px] block">Kondisi Rumah:</span>
-                                <span class="font-semibold text-text-primary capitalize">
-                                    {{ str_replace('_', ' ', $nilai->aset_rumah ?? 'Semi Permanen') }}
-                                </span>
-                            </div>
-                            <div class="p-2.5 rounded-lg bg-surface-muted">
-                                <span class="text-text-tertiary text-[11px] block">Skor Sistem:</span>
-                                <span class="font-bold text-secondary">
+                                <span class="text-text-tertiary text-[11px] block">Skor & Desil:</span>
+                                <span class="font-bold text-secondary block">
                                     {{ $nilai->total_skor ?? 0 }} / 100
                                 </span>
+                                <span class="text-[10px] text-text-tertiary block">Desil Hasil: {{ $nilai->desil_hasil ?? $nilai->desil_sebelumnya }}</span>
                             </div>
                         </div>
 

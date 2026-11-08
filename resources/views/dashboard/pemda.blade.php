@@ -1,6 +1,35 @@
 @extends('layouts.pemda')
 
 @section('content')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+    .leaflet-popup-content-wrapper {
+        border-radius: 14px;
+        padding: 0;
+        overflow: hidden;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+    .leaflet-popup-content {
+        margin: 0;
+        width: 270px !important;
+        font-family: 'Inter', sans-serif;
+    }
+    .leaflet-container {
+        font-family: 'Inter', sans-serif;
+        background: #e2e8f0;
+    }
+    .custom-leaflet-marker-div {
+        background: transparent !important;
+        border: none !important;
+    }
+    .pemda-map-pin {
+        transition: transform 0.18s ease-in-out, box-shadow 0.18s ease-in-out;
+    }
+    .pemda-map-pin:hover {
+        transform: scale(1.1) translateY(-2px);
+        z-index: 1000 !important;
+    }
+</style>
             <div class="flex flex-col w-full gap-space-xl">
                 <!-- Top Command & Action Bar -->
                 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-lg">
@@ -42,60 +71,9 @@
                     </div>
                 </div>
 
-                <!-- RINGKASAN KEUANGAN: Dana Bappeda ke Kampus & Pengurangan Penggunaan -->
-                <div class="p-space-lg rounded-2xl bg-gradient-to-r from-gov-green-dark to-primary-container text-white shadow-sm border border-primary/20 flex flex-col gap-space-md">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b border-white/20 pb-space-sm">
-                        <div class="flex items-center gap-2">
-                            <span class="p-2 rounded-lg bg-white/20 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-white text-[22px]">account_balance</span>
-                            </span>
-                            <div>
-                                <h2 class="text-base font-bold text-white tracking-tight">Alokasi Dana Bappeda ke Kampus Mitra &amp; Realisasi Penggunaan Kas</h2>
-                                <p class="text-xs text-white/80">Total pagu hibah bantuan yang diserahkan Bappeda kepada seluruh Kampus Mitra dan serapan riil di lapangan</p>
-                            </div>
-                        </div>
-                        <a href="{{ route('pemda.kampus-mitra.index') }}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs font-semibold backdrop-blur-sm transition-colors w-fit">
-                            <span>Kelola Kampus Mitra</span>
-                            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-                        </a>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
-                        <div class="p-space-md rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
-                            <span class="text-xs text-white/75 font-medium uppercase tracking-wider block">Dana Diberikan Bappeda ke Kampus</span>
-                            <div class="text-2xl lg:text-3xl font-extrabold text-white mt-1 tracking-tight">
-                                Rp {{ number_format($totalDanaBappeda ?? 0, 0, ',', '.') }}
-                            </div>
-                            <span class="text-[11px] text-white/70 mt-1 block">Total alokasi pagu kampus mitra</span>
-                        </div>
-
-                        <div class="p-space-md rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
-                            <span class="text-xs text-amber-200 font-medium uppercase tracking-wider block flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[14px]">trending_down</span>
-                                <span>Total Penggunaan Dana (-)</span>
-                            </span>
-                            <div class="text-2xl lg:text-3xl font-extrabold text-amber-300 mt-1 tracking-tight">
-                                Rp {{ number_format($totalDanaTerpakai ?? 0, 0, ',', '.') }}
-                            </div>
-                            <span class="text-[11px] text-white/70 mt-1 block">Realisasi bantuan tersalur ke masyarakat</span>
-                        </div>
-
-                        <div class="p-space-md rounded-xl bg-white/20 backdrop-blur-md border border-white/30 shadow-inner">
-                            <span class="text-xs text-emerald-200 font-bold uppercase tracking-wider block flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[14px]">savings</span>
-                                <span>Sisa Saldo Kas Kampus (=)</span>
-                            </span>
-                            <div class="text-2xl lg:text-3xl font-extrabold text-white mt-1 tracking-tight">
-                                Rp {{ number_format($totalSisaDana ?? 0, 0, ',', '.') }}
-                            </div>
-                            <span class="text-[11px] text-emerald-100 mt-1 font-medium block">Sisa dana tersisa siap disalurkan (Serapan: {{ $persenSerapanBappeda }}%)</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- KPI Cards Grid (4 Columns) -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-lg">
-                    <!-- Card 1: Program Bantuan & Pagu Dana -->
+                    <!-- Card 1: Program Bantuan & Penyaluran -->
                     <div class="bg-canvas-bg rounded-xl p-space-lg shadow-sm border border-border-light flex flex-col justify-between relative overflow-hidden">
                         <div class="flex items-start justify-between">
                             <div class="w-10 h-10 rounded-xl bg-status-verified-surface flex items-center justify-center text-primary">
@@ -106,13 +84,13 @@
                             </span>
                         </div>
                         <div class="mt-space-md">
-                            <span class="font-label-md text-label-md text-text-secondary block">Bantuan Dana Tersalurkan</span>
-                            <span class="font-headline-xl text-headline-xl text-text-primary font-bold tracking-tight block mt-1">Rp {{ number_format($totalUangDisalurkan ?? 0, 0, ',', '.') }}</span>
+                            <span class="font-label-md text-label-md text-text-secondary block">Total Penyaluran Bantuan</span>
+                            <span class="font-headline-xl text-headline-xl text-text-primary font-bold tracking-tight block mt-1">{{ number_format($totalPenyaluran ?? 0, 0, ',', '.') }} Kali</span>
                         </div>
                         <div class="mt-space-md pt-space-sm bg-surface-subtle -mx-space-lg -mb-space-lg p-space-md border-t border-border-light">
                             <div class="flex justify-between items-center text-text-secondary font-body-sm text-body-sm">
                                 <span>Kategori Bantuan:</span>
-                                <strong class="text-text-primary font-semibold">Tunai, Bibit &amp; Alat</strong>
+                                <strong class="text-text-primary font-semibold">Bibit &amp; Sarana Pertanian</strong>
                             </div>
                         </div>
                     </div>
@@ -212,54 +190,57 @@
                                 </div>
                             </div>
                             
-                            <!-- Interactive GIS Visual Map Canvas -->
-                            <div class="relative w-full h-72 rounded-xl overflow-hidden bg-surface-muted flex items-center justify-center shadow-inner border border-border-light">
-                                <div class="w-full h-full bg-cover bg-center" data-location="Kabupaten Sumbawa, NTB, Indonesia" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDUy5A14lej1Z07vzdRd2HsyKYue4NZ_ZyWhhhKAR4wuUhqTxQhxkrfJUAvR3E5juh8zfXGsm4XoK7F-_ekZhoUkjAIe2saZifqjavrZUFuZp17D7QCTpbNcwQHTCjn9jGG0A94FbTo9cAMg5ysgEVYom5YEqJuNOL1jzt8DKAnioEEya1zdWn3mOwUGKiK6EGQIYgRQwdbE3NGJ_cHiRZSSMy35v0n1gJoxnEvoiqDNRPuMMUpP46Grw')"></div>
-                                <!-- Overlay Administrative Pins -->
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
-                                
-                                <!-- Pinned locations (Clickable to show Graphs) -->
-                                <button type="button" onclick="openKecamatanModal('Kecamatan Sumbawa')" class="absolute top-1/4 left-1/3 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-110 hover:shadow-lg hover:ring-2 hover:ring-primary transition-all text-left group">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-status-verified animate-ping"></span>
-                                    <span class="font-label-sm text-label-sm font-bold text-text-primary group-hover:text-primary">Sumbawa</span>
-                                    <span class="material-symbols-outlined text-[14px] text-primary">bar_chart</span>
-                                </button>
-                                <button type="button" onclick="openKecamatanModal('Kecamatan Utan')" class="absolute top-1/2 left-1/4 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-110 hover:shadow-lg hover:ring-2 hover:ring-primary transition-all text-left group">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-status-verified"></span>
-                                    <span class="font-label-sm text-label-sm font-bold text-text-primary">Utan</span>
-                                    <span class="material-symbols-outlined text-[14px] text-primary">bar_chart</span>
-                                </button>
-                                <button type="button" onclick="openKecamatanModal('Kecamatan Plampang')" class="absolute top-1/3 right-1/4 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-110 hover:shadow-lg hover:ring-2 hover:ring-secondary transition-all text-left group">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
-                                    <span class="font-label-sm text-label-sm font-bold text-text-primary group-hover:text-secondary">Plampang</span>
-                                    <span class="material-symbols-outlined text-[14px] text-secondary">bar_chart</span>
-                                </button>
-                                <button type="button" onclick="openKecamatanModal('Kecamatan Empang')" class="absolute bottom-1/4 right-1/3 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-110 hover:shadow-lg hover:ring-2 hover:ring-primary transition-all text-left group">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-status-verified"></span>
-                                    <span class="font-label-sm text-label-sm font-bold text-text-primary group-hover:text-primary">Empang</span>
-                                    <span class="material-symbols-outlined text-[14px] text-primary">bar_chart</span>
-                                </button>
-                                <button type="button" onclick="openKecamatanModal('Kecamatan Alas')" class="absolute top-16 left-12 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-110 hover:shadow-lg hover:ring-2 hover:ring-primary transition-all text-left group">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-status-verified"></span>
-                                    <span class="font-label-sm text-label-sm font-bold text-text-primary group-hover:text-primary">Alas</span>
-                                    <span class="material-symbols-outlined text-[14px] text-primary">bar_chart</span>
-                                </button>
-                                <button type="button" onclick="openKecamatanModal('Kecamatan Moyo Hilir')" class="absolute top-16 right-16 bg-canvas-bg/95 backdrop-blur-md px-space-sm py-1 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-110 hover:shadow-lg hover:ring-2 hover:ring-primary transition-all text-left group">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-status-verified"></span>
-                                    <span class="font-label-sm text-label-sm font-bold text-text-primary group-hover:text-primary">Moyo Hilir</span>
-                                    <span class="material-symbols-outlined text-[14px] text-primary">bar_chart</span>
-                                </button>
-                                
-                                <!-- Bottom map controls & click guidance -->
-                                <div class="absolute bottom-3 left-3 bg-canvas-bg/90 backdrop-blur-md px-3 py-1.5 rounded-lg shadow flex items-center gap-3 text-text-secondary font-label-sm text-label-sm">
-                                    <span class="flex items-center gap-1 text-primary font-semibold"><span class="material-symbols-outlined text-[15px]">touch_app</span> Klik pin untuk lihat grafik</span>
-                                    <span class="h-3 w-px bg-border-medium"></span>
-                                    <span>24 Titik Pantau Kecamatan</span>
+                            <!-- Interactive GIS Visual Map Canvas (Zoomable & Pannable) -->
+                            <div class="relative w-full h-[420px] rounded-2xl overflow-hidden bg-surface-subtle shadow-inner border border-border-light group">
+                                <!-- Leaflet Map Container -->
+                                <div id="dashboard-gis-map" class="w-full h-full z-0"></div>
+
+                                <!-- Floating Zoom & Map Controls (Top Right) -->
+                                <div class="absolute top-3 right-3 z-[400] flex flex-col gap-1.5 bg-canvas-bg/95 backdrop-blur-md p-1.5 rounded-xl shadow-lg border border-border-light">
+                                    <!-- Zoom In Button -->
+                                    <button type="button" id="btn-dashboard-zoom-in" title="Perbesar Peta (Zoom In)" class="w-8 h-8 rounded-lg flex items-center justify-center bg-surface hover:bg-gov-green-surface text-text-primary hover:text-primary transition-colors cursor-pointer shadow-sm">
+                                        <span class="material-symbols-outlined text-[20px]">add</span>
+                                    </button>
+                                    <!-- Zoom Out Button -->
+                                    <button type="button" id="btn-dashboard-zoom-out" title="Perkecil Peta (Zoom Out)" class="w-8 h-8 rounded-lg flex items-center justify-center bg-surface hover:bg-gov-green-surface text-text-primary hover:text-primary transition-colors cursor-pointer shadow-sm">
+                                        <span class="material-symbols-outlined text-[20px]">remove</span>
+                                    </button>
+                                    <div class="h-px w-full bg-border-light my-0.5"></div>
+                                    <!-- Reset View Button -->
+                                    <button type="button" id="btn-dashboard-reset" title="Pusatkan Peta (Kabupaten Sumbawa)" class="w-8 h-8 rounded-lg flex items-center justify-center bg-surface hover:bg-gov-green-surface text-text-primary hover:text-primary transition-colors cursor-pointer shadow-sm">
+                                        <span class="material-symbols-outlined text-[18px]">center_focus_strong</span>
+                                    </button>
+                                    <!-- Zoom Level Indicator -->
+                                    <div id="dashboard-zoom-badge" title="Tingkat Pembesaran Peta" class="text-center font-mono text-[10px] font-bold text-text-tertiary px-1 py-0.5 bg-surface-subtle rounded">
+                                        10x
+                                    </div>
                                 </div>
-                                <div class="absolute bottom-3 right-3">
-                                    <a href="{{ route('pemda.monitoring.index') }}" class="px-2.5 py-1 rounded-lg bg-primary-container text-white text-xs font-semibold hover:bg-gov-green-dark transition-colors shadow flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-[14px]">map</span>
-                                        <span>Buka Monitoring Wilayah</span>
+
+                                <!-- Top Left Quick Layer / Status Legend Overlay -->
+                                <div class="absolute top-3 left-3 z-[400] bg-canvas-bg/90 backdrop-blur-md px-3 py-2 rounded-xl shadow border border-border-light flex items-center gap-2.5">
+                                    <span class="material-symbols-outlined text-primary text-[18px]">zoom_in</span>
+                                    <div class="flex flex-col">
+                                        <span class="text-[11px] font-bold text-text-primary">Peta Sebaran Interaktif (Zoom Aktif)</span>
+                                        <span class="text-[10px] text-text-secondary">Scroll mouse, cubit layar, atau tombol +/- untuk perbesar</span>
+                                    </div>
+                                </div>
+
+                                <!-- Bottom map controls & click guidance -->
+                                <div class="absolute bottom-3 left-3 z-[400] bg-canvas-bg/95 backdrop-blur-md px-3.5 py-1.5 rounded-xl shadow border border-border-light flex items-center gap-3 text-text-secondary font-label-sm text-label-sm">
+                                    <span class="flex items-center gap-1.5 text-primary font-bold">
+                                        <span class="material-symbols-outlined text-[16px]">touch_app</span> 
+                                        Klik pin wilayah untuk grafik &amp; rincian
+                                    </span>
+                                    <span class="h-3 w-px bg-border-medium hidden sm:inline-block"></span>
+                                    <span class="hidden sm:inline-flex items-center gap-1 text-xs text-text-tertiary font-medium">
+                                        <span class="w-2 h-2 rounded-full bg-status-verified inline-block"></span> 24 Titik Kecamatan
+                                    </span>
+                                </div>
+
+                                <div class="absolute bottom-3 right-3 z-[400]">
+                                    <a href="{{ route('pemda.monitoring.index') }}" class="px-3 py-1.5 rounded-xl bg-primary-container text-white text-xs font-semibold hover:bg-gov-green-dark transition-all shadow-md flex items-center gap-1.5 hover:shadow-lg">
+                                        <span class="material-symbols-outlined text-[16px]">map</span>
+                                        <span>Buka Monitoring Lengkap</span>
                                     </a>
                                 </div>
                             </div>
@@ -525,7 +506,7 @@
             </div>
 
             <!-- MODAL DETAIL & GRAFIK SEBARAN KECAMATAN -->
-            <div id="modal-kecamatan-grafik" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-sm transition-all duration-300 opacity-0 pointer-events-none">
+            <div id="modal-kecamatan-grafik" class="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-sm transition-all duration-300 opacity-0 pointer-events-none">
                 <div id="modal-kecamatan-card" class="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto bg-canvas-bg rounded-2xl shadow-2xl border border-surface-subtle p-5 sm:p-7 flex flex-col gap-6 transform scale-95 transition-all duration-300">
                     
                     <!-- Header Modal -->
@@ -694,8 +675,9 @@
                 </div>
             </div>
 
-            <!-- CDN Chart.js & Script Pengendali Grafik Interaktif -->
+            <!-- CDN Chart.js & Leaflet JS -->
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
             <script>
                 // Database Statistik Interaktif Kecamatan se-Kabupaten Sumbawa
                 const kecamatanDatabase = {
@@ -926,6 +908,9 @@
                     // Normalkan nama
                     const displayName = namaKecamatan.startsWith('Kecamatan') ? namaKecamatan : `Kecamatan ${namaKecamatan}`;
                     const data = getKecamatanData(displayName);
+
+                    // Zoom / Pusatkan peta ke kecamatan yang dipilih
+                    panMapToKecamatan(displayName);
 
                     // Update UI teks & badge
                     document.getElementById('modal-kecamatan-title').textContent = displayName;
@@ -1176,6 +1161,168 @@
                     if (e.target === this) {
                         closeKecamatanModal();
                     }
+                });
+
+                // ==========================================
+                // LEAFLET GIS MAP UNTUK DASHBOARD PEMDA
+                // ==========================================
+                var pemdaDashboardMap = null;
+                var pemdaMapMarkers = {};
+
+                function initPemdaDashboardMap() {
+                    var mapContainer = document.getElementById('dashboard-gis-map');
+                    if (!mapContainer || pemdaDashboardMap) return;
+
+                    // Koordinat tengah Sumbawa (-8.53, 117.43)
+                    pemdaDashboardMap = L.map('dashboard-gis-map', {
+                        center: [-8.53, 117.43],
+                        zoom: 10,
+                        minZoom: 8,
+                        maxZoom: 18,
+                        zoomControl: false,
+                        scrollWheelZoom: true,
+                        doubleClickZoom: true,
+                        touchZoom: true,
+                        boxZoom: true
+                    });
+
+                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+                        subdomains: 'abcd',
+                        maxZoom: 19
+                    }).addTo(pemdaDashboardMap);
+
+                    // Tombol Zoom In, Zoom Out & Reset View
+                    var btnZoomIn = document.getElementById('btn-dashboard-zoom-in');
+                    var btnZoomOut = document.getElementById('btn-dashboard-zoom-out');
+                    var btnReset = document.getElementById('btn-dashboard-reset');
+                    var zoomBadge = document.getElementById('dashboard-zoom-badge');
+
+                    if (btnZoomIn) {
+                        btnZoomIn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            pemdaDashboardMap.zoomIn();
+                        });
+                    }
+                    if (btnZoomOut) {
+                        btnZoomOut.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            pemdaDashboardMap.zoomOut();
+                        });
+                    }
+                    if (btnReset) {
+                        btnReset.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            pemdaDashboardMap.setView([-8.53, 117.43], 10);
+                        });
+                    }
+
+                    pemdaDashboardMap.on('zoomend', function() {
+                        if (zoomBadge) {
+                            zoomBadge.textContent = pemdaDashboardMap.getZoom() + 'x';
+                        }
+                    });
+
+                    // Muat koordinat 24 kecamatan
+                    fetch('/kecamatan_coords.json')
+                        .then(function(res) { return res.json(); })
+                        .then(function(coords) {
+                            var sebaranList = @json($sebaranKecamatan);
+
+                            sebaranList.forEach(function(kec) {
+                                var kecCoords = coords[kec.id];
+                                if (!kecCoords) return;
+
+                                var lat = parseFloat(kecCoords.lat);
+                                var lon = parseFloat(kecCoords.lon);
+                                if (isNaN(lat) || isNaN(lon)) return;
+
+                                var isActive = kec.total_kk > 0;
+                                var pinColorClass = isActive 
+                                    ? 'bg-white/95 border-emerald-500 text-slate-800 hover:ring-2 hover:ring-emerald-500' 
+                                    : 'bg-white/90 border-slate-300 text-slate-600 hover:ring-2 hover:ring-amber-500';
+
+                                var markerHtml = `
+                                    <div class="pemda-map-pin flex items-center gap-1.5 px-2.5 py-1 rounded-lg shadow-md cursor-pointer border ${pinColorClass}">
+                                        <span class="relative flex h-2.5 w-2.5">
+                                            ${isActive ? '<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>' : ''}
+                                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 ${isActive ? 'bg-emerald-600' : 'bg-amber-500'}"></span>
+                                        </span>
+                                        <span class="font-bold text-[11px] whitespace-nowrap">${kec.nama}</span>
+                                        <span class="material-symbols-outlined text-[13px] ${isActive ? 'text-emerald-700' : 'text-slate-400'}">bar_chart</span>
+                                    </div>
+                                `;
+
+                                var customIcon = L.divIcon({
+                                    html: markerHtml,
+                                    className: 'custom-leaflet-marker-div',
+                                    iconSize: [null, null],
+                                    iconAnchor: [35, 15]
+                                });
+
+                                var popupHtml = `
+                                    <div style="font-family: 'Inter', sans-serif; overflow: hidden; border-radius: 12px;">
+                                        <div style="background: #065f46; color: white; padding: 12px 14px;">
+                                            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #a7f3d0; font-weight: 700;">Wilayah Binaan Kab. Sumbawa</div>
+                                            <h4 style="margin: 2px 0 0 0; font-size: 15px; font-weight: 800;">Kecamatan ${kec.nama}</h4>
+                                        </div>
+                                        <div style="padding: 12px 14px; background: white;">
+                                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                                                <div style="background: #f8fafc; padding: 6px 8px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+                                                    <div style="font-size: 10px; color: #64748b;">Penerima</div>
+                                                    <div style="font-size: 13px; font-weight: 800; color: #0f172a;">${kec.total_kk} KK</div>
+                                                </div>
+                                                <div style="background: #f8fafc; padding: 6px 8px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+                                                    <div style="font-size: 10px; color: #64748b;">Penyaluran</div>
+                                                    <div style="font-size: 13px; font-weight: 800; color: #0f172a;">${kec.total_penyaluran} Trx</div>
+                                                </div>
+                                            </div>
+                                            <button type="button" onclick="openKecamatanModal('Kecamatan ${kec.nama}')" style="width: 100%; padding: 7px 0; background: #059669; color: white; border: none; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 6px;">
+                                                <span class="material-symbols-outlined" style="font-size: 15px;">bar_chart</span>
+                                                <span>Buka Grafik Analisis</span>
+                                            </button>
+                                            <a href="/pemda/monitoring?kecamatan_id=${kec.id}" style="width: 100%; padding: 6px 0; background: #f1f5f9; color: #334155; border-radius: 6px; font-weight: 600; font-size: 11px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                                <span class="material-symbols-outlined" style="font-size: 13px;">visibility</span>
+                                                <span>Detail Rincian Desa</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                `;
+
+                                var marker = L.marker([lat, lon], { icon: customIcon }).addTo(pemdaDashboardMap);
+                                marker.bindPopup(popupHtml, { maxWidth: 280, minWidth: 240 });
+
+                                pemdaMapMarkers[kec.nama.toLowerCase()] = {
+                                    marker: marker,
+                                    lat: lat,
+                                    lon: lon,
+                                    nama: kec.nama
+                                };
+                            });
+                        })
+                        .catch(function(err) {
+                            console.error('Error loading kecamatan coords for dashboard map:', err);
+                        });
+                }
+
+                function panMapToKecamatan(nama) {
+                    if (!pemdaDashboardMap || !nama) return;
+                    var cleanName = nama.replace(/^Kecamatan\s+/i, '').trim().toLowerCase();
+                    for (var key in pemdaMapMarkers) {
+                        if (key === cleanName || key.includes(cleanName) || cleanName.includes(key)) {
+                            var item = pemdaMapMarkers[key];
+                            pemdaDashboardMap.flyTo([item.lat, item.lon], 12, { duration: 1.2 });
+                            setTimeout(function() {
+                                item.marker.openPopup();
+                            }, 1300);
+                            break;
+                        }
+                    }
+                }
+
+                // Inisialisasi peta saat dokumen siap
+                document.addEventListener('DOMContentLoaded', function() {
+                    initPemdaDashboardMap();
                 });
             </script>
 @endsection

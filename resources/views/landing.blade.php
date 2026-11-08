@@ -175,9 +175,15 @@
                     </div>
                 </div>
 
-                <!-- BAGIAN KANAN: MENU QnA, BUTTON PANDUAN, & TOMBOL LOGIN -->
+                <!-- BAGIAN KANAN: MENU LAPORAN, MENU QnA, BUTTON PANDUAN, & TOMBOL LOGIN -->
                 <div class="flex items-center gap-2 sm:gap-3">
                     
+                    <!-- MENU LAPORAN (TANPA LOGIN) -->
+                    <a href="#lapor" class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-sm font-bold text-emerald-950 bg-emerald-100 hover:bg-emerald-200 border border-emerald-400 shadow-sm transition-all hover:scale-105 active:scale-95" title="Kirim Laporan Mandiri Warga (Tanpa Perlu Login)">
+                        <span class="material-symbols-outlined text-[19px] text-emerald-800 animate-pulse">campaign</span>
+                        <span>Laporan</span>
+                    </a>
+
                     <!-- MENU QnA (DI SEBELAH PANDUAN) -->
                     <a href="#qna" class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-sm font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-300 shadow-sm transition-all hover:scale-105 active:scale-95" title="Menu Tanya Jawab (QnA)">
                         <span class="material-symbols-outlined text-[19px] text-amber-700">help_center</span>
@@ -232,6 +238,13 @@
             <a href="#tentang" class="block px-3 py-2 rounded-lg text-base font-bold text-slate-800 hover:bg-emerald-50 flex items-center gap-2">
                 <span class="material-symbols-outlined text-[18px] text-emerald-700">stars</span>
                 <span>Profil Inovasi Lengkap</span>
+            </a>
+            <a href="#lapor" class="block px-3 py-2 rounded-lg text-base font-bold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-emerald-800">campaign</span>
+                    <span>Lapor Mandiri (Tanpa Login)</span>
+                </span>
+                <span class="text-[10px] bg-emerald-300 text-emerald-950 font-extrabold px-2 py-0.5 rounded">Form Warga</span>
             </a>
             <a href="#qna" class="block px-3 py-2 rounded-lg text-base font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 flex items-center justify-between">
                 <span class="flex items-center gap-2">
@@ -430,7 +443,7 @@
                             </li>
                             <li class="flex items-start gap-2.5">
                                 <span class="material-symbols-outlined text-red-500 text-[18px] mt-0.5 flex-shrink-0">cancel</span>
-                                <span><strong>Birokrasi SPJ Manual yang Lambat:</strong> Pembuatan SPJ memakan waktu hingga berbulan-bulan dengan tumpukan berkas fisik.</span>
+                                <span><strong>Administrasi Laporan Manual yang Lambat:</strong> Rekapitulasi penyaluran memakan waktu lama dengan tumpukan berkas fisik.</span>
                             </li>
                         </ul>
                     </div>
@@ -462,7 +475,7 @@
                             </li>
                             <li class="flex items-start gap-2.5">
                                 <span class="material-symbols-outlined text-emerald-600 text-[18px] mt-0.5 flex-shrink-0">check_circle</span>
-                                <span><strong>SPJ &amp; Laporan PDF Otomatis Sekali Klik:</strong> Menghemat waktu penyusunan administrasi pertanggungjawaban hingga 80%.</span>
+                                <span><strong>Rekapitulasi &amp; Laporan PDF Otomatis Sekali Klik:</strong> Menghemat waktu penyusunan administrasi pelaporan hingga 80%.</span>
                             </li>
                         </ul>
                     </div>
@@ -588,9 +601,9 @@
                     <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition-shadow space-y-3 relative flex flex-col justify-between">
                         <div class="space-y-2">
                             <span class="w-9 h-9 rounded-xl bg-slate-900 text-white font-black text-sm flex items-center justify-center">05</span>
-                            <h3 class="font-bold text-sm text-slate-900">SPJ Otomatis &amp; Evaluasi Spasial GIS</h3>
+                            <h3 class="font-bold text-sm text-slate-900">Rekapitulasi Otomatis &amp; Evaluasi Spasial GIS</h3>
                             <p class="text-xs text-slate-600 leading-relaxed">
-                                Cetak SPJ resmi PDF dalam 1 klik dan pemantauan peta sebaran wilayah interaktif se-Kabupaten Sumbawa.
+                                Cetak laporan rekapitulasi resmi PDF dalam 1 klik dan pemantauan peta sebaran wilayah interaktif se-Kabupaten Sumbawa.
                             </p>
                         </div>
                         <span class="text-[10px] font-bold text-slate-800 uppercase tracking-wider block pt-2 border-t border-slate-100">Dashboard Eksekutif</span>
@@ -649,7 +662,7 @@
                             </div>
                         </div>
                         <p class="text-xs text-slate-600 leading-relaxed">
-                            Pengelolaan alokasi dana Bappeda, penyusunan katalog paket bantuan, penugasan validator dan pendamping, serta penerbitan SPJ otomatis dan laporan resmi.
+                            Pengelolaan program kemitraan, penyusunan katalog paket bibit dan sarana, penugasan validator dan pendamping, serta penerbitan laporan rekapitulasi resmi.
                         </p>
                     </div>
 
@@ -771,7 +784,7 @@
                                     <td class="py-4 px-6 text-slate-600">Zero duplicate NIK &amp; bebas risiko manipulasi</td>
                                 </tr>
                                 <tr class="hover:bg-slate-50 transition-colors">
-                                    <td class="py-4 px-6 font-semibold text-slate-900">Waktu Penyelesaian SPJ &amp; Laporan</td>
+                                    <td class="py-4 px-6 font-semibold text-slate-900">Waktu Penyelesaian Laporan Rekapitulasi</td>
                                     <td class="py-4 px-6 text-slate-600 bg-red-50/20">30 s.d. 60 hari kerja manual</td>
                                     <td class="py-4 px-6 font-bold text-emerald-800 bg-emerald-50/30">&lt; 15 menit (Cetak PDF Otomatis)</td>
                                     <td class="py-4 px-6 text-slate-600">Efisiensi waktu administrasi dinas hingga 80%</td>
@@ -1051,9 +1064,41 @@
                         <div id="faq-ans-faq-8" class="hidden px-6 pb-6 pt-1 text-sm text-slate-600 border-t border-slate-100 leading-relaxed space-y-2">
                             <ul class="list-disc list-inside space-y-1.5 pl-2 text-slate-700">
                                 <li><strong>Untuk Akun Pendamping &amp; Validator:</strong> Diterbitkan secara resmi oleh Koordinator Kampus Mitra (LPPM) setelah dilakukan penugasan wilayah kecamatan. Username dan password diberikan saat sesi pembekalan (Bimtek).</li>
-                                <li><strong>Untuk Akun Keluarga Penerima (KPM):</strong> Otomatis di-generate oleh sistem saat pengesahan SK CPCL dengan menggunakan Nomor KK sebagai password default. Warga dapat masuk ke portal penerima untuk memantau bantuan dan mengirim laporan mandiri.</li>
+                                <li><strong>Untuk Akun Keluarga Penerima (KPB):</strong> Otomatis di-generate oleh sistem saat pengesahan SK CPCL dengan menggunakan Nomor KK sebagai password default. Warga dapat masuk ke portal penerima untuk memantau bantuan dan mengirim laporan mandiri atau melapor lewat WhatsApp.</li>
                                 <li><strong>Untuk Akun Administrator Pemda:</strong> Dikelola oleh Bidang Perencanaan Bappeda Kabupaten Sumbawa.</li>
                             </ul>
+                        </div>
+                    </div>
+
+                    <!-- Q9: Pelaporan WhatsApp -->
+                    <div class="faq-item bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden transition-all duration-200 hover:border-emerald-400" data-category="bantuan" data-keywords="whatsapp lapor wa pengaduan kendala bibit perkembangan nomor api gemasmart format kpb">
+                        <button type="button" onclick="toggleFaq('faq-9')" class="w-full p-5 sm:p-6 text-left flex items-start justify-between gap-4 focus:outline-none">
+                            <div class="flex items-start gap-3.5">
+                                <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center flex-shrink-0 mt-0.5">Q9</span>
+                                <span class="font-bold text-base text-slate-900 leading-snug">Bagaimana cara Keluarga Penerima Bantuan (KPB) melapor melalui WhatsApp secara langsung?</span>
+                            </div>
+                            <span id="faq-icon-faq-9" class="material-symbols-outlined text-slate-400 text-[24px] transform transition-transform duration-200 flex-shrink-0">expand_more</span>
+                        </button>
+                        <div id="faq-ans-faq-9" class="hidden px-6 pb-6 pt-1 text-sm text-slate-600 border-t border-slate-100 leading-relaxed space-y-3">
+                            <p>
+                                Sistem <strong>GemaSmart</strong> telah terintegrasi dengan Webhook API WhatsApp Bot. Penerima bantuan dapat mengirim laporan perkembangan bibit, kendala hama, atau panen kapan saja langsung lewat WhatsApp tanpa harus menggunakan aplikasi komputer:
+                            </p>
+                            <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 space-y-2">
+                                <div class="font-bold text-emerald-950 flex items-center gap-1.5 text-xs">
+                                    <i class="fa-brands fa-whatsapp text-emerald-700 text-sm"></i> Format Pengiriman Pesan:
+                                </div>
+                                <code class="block bg-white p-2.5 rounded-lg border border-emerald-200 font-mono text-xs text-slate-800 select-all">#LAPOR#[NIK_ATAU_NO_KK]#[Isi Laporan / Kendala Bibit]</code>
+                                <p class="text-xs text-slate-600">
+                                    <strong>Contoh:</strong> <span class="italic">#LAPOR#5204011234560001#Bibit tomat tumbuh subur sudah berbunga lebat, butuh saran pupuk tambahan.</span>
+                                </p>
+                            </div>
+                            <p class="text-xs text-slate-600">
+                                Laporan yang dikirim akan otomatis masuk ke API sistem GemaSmart, diverifikasi dengan data penerima bantuan, dan langsung dapat ditinjau serta ditanggapi oleh Tim Pendamping, Kampus Mitra, dan Bappeda. Bot WhatsApp akan segera membalas dengan Nomor Tiket Laporan Anda secara instan.
+                            </p>
+                            <div class="pt-1 flex items-center gap-2 text-xs text-slate-500">
+                                <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">Kategori: Layanan Laporan WhatsApp</span>
+                                <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 font-semibold">Tersinkronisasi Otomatis</span>
+                            </div>
                         </div>
                     </div>
 
@@ -1066,20 +1111,218 @@
                             <span class="material-symbols-outlined text-[28px]">contact_support</span>
                         </div>
                         <div>
-                            <h3 class="text-base font-bold text-slate-900">Masih Ada Pertanyaan yang Belum Terjawab?</h3>
-                            <p class="text-xs text-slate-600 mt-0.5">Tim Sekretariat Inovasi Bappeda Kabupaten Sumbawa siap membantu Anda setiap jam kerja dinas.</p>
+                            <h3 class="text-base font-bold text-slate-900">Masih Ada Pertanyaan atau Ingin Lapor Langsung?</h3>
+                            <p class="text-xs text-slate-600 mt-0.5">Tim Sekretariat Inovasi Bappeda Kabupaten Sumbawa dan layanan bot WhatsApp siap membantu Anda.</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3 w-full md:w-auto">
+                    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                        <a href="https://wa.me/6281234567890?text=%23LAPOR%23" target="_blank" class="w-full md:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-colors">
+                            <i class="fa-brands fa-whatsapp text-[16px]"></i>
+                            <span>Lapor via WhatsApp</span>
+                        </a>
                         <button type="button" onclick="openPanduanModal()" class="w-full md:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition-colors">
                             <span class="material-symbols-outlined text-[18px]">menu_book</span>
                             <span>Buku Panduan Lengkap</span>
                         </button>
-                        <a href="mailto:bappeda@sumbawakab.go.id" class="w-full md:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors">
-                            <span class="material-symbols-outlined text-[18px]">mail</span>
-                            <span>Kirim Surel</span>
-                        </a>
                     </div>
+                </div>
+
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SECTION: FORMULIR LAPORAN MANDIRI WARGA (TANPA PERLU LOGIN) -->
+        <!-- ========================================================================= -->
+        <section id="lapor" class="py-20 bg-white border-b border-slate-200 scroll-mt-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                
+                <!-- Section Header -->
+                <div class="text-center max-w-3xl mx-auto space-y-3">
+                    <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 text-xs font-bold uppercase tracking-wider">
+                        <span class="material-symbols-outlined text-[16px] text-emerald-800">campaign</span>
+                        <span>Layanan Laporan Mandiri Warga</span>
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                        Kirim Laporan &amp; Kendala Bibit Tanpa Perlu Login
+                    </h2>
+                    <p class="text-base text-slate-600">
+                        Keluarga Penerima Bantuan (KPB) maupun warga binaan dapat langsung melaporkan tumbuh kembang bibit, kendala serangan hama, atau hasil panen secara mandiri tanpa harus membuat akun atau login.
+                    </p>
+                </div>
+
+                @if(session('laporan_sukses'))
+                <!-- Flash Notification Sukses -->
+                <div id="alert-sukses-lapor" class="max-w-4xl mx-auto bg-emerald-50 border-2 border-emerald-500 rounded-2xl p-6 sm:p-8 shadow-md flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[28px]">check_circle</span>
+                    </div>
+                    <div class="space-y-1.5 flex-1">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h3 class="text-lg font-bold text-emerald-950">Laporan Berhasil Diterima Sistem!</h3>
+                            <span class="px-3 py-1 rounded-lg bg-emerald-700 text-white font-mono text-xs font-black tracking-wide">
+                                {{ session('nomor_tiket') }}
+                            </span>
+                        </div>
+                        <p class="text-sm text-emerald-900">
+                            Terima kasih Bpk/Ibu <strong>{{ session('nama_pengirim') }}</strong>. Laporan Anda telah tersimpan di sistem GemaSmart dan langsung diteruskan ke Tim Pendamping Lapangan serta Pemerintah Daerah untuk ditindaklanjuti.
+                        </p>
+                    </div>
+                </div>
+                @endif
+
+                <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- FORMULIR WEB MANDIRI (7 Kolom) -->
+                    <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-lg shadow-slate-100 space-y-6">
+                        <div class="border-b border-slate-100 pb-4">
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-emerald-700 text-[22px]">edit_note</span>
+                                Formulir Lapor Mandiri Web
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-1">
+                                Isi formulir singkat di bawah ini. Jika Anda memasukkan NIK terdaftar, sistem akan otomatis mengenali data bantuan Anda.
+                            </p>
+                        </div>
+
+                        <!-- Feedback Box JS Saat Kirim via Ajax -->
+                        <div id="ajaxResultBox" class="hidden rounded-2xl p-5 border"></div>
+
+                        <form id="formLaporMandiri" action="{{ route('public.lapor.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                            @csrf
+
+                            <!-- NIK / No. KK -->
+                            <div>
+                                <label for="nik_input" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                    Nomor Induk Kependudukan (NIK) / No. KK <span class="text-slate-400 font-normal lowercase">(opsional tapi direkomendasikan)</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-3.5 top-3 text-slate-400 text-[20px]">badge</span>
+                                    <input type="text" id="nik_input" name="nik" maxlength="20" oninput="verifikasiNikPublik(this.value)" placeholder="Contoh: 5204010000000001 (16 digit)" class="w-full pl-11 pr-10 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-mono" />
+                                    <div id="nikLoadingSpinner" class="hidden absolute right-3 top-3">
+                                        <span class="material-symbols-outlined text-emerald-600 animate-spin text-[20px]">autorenew</span>
+                                    </div>
+                                </div>
+                                <!-- Tempat Muncul Verifikasi NIK Real-time -->
+                                <div id="nikFeedbackBox" class="hidden mt-2 p-2.5 rounded-xl text-xs flex items-center gap-2"></div>
+                            </div>
+
+                            <!-- Nama Lengkap & No WhatsApp (Grid 2 Kolom) -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="nama_input" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                        Nama Lengkap Pelapor
+                                    </label>
+                                    <div class="relative">
+                                        <span class="material-symbols-outlined absolute left-3.5 top-3 text-slate-400 text-[20px]">person</span>
+                                        <input type="text" id="nama_input" name="nama_pengirim" placeholder="Nama Kepala Keluarga / Pelapor" class="w-full pl-11 pr-3 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="no_hp_input" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                        Nomor WhatsApp / HP Aktif
+                                    </label>
+                                    <div class="relative">
+                                        <span class="material-symbols-outlined absolute left-3.5 top-3 text-slate-400 text-[20px]">call</span>
+                                        <input type="text" id="no_hp_input" name="no_hp" placeholder="Contoh: 081234567890" class="w-full pl-11 pr-3 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-mono" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Isi Laporan / Kendala -->
+                            <div>
+                                <label for="laporan_teks" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                    Isi Laporan / Kendala Bibit <span class="text-rose-500">*</span>
+                                </label>
+                                <textarea id="laporan_teks" name="laporan_teks" rows="4" required placeholder="Ceritakan kondisi tanaman bibit bantuan Anda, kendala pupuk/hama yang dialami, atau hasil panen yang diperoleh..." class="w-full p-3.5 rounded-xl border border-slate-200 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all leading-relaxed"></textarea>
+                            </div>
+
+                            <!-- Upload Foto Lapangan (Opsional) -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                    Foto Kondisi Tanaman / Lapangan <span class="text-slate-400 font-normal lowercase">(opsional)</span>
+                                </label>
+                                <div class="border-2 border-dashed border-slate-200 hover:border-emerald-400 rounded-2xl p-4 text-center transition-colors">
+                                    <input type="file" id="foto_input" name="foto" accept="image/*" onchange="previewPublicPhoto(this)" class="hidden" />
+                                    <label for="foto_input" class="cursor-pointer flex flex-col items-center justify-center gap-1.5">
+                                        <span class="material-symbols-outlined text-emerald-700 text-[32px]">add_a_photo</span>
+                                        <span class="text-xs font-semibold text-slate-700">Klik untuk memilih foto dari galeri / kamera</span>
+                                        <span class="text-[10px] text-slate-400">Format: JPG, PNG, WEBP (Maksimal 5 MB)</span>
+                                    </label>
+                                    <div id="fotoPreviewContainer" class="hidden mt-3 relative inline-block">
+                                        <img id="fotoPreviewImg" src="#" alt="Preview" class="h-28 rounded-xl object-cover border border-slate-200 shadow-sm" />
+                                        <button type="button" onclick="cancelPublicPhoto()" class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center shadow hover:bg-rose-600 transition-colors">
+                                            <span class="material-symbols-outlined text-[14px]">close</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button id="btnSubmitPublicReport" type="submit" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-700 to-emerald-900 hover:from-emerald-800 hover:to-emerald-950 text-white font-bold text-sm shadow-md hover:shadow-emerald-900/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-[20px]">send</span>
+                                <span>Kirim Laporan Sekarang</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- KANAL CEPAT WHATSAPP (5 Kolom) -->
+                    <div class="lg:col-span-5 space-y-6">
+                        
+                        <!-- Kartu Hijau WhatsApp -->
+                        <div class="bg-gradient-to-br from-emerald-900 via-green-950 to-slate-950 text-white rounded-3xl p-6 sm:p-7 shadow-xl border border-emerald-700/50 space-y-5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300 shrink-0">
+                                    <i class="fa-brands fa-whatsapp text-[28px]"></i>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] font-bold tracking-wider uppercase text-emerald-300 bg-emerald-900/80 px-2 py-0.5 rounded border border-emerald-700">Lapor Instan</span>
+                                    <h4 class="text-base font-bold text-white mt-0.5">Lebih Nyaman Lewat WhatsApp?</h4>
+                                </div>
+                            </div>
+
+                            <p class="text-xs text-emerald-100/90 leading-relaxed">
+                                Anda juga dapat melapor langsung melalui aplikasi WhatsApp tanpa membuka formulir website. Pesan otomatis dicatat oleh sistem GemaSmart.
+                            </p>
+
+                            <!-- Kotak Format WA -->
+                            <div class="bg-black/35 rounded-2xl p-4 border border-emerald-800/80 space-y-2">
+                                <span class="text-[11px] font-bold text-emerald-300 block">Kirim Pesan dengan Format:</span>
+                                <code class="block bg-black/60 p-2.5 rounded-xl font-mono text-xs text-emerald-200 select-all border border-emerald-800/50">#LAPOR#[NIK]#[Isi Laporan]</code>
+                                <p class="text-[11px] text-emerald-200/80 italic">
+                                    Contoh: #LAPOR#5204010000000001#Bibit tomat tumbuh subur sudah berbunga.
+                                </p>
+                            </div>
+
+                            <!-- Tombol Direct Link WhatsApp -->
+                            <a href="https://wa.me/6285743400187?text=%23LAPOR%23" target="_blank" class="w-full inline-flex items-center justify-center gap-2.5 py-3 px-5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-md transition-all active:scale-95">
+                                <i class="fa-brands fa-whatsapp text-[19px]"></i>
+                                <span>Buka WhatsApp Hotline (0857-4340-0187)</span>
+                            </a>
+
+                            <div class="pt-2 border-t border-emerald-800/60 flex items-center justify-between text-[11px] text-emerald-300">
+                                <span class="flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                    Bot WhatsApp Aktif
+                                </span>
+                                <span>Balasan Tiket Instan</span>
+                            </div>
+                        </div>
+
+                        <!-- Kartu Info Alur Laporan -->
+                        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 space-y-3">
+                            <h5 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[18px] text-slate-700">info</span>
+                                Apa yang Terjadi Setelah Anda Melapor?
+                            </h5>
+                            <ol class="text-xs text-slate-600 space-y-2 list-decimal list-inside leading-relaxed">
+                                <li>Sistem menerbitkan <strong>Nomor Tiket Aduan</strong> resmi.</li>
+                                <li>Laporan diteruskan langsung ke <strong>Pendamping Lapangan</strong> di wilayah desa Anda.</li>
+                                <li>Tim Pendamping &amp; Bappeda akan meninjau dan memberikan solusi atau bantuan tindak lanjut.</li>
+                            </ol>
+                        </div>
+
+                    </div>
+
                 </div>
 
             </div>
@@ -1253,7 +1496,7 @@
                         <span class="material-symbols-outlined text-blue-700 text-[24px] mt-0.5">school</span>
                         <div>
                             <strong class="block text-sm">Pengelola Program Kampus Mitra (LPPM / Koordinator Mitra)</strong>
-                            <span class="text-xs text-blue-800">Mengelola penugasan tim lapangan, menyusun item paket bantuan, dan mengunduh SPJ keuangan resmi.</span>
+                            <span class="text-xs text-blue-800">Mengelola penugasan tim lapangan, menyusun item paket bantuan, dan mengunduh rekapitulasi program resmi.</span>
                         </div>
                     </div>
 
@@ -1272,15 +1515,15 @@
                             <span class="w-7 h-7 rounded-lg bg-blue-700 text-white font-bold text-xs flex items-center justify-center flex-shrink-0">2</span>
                             <div>
                                 <strong class="text-slate-900 block">Penyusunan Katalog Item Bantuan</strong>
-                                <p class="text-xs text-slate-600 mt-1">Kelola stok dan pagu paket bibit unggul, bantuan dana tunai modal kerja, serta peralatan pertanian yang siap didistribusikan ke keluarga sasaran.</p>
+                                <p class="text-xs text-slate-600 mt-1">Kelola stok paket bibit unggul, pupuk organik, serta peralatan pertanian yang siap didistribusikan ke keluarga sasaran binaan.</p>
                             </div>
                         </div>
 
                         <div class="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
                             <span class="w-7 h-7 rounded-lg bg-blue-700 text-white font-bold text-xs flex items-center justify-center flex-shrink-0">3</span>
                             <div>
-                                <strong class="text-slate-900 block">Ekspor Laporan Pertanggungjawaban (SPJ) Otomatis</strong>
-                                <p class="text-xs text-slate-600 mt-1">Buka menu <em>Laporan &rarr; SPJ</em>. Sistem secara otomatis membuat berkas PDF SPJ realisasi keuangan, bukti serah terima, dan log pendampingan berstandar audit resmi.</p>
+                                <strong class="text-slate-900 block">Ekspor Rekapitulasi &amp; Log Pendampingan</strong>
+                                <p class="text-xs text-slate-600 mt-1">Buka menu <em>Laporan</em>. Sistem secara otomatis membuat berkas PDF rekapitulasi penyaluran bantuan bibit, bukti serah terima, dan log pemantauan lapangan berstandar audit resmi.</p>
                             </div>
                         </div>
                     </div>
@@ -1561,6 +1804,147 @@
                 }
             });
         }
+
+        // ==========================================
+        // 7. PUBLIC REPORT JAVASCRIPT (TANPA LOGIN)
+        // ==========================================
+        let nikDebounceTimeout = null;
+        function verifikasiNikPublik(val) {
+            clearTimeout(nikDebounceTimeout);
+            const clean = val.replace(/\D/g, '');
+            const box = document.getElementById('nikFeedbackBox');
+            const spinner = document.getElementById('nikLoadingSpinner');
+            const namaInput = document.getElementById('nama_input');
+
+            if (clean.length < 15) {
+                if (box) { box.classList.add('hidden'); }
+                if (spinner) { spinner.classList.add('hidden'); }
+                return;
+            }
+
+            if (spinner) { spinner.classList.remove('hidden'); }
+
+            nikDebounceTimeout = setTimeout(() => {
+                fetch('/lapor-mandiri/cek-nik?nik=' + encodeURIComponent(clean))
+                    .then(res => res.json())
+                    .then(data => {
+                        if (spinner) { spinner.classList.add('hidden'); }
+                        if (box) {
+                            box.classList.remove('hidden');
+                            if (data.found) {
+                                box.className = "mt-2 p-3 rounded-xl text-xs bg-emerald-50 border border-emerald-300 text-emerald-950 flex items-start gap-2";
+                                box.innerHTML = `
+                                    <span class="material-symbols-outlined text-emerald-700 text-[18px] shrink-0 mt-0.5">verified</span>
+                                    <div>
+                                        <strong>Terverifikasi KPB:</strong> ${data.nama} (${data.desa}, Kec. ${data.kecamatan})<br>
+                                        <span class="text-[11px] text-emerald-800">${data.program || 'Bantuan Bibit'} ${data.desil ? '• ' + data.desil : ''}</span>
+                                    </div>
+                                `;
+                                if (namaInput && !namaInput.value.trim()) {
+                                    namaInput.value = data.nama;
+                                }
+                            } else {
+                                box.className = "mt-2 p-2.5 rounded-xl text-xs bg-slate-50 border border-slate-200 text-slate-600 flex items-center gap-1.5";
+                                box.innerHTML = `
+                                    <span class="material-symbols-outlined text-slate-400 text-[16px]">info</span>
+                                    <span>NIK belum tercatat di data penerima, laporan tetap dapat dikirim sebagai warga umum.</span>
+                                `;
+                            }
+                        }
+                    })
+                    .catch(() => {
+                        if (spinner) { spinner.classList.add('hidden'); }
+                    });
+            }, 400);
+        }
+
+        function previewPublicPhoto(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('fotoPreviewImg');
+                    const container = document.getElementById('fotoPreviewContainer');
+                    if (img && container) {
+                        img.src = e.target.result;
+                        container.classList.remove('hidden');
+                    }
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function cancelPublicPhoto() {
+            const input = document.getElementById('foto_input');
+            const container = document.getElementById('fotoPreviewContainer');
+            if (input) { input.value = ''; }
+            if (container) { container.classList.add('hidden'); }
+        }
+
+        // AJAX Submission Handling untuk pengalaman instan
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('formLaporMandiri');
+            if (!form) return;
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const btn = document.getElementById('btnSubmitPublicReport');
+                const resultBox = document.getElementById('ajaxResultBox');
+                const origBtnHtml = btn.innerHTML;
+
+                btn.disabled = true;
+                btn.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">autorenew</span> Mengirim Laporan...`;
+
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    btn.disabled = false;
+                    btn.innerHTML = origBtnHtml;
+
+                    if (data.success) {
+                        resultBox.classList.remove('hidden');
+                        resultBox.className = "rounded-2xl p-6 bg-emerald-50 border-2 border-emerald-500 shadow-md flex items-start gap-3.5 text-emerald-950";
+                        resultBox.innerHTML = `
+                            <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-[24px]">task_alt</span>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h4 class="font-bold text-base text-emerald-950">Laporan Berhasil Terkirim!</h4>
+                                    <span class="px-2.5 py-0.5 rounded-lg bg-emerald-700 text-white font-mono text-xs font-black">${data.nomor_tiket}</span>
+                                </div>
+                                <p class="text-xs text-emerald-900 leading-relaxed">
+                                    Terima kasih Bpk/Ibu <strong>${data.data.pengirim}</strong>. Laporan Anda langsung diteruskan ke Tim Pendamping Lapangan untuk ditindaklanjuti.
+                                </p>
+                                <div class="pt-2">
+                                    <button type="button" onclick="this.closest('#ajaxResultBox').classList.add('hidden')" class="px-3 py-1 bg-emerald-200 hover:bg-emerald-300 text-emerald-950 rounded-lg text-xs font-semibold">Tutup Notifikasi</button>
+                                </div>
+                            </div>
+                        `;
+                        form.reset();
+                        cancelPublicPhoto();
+                        const feedback = document.getElementById('nikFeedbackBox');
+                        if (feedback) feedback.classList.add('hidden');
+                        resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    } else {
+                        alert(data.message || 'Terjadi kesalahan saat mengirim laporan.');
+                    }
+                })
+                .catch(err => {
+                    btn.disabled = false;
+                    btn.innerHTML = origBtnHtml;
+                    // Fallback submit standar jika browser memblokir fetch
+                    form.submit();
+                });
+            });
+        });
     </script>
 
 </body>

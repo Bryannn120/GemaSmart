@@ -32,8 +32,9 @@
                 <div class="flex flex-col gap-space-xs">
                     <label for="nik" class="font-label-md text-text-primary">NIK <span class="text-error">*</span></label>
                     <input type="text" name="nik" id="nik" value="{{ old('nik', $keluarga_penerima->nik) }}" required maxlength="16" minlength="16"
-                        class="w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle"
+                        class="w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle font-mono"
                         placeholder="16 Digit NIK">
+                    <div id="nik-dup-alert" class="hidden text-xs text-error font-medium mt-1 flex items-start gap-1 p-2 rounded-lg bg-error-container/40 border border-error/20"></div>
                 </div>
                 
                 <div class="flex flex-col gap-space-xs">
@@ -47,8 +48,9 @@
                 <div class="flex flex-col gap-space-xs">
                     <label for="no_kk" class="font-label-md text-text-primary">No. KK <span class="text-error">*</span></label>
                     <input type="text" name="no_kk" id="no_kk" value="{{ old('no_kk', $keluarga_penerima->no_kk) }}" required maxlength="16" minlength="16"
-                        class="w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle"
+                        class="w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle font-mono"
                         placeholder="16 Digit No. Kartu Keluarga">
+                    <div id="no-kk-dup-alert" class="hidden text-xs text-error font-medium mt-1 flex items-start gap-1 p-2 rounded-lg bg-error-container/40 border border-error/20"></div>
                 </div>
                 
                 <div class="flex flex-col gap-space-xs">
@@ -142,11 +144,106 @@
                 <a href="{{ route('pemda.data-penerima.index') }}" class="px-space-lg py-2.5 rounded-xl font-label-md font-semibold text-text-secondary hover:bg-surface-variant transition-colors">
                     Batal
                 </a>
-                <button type="submit" class="px-space-lg py-2.5 rounded-xl font-label-md font-semibold bg-primary-container text-on-primary hover:bg-gov-green-dark transition-colors shadow-sm">
-                    Simpan Perubahan
+                <button type="submit" id="submit-btn" class="px-space-lg py-2.5 rounded-xl font-label-md font-semibold bg-primary-container text-on-primary hover:bg-gov-green-dark transition-colors shadow-sm flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">save</span>
+                    <span>Simpan Perubahan</span>
                 </button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nikInput = document.getElementById('nik');
+    const noKkInput = document.getElementById('no_kk');
+    const nikAlert = document.getElementById('nik-dup-alert');
+    const noKkAlert = document.getElementById('no-kk-dup-alert');
+    const submitBtn = document.getElementById('submit-btn');
+    const form = submitBtn ? submitBtn.closest('form') : null;
+    const excludeId = "{{ $keluarga_penerima->id }}";
+
+    let nikDuplicate = false;
+    let noKkDuplicate = false;
+    let debounceTimer;
+
+    function updateSubmitState() {
+        if (!submitBtn) return;
+        if (nikDuplicate || noKkDuplicate) {
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            submitBtn.title = 'Data NIK atau No. KK sudah terdaftar pada penerima lain.';
+        } else {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            submitBtn.title = '';
+        }
+    }
+
+    function checkDuplication(field, value, alertEl) {
+        if (!value || value.length < 12) {
+            if (field === 'nik') nikDuplicate = false;
+            if (field === 'no_kk') noKkDuplicate = false;
+            alertEl.classList.add('hidden');
+            alertEl.innerHTML = '';
+            updateSubmitState();
+            return;
+        }
+
+        const params = new URLSearchParams();
+        params.append(field, value);
+        params.append('exclude_id', excludeId);
+
+        fetch("{{ route('penerima.cek_duplikasi') }}?" + params.toString())
+            .then(res => res.json())
+            .then(data => {
+                if (data.duplicate) {
+                    if (field === 'nik') nikDuplicate = true;
+                    if (field === 'no_kk') noKkDuplicate = true;
+                    alertEl.innerHTML = `<span class="material-symbols-outlined text-[16px] text-error shrink-0 mt-0.5">error</span><span class="text-error font-medium leading-tight">${data.message}</span>`;
+                    alertEl.classList.remove('hidden');
+                } else {
+                    if (field === 'nik') nikDuplicate = false;
+                    if (field === 'no_kk') noKkDuplicate = false;
+                    alertEl.classList.add('hidden');
+                    alertEl.innerHTML = '';
+                }
+                updateSubmitState();
+            })
+            .catch(err => {
+                console.error('Gagal memeriksa duplikasi:', err);
+            });
+    }
+
+    if (nikInput && nikAlert) {
+        nikInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const val = this.value.replace(/\D/g, '');
+            debounceTimer = setTimeout(() => checkDuplication('nik', val, nikAlert), 400);
+        });
+    }
+
+    if (noKkInput && noKkAlert) {
+        noKkInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const val = this.value.replace(/\D/g, '');
+            debounceTimer = setTimeout(() => checkDuplication('no_kk', val, noKkAlert), 400);
+        });
+    }
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (nikDuplicate || noKkDuplicate) {
+                e.preventDefault();
+                alert('Tidak dapat menyimpan: Data NIK atau No. KK sudah terdaftar dalam sistem!');
+                return false;
+            }
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<span class="inline-block animate-spin mr-2">⏳</span> Menyimpan Perubahan...`;
+            }
+        });
+    }
+});
+</script>
 @endsection

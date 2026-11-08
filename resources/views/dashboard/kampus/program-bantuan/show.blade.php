@@ -45,8 +45,8 @@
             <!-- Metadata Pills -->
             <div class="flex flex-wrap items-center gap-space-lg mt-space-md pt-space-md border-t border-border-light text-body-sm font-body-sm text-text-secondary">
                 <div class="flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-secondary text-[20px]">account_balance_wallet</span>
-                    <span>Pagu Anggaran: <strong class="text-text-primary">Rp {{ number_format($program->pagu_anggaran, 0, ',', '.') }}</strong></span>
+                    <span class="material-symbols-outlined text-primary text-[20px]">calendar_today</span>
+                    <span>Tahun Anggaran: <strong class="text-text-primary">TA {{ $program->tahun_anggaran }}</strong></span>
                 </div>
                 <div class="flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-primary text-[20px]">group</span>
@@ -55,7 +55,7 @@
                 <div class="flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-blue-600 text-[20px]">category</span>
                     <span>Jenis Subsidi: 
-                        <strong class="text-text-primary uppercase">{{ str_replace(',', ', ', $program->jenis_subsidi ?? 'bibit, uang, barang') }}</strong>
+                        <strong class="text-text-primary uppercase">{{ str_replace(['uang,', ', uang', 'uang'], '', $program->jenis_subsidi ?? 'bibit, barang') }}</strong>
                     </span>
                 </div>
             </div>

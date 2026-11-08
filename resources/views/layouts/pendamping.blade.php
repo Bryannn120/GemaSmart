@@ -97,6 +97,25 @@
                         </span>
                     @endif
                 </a>
+                @php
+                    $navUnreadPenerimaCount = \App\Models\LaporanPenerima::where('is_read_by_pendamping', false)
+                        ->whereHas('keluargaPenerima', function($q) use ($currUser) {
+                            if ($currUser) {
+                                $q->where('pendamping_id', $currUser->id);
+                            }
+                        })->count();
+                @endphp
+                <a href="{{ route('pendamping.laporan-penerima.index') }}" class="flex items-center justify-between gap-2 px-space-md py-space-sm rounded-lg {{ request()->routeIs('pendamping.laporan-penerima.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
+                    <div class="flex items-center gap-space-md">
+                        <span class="material-symbols-outlined text-[20px]">mark_email_unread</span>
+                        <span>Laporan Warga</span>
+                    </div>
+                    @if($navUnreadPenerimaCount > 0)
+                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-500 text-white shadow-xs">
+                            {{ $navUnreadPenerimaCount }}
+                        </span>
+                    @endif
+                </a>
                 <a href="{{ route('pendamping.lapor.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg {{ request()->routeIs('pendamping.lapor.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : 'text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg' }}">
                     <span class="material-symbols-outlined text-[20px]">assignment</span><span>Laporan Kunjungan</span>
                 </a>

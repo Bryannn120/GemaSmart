@@ -210,13 +210,49 @@
 
             <!-- Right Column: Feedback & Laporan -->
             <div class="flex flex-col gap-6">
+                <!-- KARTU KHUSUS: LAPOR LEWAT WHATSAPP -->
+                <div class="bg-gradient-to-br from-emerald-800 to-green-950 text-white rounded-xl shadow-md p-5 border border-emerald-600/40 relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 w-28 h-28 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
+                    <div class="flex items-start gap-3.5 relative z-10">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0 text-emerald-300">
+                            <span class="material-symbols-outlined text-[24px]">chat</span>
+                        </div>
+                        <div class="flex-1">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-400 text-slate-900 uppercase tracking-wider inline-block mb-1">
+                                WhatsApp Resmi GemaSmart
+                            </span>
+                            <h3 class="font-bold text-sm sm:text-base text-white leading-tight">Lapor Cepat via WhatsApp</h3>
+                            <p class="text-xs text-emerald-100/90 mt-1 leading-relaxed">
+                                Lebih mudah &amp; hemat kuota! Kirim keluhan langsung ke WhatsApp Hotline Pemda. Pesan otomatis dicatat ke sistem.
+                            </p>
+                        </div>
+                    </div>
+
+                    @php
+                        $waNik = $keluarga->nik ?? '';
+                        $waText = rawurlencode("#LAPOR#{$waNik}#Halo GemaSmart, saya ingin melaporkan kendala terkait program bantuan: ");
+                        $waHotline = '6285238912026';
+                    @endphp
+
+                    <div class="mt-4 pt-3 border-t border-emerald-700/60 flex flex-col sm:flex-row items-center justify-between gap-3 relative z-10">
+                        <div class="text-[11px] text-emerald-200">
+                            <span class="block text-emerald-300 font-semibold">Format otomatis terpasang:</span>
+                            <code class="font-mono bg-black/30 px-1.5 py-0.5 rounded text-[10px] text-emerald-200">#LAPOR#{{ $waNik }}#...</code>
+                        </div>
+                        <a href="https://wa.me/{{ $waHotline }}?text={{ $waText }}" target="_blank" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 shrink-0">
+                            <span class="material-symbols-outlined text-[16px]">send</span>
+                            <span>Kirim via WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+
                 <!-- Form Kirim Laporan -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2 mb-3">
                         <span class="material-symbols-outlined text-green-700">rate_review</span>
-                        Kirim Laporan / Kendala
+                        Kirim Laporan / Kendala (Web)
                     </h3>
-                    <p class="text-xs text-gray-500 mb-4">Sampaikan kendala, kebutuhan bibit/pupuk, atau perkembangan langsung ke Pemda & Pendamping.</p>
+                    <p class="text-xs text-gray-500 mb-4">Sampaikan kendala, kebutuhan bibit/pupuk, atau perkembangan langsung ke Pemda &amp; Pendamping.</p>
 
                     <form id="formLaporanPenerima" action="{{ route('penerima.laporan.store') }}" method="POST" class="flex flex-col gap-3">
                         @csrf
@@ -253,7 +289,14 @@
                         @forelse ($keluarga->laporanPenerimas->sortByDesc('created_at') as $lap)
                         <div class="p-3 rounded-lg bg-gray-50 border border-gray-100 text-xs">
                             <div class="flex justify-between items-center text-gray-400 mb-1">
-                                <span>{{ $lap->created_at->format('d M Y, H:i') }}</span>
+                                <div class="flex items-center gap-1.5">
+                                    <span>{{ $lap->created_at->format('d M Y, H:i') }}</span>
+                                    @if ($lap->is_whatsapp || $lap->sumber === 'whatsapp')
+                                        <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[9px]">WhatsApp</span>
+                                    @else
+                                        <span class="px-1.5 py-0.5 rounded bg-gray-200 text-gray-700 font-medium text-[9px]">Web</span>
+                                    @endif
+                                </div>
                                 @if ($lap->is_read_by_pemda)
                                     <span class="text-green-600 font-bold">Dibaca Pemda</span>
                                 @else

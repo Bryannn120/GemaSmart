@@ -86,4 +86,16 @@ Route::prefix('v1')->group(function () {
         ], 201);
     });
 
+    // 5. Integrasi WhatsApp Gateway Webhook untuk Laporan Penerima Bantuan
+    Route::match(['get', 'post'], '/whatsapp/webhook', [\App\Http\Controllers\Api\WhatsAppWebhookController::class, 'webhook']);
+    Route::post('/whatsapp/simulator', [\App\Http\Controllers\Api\WhatsAppWebhookController::class, 'simulator']);
+    Route::get('/whatsapp/info', [\App\Http\Controllers\Api\WhatsAppWebhookController::class, 'info']);
 });
+
+// Alias langsung tanpa prefix v1 untuk fleksibilitas webhook gateway eksternal
+Route::match(['get', 'post'], '/whatsapp/webhook', [\App\Http\Controllers\Api\WhatsAppWebhookController::class, 'webhook']);
+Route::post('/whatsapp/laporan', [\App\Http\Controllers\Api\WhatsAppWebhookController::class, 'webhook']);
+Route::post('/whatsapp/simulator', [\App\Http\Controllers\Api\WhatsAppWebhookController::class, 'simulator']);
+Route::get('/whatsapp/info', [\App\Http\Controllers\Api\WhatsAppWebhookController::class, 'info']);
+
+

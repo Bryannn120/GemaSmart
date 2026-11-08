@@ -18,7 +18,7 @@
                 Dashboard Koordinator Kampus Mitra
             </h1>
             <p class="font-body-md text-body-md text-text-secondary">
-                Kelola program subsidi bantuan (bibit pertanian, bantuan tunai usaha, dan fasilitas/alat), pantau realisasi penyaluran kader pendamping, dan monitoring dampak keluarga binaan.
+                Kelola program subsidi bantuan bibit tanaman produktif dan sarana pertanian, pantau realisasi penyaluran kader pendamping, dan monitoring dampak keluarga binaan.
             </p>
         </div>
         <!-- Top Global Actions -->
@@ -35,84 +35,6 @@
                 <span class="material-symbols-outlined text-[18px]">file_download</span>
                 <span>Cetak PDF</span>
             </a>
-        </div>
-    </div>
-
-    <!-- FINANCIAL OVERVIEW: Dana Bappeda ke Kampus & Pengurangan Penggunaan -->
-    <div class="p-space-lg rounded-2xl bg-gradient-to-r from-gov-green-dark via-primary-container to-primary text-white shadow-md relative overflow-hidden">
-        <div class="absolute -right-12 -bottom-12 opacity-10 pointer-events-none">
-            <span class="material-symbols-outlined text-[240px]">account_balance</span>
-        </div>
-        <div class="relative z-10 flex flex-col gap-space-md">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b border-white/20 pb-space-sm">
-                <div class="flex items-center gap-2">
-                    <span class="p-2 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center">
-                        <span class="material-symbols-outlined text-white text-[22px]">account_balance_wallet</span>
-                    </span>
-                    <div>
-                        <h2 class="text-base font-bold text-white tracking-tight">Alokasi Kas &amp; Dana Program dari Bappeda ke Kampus</h2>
-                        <p class="text-xs text-white/80">Anggaran resmi yang diberikan oleh Bappeda Kab. Sumbawa kepada {{ $kampus->nama_universitas ?? 'Kampus Mitra' }}</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-md">
-                        Serapan: {{ $persenSerapan }}%
-                    </span>
-                </div>
-            </div>
-
-            <!-- 3 Financial Metrics -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
-                <!-- 1. Dana Bappeda -->
-                <div class="p-space-md rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex flex-col justify-between">
-                    <div>
-                        <span class="text-xs text-white/75 font-medium uppercase tracking-wider block">1. Dana Diberikan Bappeda</span>
-                        <div class="text-2xl lg:text-3xl font-extrabold text-white mt-1 tracking-tight">
-                            Rp {{ number_format($danaBappeda, 0, ',', '.') }}
-                        </div>
-                    </div>
-                    <span class="text-[11px] text-white/70 mt-2 block">Pagu hibah operasional &amp; bantuan</span>
-                </div>
-
-                <!-- 2. Penggunaan Dana -->
-                <div class="p-space-md rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex flex-col justify-between">
-                    <div>
-                        <span class="text-xs text-amber-200 font-medium uppercase tracking-wider block flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[14px]">trending_down</span>
-                            <span>2. Total Penggunaan Dana (-)</span>
-                        </span>
-                        <div class="text-2xl lg:text-3xl font-extrabold text-amber-300 mt-1 tracking-tight">
-                            Rp {{ number_format($danaTerpakai, 0, ',', '.') }}
-                        </div>
-                    </div>
-                    <span class="text-[11px] text-white/70 mt-2 block">Realisasi uang tunai + nilai bibit &amp; barang tersalur</span>
-                </div>
-
-                <!-- 3. Sisa Saldo Kas -->
-                <div class="p-space-md rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex flex-col justify-between shadow-inner">
-                    <div>
-                        <span class="text-xs text-emerald-200 font-bold uppercase tracking-wider block flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[14px]">savings</span>
-                            <span>3. Sisa Saldo Kas Kampus (=)</span>
-                        </span>
-                        <div class="text-2xl lg:text-3xl font-extrabold text-white mt-1 tracking-tight">
-                            Rp {{ number_format($sisaDana, 0, ',', '.') }}
-                        </div>
-                    </div>
-                    <span class="text-[11px] text-emerald-100 mt-2 font-medium block">Siap dialokasikan untuk penyaluran berikutnya</span>
-                </div>
-            </div>
-
-            <!-- Progress Bar Serapan -->
-            <div class="flex flex-col gap-1.5 pt-1">
-                <div class="flex items-center justify-between text-xs text-white/90">
-                    <span>Realisasi Penggunaan Anggaran:</span>
-                    <span class="font-bold">Rp {{ number_format($danaTerpakai, 0, ',', '.') }} / Rp {{ number_format($danaBappeda, 0, ',', '.') }} ({{ $persenSerapan }}%)</span>
-                </div>
-                <div class="w-full bg-black/20 rounded-full h-2.5 overflow-hidden p-0.5">
-                    <div class="bg-emerald-300 h-full rounded-full transition-all duration-700 shadow-sm" style="width: {{ $persenSerapan }}%"></div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -137,22 +59,22 @@
             </div>
         </div>
 
-        <!-- Card 2: Bantuan Dana Usaha -->
+        <!-- Card 2: Penyaluran Bantuan -->
         <div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm border border-border-light flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-between mb-space-sm">
-                    <span class="font-label-md text-label-md uppercase tracking-wider text-text-secondary">Dana Tersalurkan</span>
+                    <span class="font-label-md text-label-md uppercase tracking-wider text-text-secondary">Penyaluran Bantuan</span>
                     <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[22px]">account_balance_wallet</span>
+                        <span class="material-symbols-outlined text-[22px]">volunteer_activism</span>
                     </div>
                 </div>
                 <div class="font-headline-xl text-headline-xl text-emerald-700 tracking-tight font-bold">
-                    Rp {{ number_format($totalUangDisalurkan ?? 0, 0, ',', '.') }}
+                    {{ $totalPenyaluran ?? 0 }} Kali
                 </div>
             </div>
             <div class="mt-space-md pt-space-xs flex items-center justify-between text-text-secondary font-body-sm text-xs border-t border-border-light">
-                <span>Peruntukan:</span>
-                <span class="font-semibold text-text-primary">Modal Usaha Tani Tunai</span>
+                <span>Distribusi:</span>
+                <span class="font-semibold text-text-primary">Bibit &amp; Sarana Produktif</span>
             </div>
         </div>
 

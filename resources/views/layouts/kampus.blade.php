@@ -60,8 +60,28 @@
                 <a href="{{ route('kampus.monitoring.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg {{ request()->routeIs('kampus.monitoring.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : '' }}">
                     <span class="material-symbols-outlined text-[20px]">fact_check</span><span>Monitoring & Evaluasi</span>
                 </a>
-                <a href="{{ route('kampus.laporan.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg {{ request()->routeIs('kampus.laporan.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : '' }}">
-                    <span class="material-symbols-outlined text-[20px]">summarize</span><span>Laporan Kampus</span>
+                @php
+                    $kampusAuth = \App\Models\KampusMitra::where('user_id', auth()->id())->first() ?? \App\Models\KampusMitra::first();
+                    $kampusAuthId = $kampusAuth ? $kampusAuth->id : null;
+                    $unreadKampusReports = \App\Models\LaporanPenerima::where('is_read_by_kampus', false)
+                        ->whereHas('keluargaPenerima', function($kp) use ($kampusAuthId) {
+                            if ($kampusAuthId) {
+                                $kp->where('kampus_id', $kampusAuthId)
+                                   ->orWhereHas('pendamping', function($p) use ($kampusAuthId) {
+                                       $p->where('kampus_id', $kampusAuthId);
+                                   });
+                            }
+                        })->count();
+                @endphp
+                <a href="{{ route('kampus.laporan.index') }}" class="flex items-center justify-between gap-2 px-space-md py-space-sm rounded-lg text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg {{ request()->routeIs('kampus.laporan.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : '' }}">
+                    <div class="flex items-center gap-space-md">
+                        <span class="material-symbols-outlined text-[20px]">summarize</span><span>Laporan Kampus</span>
+                    </div>
+                    @if(($unreadKampusReports ?? 0) > 0)
+                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-purple-500 text-white shadow-xs">
+                            {{ $unreadKampusReports }}
+                        </span>
+                    @endif
                 </a>
                 <a href="{{ route('profile.index') }}" class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-primary/80 hover:bg-gov-green-dark hover:text-on-primary transition-colors font-label-lg text-label-lg {{ request()->routeIs('profile.*') ? 'bg-primary text-on-primary font-semibold shadow-sm' : '' }}">
                     <span class="material-symbols-outlined text-[20px]">settings</span><span>Pengaturan Akun</span>

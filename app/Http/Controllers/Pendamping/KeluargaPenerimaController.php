@@ -11,6 +11,7 @@ use App\Models\Wilayah;
 use App\Models\ProgramBantuan;
 use App\Models\User;
 use App\Models\AuditLog;
+use App\Services\DataPenerimaExportImportService;
 
 class KeluargaPenerimaController extends Controller
 {
@@ -74,6 +75,82 @@ class KeluargaPenerimaController extends Controller
     }
 
     /**
+     * Ekspor Data Keluarga Penerima Binaan ke Excel (.xlsx) atau CSV (.csv).
+     */
+    public function export(Request $request, DataPenerimaExportImportService $service)
+    {
+        $user = Auth::user();
+        $format = $request->query('format', 'xlsx');
+        $tab = $request->query('tab', 'aktif');
+        $search = $request->query('search');
+
+        $context = [
+            'role' => 'pendamping',
+            'pendamping_id' => $user->id,
+            'pendamping_name' => $user->name,
+            'kampus_id' => $user->kampus_id,
+            'assigned_desa_ids' => $user->getAssignedDesaIds(),
+        ];
+
+        return $service->export($format, $tab, null, null, $search, $context);
+    }
+
+    /**
+     * Download Template Impor Penerima Bantuan untuk Pendamping.
+     */
+    public function downloadTemplate(Request $request, DataPenerimaExportImportService $service)
+    {
+        $user = Auth::user();
+        $format = $request->query('format', 'xlsx');
+
+        $context = [
+            'role' => 'pendamping',
+            'pendamping_id' => $user->id,
+            'pendamping_name' => $user->name,
+            'kampus_id' => $user->kampus_id,
+            'assigned_desa_ids' => $user->getAssignedDesaIds(),
+        ];
+
+        return $service->downloadTemplate($format, $context);
+    }
+
+    /**
+     * Impor Data Penerima Bantuan dari Excel/CSV dengan Proteksi Anti-Duplikasi.
+     */
+    public function import(Request $request, DataPenerimaExportImportService $service)
+    {
+        $request->validate([
+            'file' => 'required|file|max:10240',
+            'duplicate_mode' => 'required|in:update,skip',
+        ], [
+            'file.required' => 'Pilih file Excel (.xlsx) atau CSV (.csv) untuk diunggah.',
+            'file.max' => 'Ukuran file maksimal adalah 10 MB.',
+            'duplicate_mode.required' => 'Pilih mode penanganan jika data NIK sudah terdaftar.',
+        ]);
+
+        $user = Auth::user();
+        $context = [
+            'role' => 'pendamping',
+            'pendamping_id' => $user->id,
+            'pendamping_name' => $user->name,
+            'kampus_id' => $user->kampus_id,
+            'assigned_desa_ids' => $user->getAssignedDesaIds(),
+        ];
+
+        $result = $service->import($request->file('file'), $request->duplicate_mode, $context);
+
+        if ($result['success']) {
+            return redirect()->route('pendamping.keluarga_penerima.index')
+                ->with('success', $result['message'])
+                ->with('import_errors', $result['stats']['errors'] ?? []);
+        }
+
+        return redirect()->route('pendamping.keluarga_penerima.index')
+            ->with('error', $result['message'])
+            ->with('import_errors', $result['stats']['errors'] ?? []);
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -96,6 +173,31 @@ class KeluargaPenerimaController extends Controller
      */
     public function store(Request $request)
     {
+        // Sanitasi NIK dan No KK (hanya angka)
+        $cleanNik = preg_replace('/\D/', '', (string)$request->input('nik'));
+        $cleanNoKk = preg_replace('/\D/', '', (string)$request->input('no_kk'));
+        $request->merge([
+            'nik' => $cleanNik,
+            'no_kk' => $cleanNoKk,
+        ]);
+
+        // Cek duplikasi NIK dan KK secara ketat (termasuk trashed)
+        $existingNik = KeluargaPenerima::withTrashed()->with('wilayah')->where('nik', $cleanNik)->first();
+        if ($existingNik) {
+            $desa = $existingNik->wilayah ? $existingNik->wilayah->nama : 'Sumbawa';
+            return back()->withInput()->withErrors([
+                'nik' => "NIK {$cleanNik} sudah terdaftar atas nama {$existingNik->kepala_keluarga} (Desa {$desa}). Data penerima tidak boleh ganda!"
+            ]);
+        }
+
+        $existingKk = KeluargaPenerima::withTrashed()->with('wilayah')->where('no_kk', $cleanNoKk)->first();
+        if ($existingKk) {
+            $desa = $existingKk->wilayah ? $existingKk->wilayah->nama : 'Sumbawa';
+            return back()->withInput()->withErrors([
+                'no_kk' => "Nomor KK {$cleanNoKk} sudah terdaftar atas nama {$existingKk->kepala_keluarga} (Desa {$desa}). Setiap KK hanya boleh terdaftar satu kali!"
+            ]);
+        }
+
         $validated = $request->validate([
             'no_kk' => 'required|string|size:16|unique:keluarga_penerimas,no_kk',
             'kepala_keluarga' => 'required|string|max:255',
@@ -141,18 +243,16 @@ class KeluargaPenerimaController extends Controller
         $penerima = KeluargaPenerima::create($validated);
 
         // Catat Audit Trail
-        AuditLog::create([
-            'user_id' => Auth::id(),
-            'aksi' => 'Tambah Data Keluarga Penerima Bantuan',
-            'model' => 'KeluargaPenerima',
-            'model_id' => $penerima->id,
-            'data_lama' => null,
-            'data_baru' => $validated,
-            'ip_address' => $request->ip(),
-        ]);
+        AuditLog::record(
+            'Pendamping Menambahkan Data Keluarga Penerima Bantuan',
+            'KeluargaPenerima',
+            $penerima->id,
+            null,
+            $validated
+        );
 
         return redirect()->route('pendamping.keluarga_penerima.index')
-            ->with('success', "Keluarga penerima {$penerima->kepala_keluarga} berhasil ditambahkan.");
+            ->with('success', "Keluarga penerima {$penerima->kepala_keluarga} berhasil ditambahkan tanpa duplikasi.");
     }
 
     /**
@@ -192,6 +292,41 @@ class KeluargaPenerimaController extends Controller
     public function update(Request $request, string $id)
     {
         $keluarga_penerima = KeluargaPenerima::findOrFail($id);
+
+        // Sanitasi NIK dan No KK (hanya angka)
+        $cleanNik = preg_replace('/\D/', '', (string)$request->input('nik'));
+        $cleanNoKk = preg_replace('/\D/', '', (string)$request->input('no_kk'));
+        $request->merge([
+            'nik' => $cleanNik,
+            'no_kk' => $cleanNoKk,
+        ]);
+
+        // Cek duplikasi NIK dan KK terhadap data penerima lain (termasuk trashed)
+        $existingNik = KeluargaPenerima::withTrashed()
+            ->with('wilayah')
+            ->where('nik', $cleanNik)
+            ->where('id', '!=', $id)
+            ->first();
+
+        if ($existingNik) {
+            $desa = $existingNik->wilayah ? $existingNik->wilayah->nama : 'Sumbawa';
+            return back()->withInput()->withErrors([
+                'nik' => "NIK {$cleanNik} sudah terdaftar atas nama {$existingNik->kepala_keluarga} (Desa {$desa}). NIK tidak boleh ganda!"
+            ]);
+        }
+
+        $existingKk = KeluargaPenerima::withTrashed()
+            ->with('wilayah')
+            ->where('no_kk', $cleanNoKk)
+            ->where('id', '!=', $id)
+            ->first();
+
+        if ($existingKk) {
+            $desa = $existingKk->wilayah ? $existingKk->wilayah->nama : 'Sumbawa';
+            return back()->withInput()->withErrors([
+                'no_kk' => "Nomor KK {$cleanNoKk} sudah terdaftar atas nama {$existingKk->kepala_keluarga} (Desa {$desa}). Nomor KK tidak boleh ganda!"
+            ]);
+        }
 
         $validated = $request->validate([
             'no_kk' => 'required|string|size:16|unique:keluarga_penerimas,no_kk,' . $id,
@@ -238,15 +373,13 @@ class KeluargaPenerimaController extends Controller
         }
 
         // Catat Audit Trail
-        AuditLog::create([
-            'user_id' => Auth::id(),
-            'aksi' => 'Update Data Keluarga Penerima Bantuan',
-            'model' => 'KeluargaPenerima',
-            'model_id' => $keluarga_penerima->id,
-            'data_lama' => $dataLama,
-            'data_baru' => $keluarga_penerima->toArray(),
-            'ip_address' => $request->ip(),
-        ]);
+        AuditLog::record(
+            'Pendamping Memperbarui Data Keluarga Penerima Bantuan',
+            'KeluargaPenerima',
+            $keluarga_penerima->id,
+            $dataLama,
+            $keluarga_penerima->fresh()->toArray()
+        );
 
         return redirect()->route('pendamping.keluarga_penerima.show', $keluarga_penerima->id)
             ->with('success', "Data keluarga {$keluarga_penerima->kepala_keluarga} berhasil diperbarui.");

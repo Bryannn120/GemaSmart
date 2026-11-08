@@ -12,67 +12,93 @@ use Illuminate\Support\Facades\DB;
 class MonitoringKemandirianController extends Controller
 {
     /**
-     * Tampilkan halaman monitoring kemandirian, distribusi desil, dan riwayat kunjungan penilaian.
+     * Tampilkan halaman monitoring kemandirian berdasarkan indikator penilaian, pendapatan, dan pengeluaran.
      */
     public function index(Request $request)
     {
         $search = $request->query('search');
-        $statusFilter = $request->query('status'); // all, mandiri, tahap_kemandirian, penurunan
+        $statusFilter = $request->query('status'); // all, mandiri, tahap_kemandirian, defisit
         $wilayahId = $request->query('wilayah_id');
 
         $user = auth()->user();
-        $desaIds = $user->getAssignedDesaIds();
 
-        // 1. Data Statistik Utama & Agregasi (Ter-scope ke wilayah binaan pendamping)
-        $baseKeluarga = KeluargaPenerima::query();
-        if (!empty($desaIds)) {
-            $baseKeluarga->where(function($q) use ($user, $desaIds) {
-                $q->where('pendamping_id', $user->id)
-                  ->orWhereIn('wilayah_id', $desaIds);
-            });
-        } else {
-            $baseKeluarga->where('pendamping_id', $user->id);
-        }
+        // 1. Data Statistik Utama & Agregasi (Ter-scope hanya keluarga binaan yang didampingi pendamping yang login)
+        $baseKeluarga = KeluargaPenerima::where('pendamping_id', $user->id);
 
         $totalBinaan = (clone $baseKeluarga)->count();
-        $totalMandiri = (clone $baseKeluarga)->where('desil', '>=', 6)->count();
-        $totalTahap = (clone $baseKeluarga)->where('desil', '<', 6)
-            ->where('status_kemandirian', '!=', 'Penurunan Desil')
-            ->count();
-        $totalPenurunan = (clone $baseKeluarga)->where('status_kemandirian', 'Penurunan Desil')->count();
-
-        $totalKunjungan = PenilaianKemandirian::where(function($q) use ($user, $desaIds) {
-            $q->where('pendamping_id', $user->id);
-            if (!empty($desaIds)) {
-                $q->orWhereHas('keluargaPenerima', fn($kp) => $kp->whereIn('wilayah_id', $desaIds));
-            }
+        $totalMandiri = (clone $baseKeluarga)->where(function($q) {
+            $q->where('status_kemandirian', 'Mandiri')
+              ->orWhere('desil', '>=', 6);
         })->count();
+
+        $totalTahap = (clone $baseKeluarga)->where(function($q) {
+            $q->where('status_kemandirian', 'Tahap Kemandirian')
+              ->orWhere(function($sub) {
+                  $sub->where('desil', '<', 6)
+                      ->where('status_kemandirian', '!=', 'Penurunan Desil');
+              });
+        })->count();
+
+        $totalDefisit = (clone $baseKeluarga)->where(function($q) {
+            $q->where('status_kemandirian', 'like', '%Penurunan%')
+              ->orWhere('penghasilan_bersih', '<', 0);
+        })->count();
+
+        $totalKunjungan = PenilaianKemandirian::where('pendamping_id', $user->id)->count();
 
         $persenMandiri = $totalBinaan > 0 ? round(($totalMandiri / $totalBinaan) * 100, 1) : 0;
         $persenTahap = $totalBinaan > 0 ? round(($totalTahap / $totalBinaan) * 100, 1) : 0;
-        $persenPenurunan = $totalBinaan > 0 ? round(($totalPenurunan / $totalBinaan) * 100, 1) : 0;
+        $persenDefisit = $totalBinaan > 0 ? round(($totalDefisit / $totalBinaan) * 100, 1) : 0;
 
-        $rataRataPenghasilan = (clone $baseKeluarga)->where('penghasilan_perbulan', '>', 0)->avg('penghasilan_perbulan') ?? 0;
+        // Rata-rata Pendapatan, Pengeluaran, dan Surplus per Bulan
+        $rataRataPendapatan = (clone $baseKeluarga)->where(function($q) {
+            $q->where('pendapatan_perbulan', '>', 0)->orWhere('penghasilan_perbulan', '>', 0);
+        })->selectRaw('AVG(CASE WHEN pendapatan_perbulan > 0 THEN pendapatan_perbulan ELSE penghasilan_perbulan END) as avg_inc')->value('avg_inc') ?? 0;
 
-        // 2. Data Grafik (Ter-scope)
-        $distribusiDesil = [];
-        for ($d = 1; $d <= 10; $d++) {
-            $distribusiDesil[$d] = (clone $baseKeluarga)->where('desil', $d)->count();
+        $rataRataPengeluaran = (clone $baseKeluarga)->where('pengeluaran_perbulan', '>', 0)->avg('pengeluaran_perbulan') ?? 0;
+        $rataRataSurplus = $rataRataPendapatan - $rataRataPengeluaran;
+
+        // 2. Data Grafik: Distribusi Berdasarkan Indikator Penilaian Kemandirian
+        // Mengelompokkan keluarga berdasarkan skor indikator penilaian (0-100)
+        $allBinaan = (clone $baseKeluarga)->with(['penilaianKemandirians' => function($q) {
+            $q->latest();
+        }])->get();
+
+        $distribusiIndikator = [
+            'perlu_intervensi' => 0, // Skor 0 - 40 / Defisit
+            'tahap_awal'       => 0, // Skor 41 - 55
+            'berkembang'       => 0, // Skor 56 - 70
+            'mandiri_madya'    => 0, // Skor 71 - 85
+            'mandiri_utama'    => 0, // Skor 86 - 100
+        ];
+
+        foreach ($allBinaan as $b) {
+            $latest = $b->penilaianKemandirians->first();
+            $skor = $latest ? (int)$latest->total_skor : (int)($b->desil ? $b->desil * 10 : 30);
+            
+            if ($skor <= 40 || ($b->penghasilan_bersih < 0)) {
+                $distribusiIndikator['perlu_intervensi']++;
+            } elseif ($skor <= 55) {
+                $distribusiIndikator['tahap_awal']++;
+            } elseif ($skor <= 70) {
+                $distribusiIndikator['berkembang']++;
+            } elseif ($skor <= 85) {
+                $distribusiIndikator['mandiri_madya']++;
+            } else {
+                $distribusiIndikator['mandiri_utama']++;
+            }
         }
 
-        // B. Tren Kunjungan Evaluasi
+        // B. Tren Evaluasi Indikator Penilaian
         $trenKunjungan = PenilaianKemandirian::select(
                 'periode',
                 DB::raw('COUNT(*) as total_asesmen'),
                 DB::raw('AVG(total_skor) as avg_skor'),
-                DB::raw('AVG(penghasilan_perbulan) as avg_penghasilan')
+                DB::raw('AVG(COALESCE(NULLIF(pendapatan_perbulan, 0), penghasilan_perbulan, 0)) as avg_pendapatan'),
+                DB::raw('AVG(COALESCE(pengeluaran_perbulan, 0)) as avg_pengeluaran'),
+                DB::raw('AVG(COALESCE(penghasilan_bersih, 0)) as avg_surplus')
             )
-            ->where(function($q) use ($user, $desaIds) {
-                $q->where('pendamping_id', $user->id);
-                if (!empty($desaIds)) {
-                    $q->orWhereHas('keluargaPenerima', fn($kp) => $kp->whereIn('wilayah_id', $desaIds));
-                }
-            })
+            ->where('pendamping_id', $user->id)
             ->groupBy('periode')
             ->orderByRaw('MIN(created_at) ASC')
             ->take(8)
@@ -105,46 +131,56 @@ class MonitoringKemandirianController extends Controller
 
         if ($request->filled('status')) {
             if ($statusFilter === 'mandiri') {
-                $keluargaQuery->where('desil', '>=', 6);
+                $keluargaQuery->where(function($q) {
+                    $q->where('status_kemandirian', 'Mandiri')
+                      ->orWhere('desil', '>=', 6);
+                });
             } elseif ($statusFilter === 'tahap_kemandirian') {
-                $keluargaQuery->where('desil', '<', 6)->where('status_kemandirian', '!=', 'Penurunan Desil');
-            } elseif ($statusFilter === 'penurunan') {
-                $keluargaQuery->where('status_kemandirian', 'Penurunan Desil');
+                $keluargaQuery->where(function($q) {
+                    $q->where('status_kemandirian', 'Tahap Kemandirian')
+                      ->orWhere(function($sub) {
+                          $sub->where('desil', '<', 6)
+                              ->where('status_kemandirian', '!=', 'Penurunan Desil');
+                      });
+                });
+            } elseif ($statusFilter === 'defisit' || $statusFilter === 'penurunan') {
+                $keluargaQuery->where(function($q) {
+                    $q->where('status_kemandirian', 'like', '%Penurunan%')
+                      ->orWhere('penghasilan_bersih', '<', 0);
+                });
             }
         }
 
         $keluargaList = $keluargaQuery->latest('id')->get();
 
-        // 4. Tabel 2: Riwayat Penilaian Desil Ter-scope
+        // 4. Tabel 2: Riwayat Indikator Penilaian Kunjungan Lapangan Ter-scope
         $historiKunjungan = PenilaianKemandirian::with(['keluargaPenerima.wilayah', 'pendamping'])
-            ->where(function($q) use ($user, $desaIds) {
-                $q->where('pendamping_id', $user->id);
-                if (!empty($desaIds)) {
-                    $q->orWhereHas('keluargaPenerima', fn($kp) => $kp->whereIn('wilayah_id', $desaIds));
-                }
-            })
+            ->where('pendamping_id', $user->id)
             ->latest()
             ->take(30)
             ->get();
 
-        // Daftar Wilayah untuk filter (terbatas pada desa binaan)
-        $wilayahsQuery = Wilayah::with('parent')->where('jenis', 'desa');
-        if (!empty($desaIds)) {
-            $wilayahsQuery->whereIn('id', $desaIds);
-        }
-        $wilayahs = $wilayahsQuery->orderBy('nama')->get();
+        // Daftar Wilayah untuk filter (desa dari keluarga binaan pendamping)
+        $desaIdsBinaan = (clone $baseKeluarga)->pluck('wilayah_id')->filter()->unique();
+        $wilayahs = Wilayah::with('parent')
+            ->where('jenis', 'desa')
+            ->whereIn('id', $desaIdsBinaan)
+            ->orderBy('nama')
+            ->get();
 
         return view('dashboard.pendamping.kemandirian.index', compact(
             'totalBinaan',
             'totalMandiri',
             'totalTahap',
-            'totalPenurunan',
+            'totalDefisit',
             'totalKunjungan',
             'persenMandiri',
             'persenTahap',
-            'persenPenurunan',
-            'rataRataPenghasilan',
-            'distribusiDesil',
+            'persenDefisit',
+            'rataRataPendapatan',
+            'rataRataPengeluaran',
+            'rataRataSurplus',
+            'distribusiIndikator',
             'trenKunjungan',
             'keluargaList',
             'historiKunjungan',

@@ -5,9 +5,8 @@ namespace App\Http\Controllers\Kampus;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\KeluargaPenerima;
-use App\Models\Penyaluran;
 use App\Models\LaporanTumbuhKembang;
-use App\Models\Spj;
+use App\Models\LaporanPenerima;
 use App\Models\KampusMitra;
 use App\Models\ProgramBantuan;
 use App\Models\ItemBantuan;
@@ -17,7 +16,7 @@ use App\Services\PeriodFilterHelper;
 class LaporanController extends Controller
 {
     /**
-     * Display a listing of the resource with period filter (hari, minggu, bulan, tahun).
+     * Display a listing of reports with period filter.
      */
     public function index(Request $request)
     {
@@ -26,7 +25,21 @@ class LaporanController extends Controller
         $kampus = KampusMitra::where('user_id', auth()->id())->first() ?? KampusMitra::first();
         $kampusId = $kampus ? $kampus->id : null;
 
-        // Query Penyaluran Bantuan Binaan Kampus
+        // 1. Query Laporan & Keluhan Langsung dari Penerima Bantuan (Requirement 1)
+        $laporanPenerimaQuery = LaporanPenerima::with([
+            'keluargaPenerima.wilayah.parent',
+            'keluargaPenerima.pendamping',
+            'keluargaPenerima.programBantuan'
+        ])->when($kampusId, function($q) use ($kampusId) {
+            $q->whereHas('keluargaPenerima', function($kp) use ($kampusId) {
+                $kp->where('kampus_id', $kampusId)
+                   ->orWhereHas('pendamping', function($p) use ($kampusId) {
+                       $p->where('kampus_id', $kampusId);
+                   });
+            });
+        });
+
+        // 2. Query Penyaluran Bantuan Bibit & Sarana Binaan Kampus
         $penyaluranQuery = PenyaluranBantuan::with(['keluargaPenerima.wilayah', 'programBantuan', 'itemBantuan', 'pendamping'])
             ->where('status', '!=', 'batal')
             ->when($kampusId, function($q) use ($kampusId) {
@@ -35,7 +48,7 @@ class LaporanController extends Controller
                 });
             });
 
-        // Query Laporan Tumbuh Kembang Lapangan
+        // 3. Query Laporan Tumbuh Kembang Lapangan
         $laporanQuery = LaporanTumbuhKembang::with(['keluarga_penerima.wilayah', 'pendamping'])
             ->when($kampusId, function($q) use ($kampusId) {
                 $q->whereHas('pendamping', function($p) use ($kampusId) {
@@ -47,17 +60,19 @@ class LaporanController extends Controller
         if ($periodInfo['start'] && $periodInfo['end']) {
             $penyaluranQuery->whereBetween('tgl_penyaluran', [$periodInfo['start']->toDateString(), $periodInfo['end']->toDateString()]);
             $laporanQuery->whereBetween('tanggal_lapor', [$periodInfo['start']->toDateString(), $periodInfo['end']->toDateString()]);
+            $laporanPenerimaQuery->whereBetween('created_at', [$periodInfo['start'], $periodInfo['end']]);
         }
 
         $penyalurans = (clone $penyaluranQuery)->latest('tgl_penyaluran')->latest('id')->take(20)->get();
         $laporans = (clone $laporanQuery)->latest('tanggal_lapor')->latest('id')->take(20)->get();
+        $laporanPenerimas = $laporanPenerimaQuery->latest()->get();
 
         $totalPenyaluran = (clone $penyaluranQuery)->count();
-        $totalNominalUang = (clone $penyaluranQuery)->where('jenis', 'uang')->sum('nominal_uang');
         $totalBarangDisalurkan = (clone $penyaluranQuery)->where('jenis', 'barang')->sum('jumlah');
         $totalBibitDisalurkan = (clone $penyaluranQuery)->where('jenis', 'bibit')->sum('jumlah');
         $totalKkTerlayani = (clone $penyaluranQuery)->distinct('keluarga_penerima_id')->count('keluarga_penerima_id');
         $totalLaporan = (clone $laporanQuery)->count();
+        $totalLaporanPenerima = $laporanPenerimas->count();
 
         // Data Program Bantuan
         $programs = ProgramBantuan::with('itemBantuans')
@@ -70,14 +85,38 @@ class LaporanController extends Controller
             'programs',
             'penyalurans',
             'laporans',
+            'laporanPenerimas',
             'totalPenyaluran',
-            'totalNominalUang',
             'totalBarangDisalurkan',
             'totalBibitDisalurkan',
             'totalKkTerlayani',
             'totalLaporan',
+            'totalLaporanPenerima',
             'periodInfo'
         ));
+    }
+
+    /**
+     * Tampilkan detail laporan dari warga penerima bantuan untuk pihak kampus.
+     */
+    public function showPenerima(string $id)
+    {
+        $kampus = KampusMitra::where('user_id', auth()->id())->first() ?? KampusMitra::first();
+        $kampusId = $kampus ? $kampus->id : null;
+
+        $laporan = LaporanPenerima::with([
+            'keluargaPenerima.wilayah.parent',
+            'keluargaPenerima.pendamping',
+            'keluargaPenerima.programBantuan',
+            'keluargaPenerima.kampusMitra'
+        ])->findOrFail($id);
+
+        // Tandai sudah dilihat oleh kampus
+        if (!$laporan->is_read_by_kampus) {
+            $laporan->update(['is_read_by_kampus' => true]);
+        }
+
+        return view('dashboard.kampus.laporan.penerima_show', compact('laporan', 'kampus'));
     }
 
     /**
@@ -143,53 +182,5 @@ class LaporanController extends Controller
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->download('Laporan_Log_Pendamping_' . ($periodInfo['start_date'] ?? 'all') . '.pdf');
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

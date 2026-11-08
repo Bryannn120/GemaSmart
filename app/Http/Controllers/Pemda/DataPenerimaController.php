@@ -151,6 +151,31 @@ class DataPenerimaController extends Controller
 
     public function store(Request $request)
     {
+        // Sanitasi NIK dan No KK (hanya angka)
+        $cleanNik = preg_replace('/\D/', '', (string)$request->input('nik'));
+        $cleanNoKk = preg_replace('/\D/', '', (string)$request->input('no_kk'));
+        $request->merge([
+            'nik' => $cleanNik,
+            'no_kk' => $cleanNoKk,
+        ]);
+
+        // Cek duplikasi NIK dan KK secara ketat (termasuk trashed)
+        $existingNik = KeluargaPenerima::withTrashed()->with('wilayah')->where('nik', $cleanNik)->first();
+        if ($existingNik) {
+            $desa = $existingNik->wilayah ? $existingNik->wilayah->nama : 'Sumbawa';
+            return back()->withInput()->withErrors([
+                'nik' => "NIK {$cleanNik} sudah terdaftar atas nama {$existingNik->kepala_keluarga} (Desa {$desa}). Data penerima tidak boleh ganda!"
+            ]);
+        }
+
+        $existingKk = KeluargaPenerima::withTrashed()->with('wilayah')->where('no_kk', $cleanNoKk)->first();
+        if ($existingKk) {
+            $desa = $existingKk->wilayah ? $existingKk->wilayah->nama : 'Sumbawa';
+            return back()->withInput()->withErrors([
+                'no_kk' => "Nomor KK {$cleanNoKk} sudah terdaftar atas nama {$existingKk->kepala_keluarga} (Desa {$desa}). Setiap KK hanya boleh terdaftar satu kali!"
+            ]);
+        }
+
         $validated = $request->validate([
             'no_kk' => 'required|string|size:16|unique:keluarga_penerimas,no_kk',
             'kepala_keluarga' => 'required|string|max:255',
@@ -161,15 +186,28 @@ class DataPenerimaController extends Controller
             'program_bantuan_id' => 'required|exists:program_bantuans,id',
             'pendamping_id' => 'nullable|exists:users,id',
             'status_validasi' => 'required|in:menunggu_validasi,proses_lapangan,valid,anomali',
+        ], [
+            'no_kk.required' => 'Nomor Kartu Keluarga (KK) wajib diisi.',
+            'no_kk.size' => 'Nomor KK harus 16 digit angka.',
+            'no_kk.unique' => 'Nomor KK ini sudah terdaftar dalam sistem.',
+            'nik.required' => 'NIK Kepala Keluarga wajib diisi.',
+            'nik.size' => 'NIK harus 16 digit angka.',
+            'nik.unique' => 'NIK ini sudah terdaftar dalam sistem.',
+            'kepala_keluarga.required' => 'Nama Kepala Keluarga wajib diisi.',
+            'desil.required' => 'Tingkat desil wajib dipilih.',
+            'wilayah_id.required' => 'Wilayah desa/kelurahan wajib dipilih.',
+            'program_bantuan_id.required' => 'Program bantuan wajib dipilih.',
         ]);
 
-        // Create User account automatically
-        $user = User::create([
-            'name' => $validated['kepala_keluarga'],
-            'email' => $validated['nik'] . '@penerima.com',
-            'password' => Hash::make($validated['no_kk']),
-            'role' => 'penerima',
-        ]);
+        // Hubungkan atau buat akun user penerima otomatis
+        $user = User::firstOrCreate(
+            ['email' => $validated['nik'] . '@penerima.com'],
+            [
+                'name' => $validated['kepala_keluarga'],
+                'password' => Hash::make($validated['no_kk']),
+                'role' => 'penerima',
+            ]
+        );
 
         $validated['user_id'] = $user->id;
         $validated['status_kemandirian'] = ($validated['desil'] >= 6) ? 'Mandiri' : 'Belum Dinilai';
@@ -191,7 +229,7 @@ class DataPenerimaController extends Controller
             ]
         );
 
-        return redirect()->route('pemda.data-penerima.index')->with('success', 'Data penerima berhasil ditambahkan & Akun berhasil dibuat.');
+        return redirect()->route('pemda.data-penerima.index')->with('success', "Data penerima {$penerima->kepala_keluarga} berhasil ditambahkan tanpa duplikasi.");
     }
 
     public function show(string $id)
@@ -221,6 +259,41 @@ class DataPenerimaController extends Controller
         $keluarga_penerima = KeluargaPenerima::findOrFail($id);
         $dataLama = $keluarga_penerima->toArray();
 
+        // Sanitasi NIK dan No KK (hanya angka)
+        $cleanNik = preg_replace('/\D/', '', (string)$request->input('nik'));
+        $cleanNoKk = preg_replace('/\D/', '', (string)$request->input('no_kk'));
+        $request->merge([
+            'nik' => $cleanNik,
+            'no_kk' => $cleanNoKk,
+        ]);
+
+        // Cek duplikasi NIK dan KK terhadap data penerima lain (termasuk trashed)
+        $existingNik = KeluargaPenerima::withTrashed()
+            ->with('wilayah')
+            ->where('nik', $cleanNik)
+            ->where('id', '!=', $id)
+            ->first();
+
+        if ($existingNik) {
+            $desa = $existingNik->wilayah ? $existingNik->wilayah->nama : 'Sumbawa';
+            return back()->withInput()->withErrors([
+                'nik' => "NIK {$cleanNik} sudah terdaftar atas nama {$existingNik->kepala_keluarga} (Desa {$desa}). NIK tidak boleh ganda!"
+            ]);
+        }
+
+        $existingKk = KeluargaPenerima::withTrashed()
+            ->with('wilayah')
+            ->where('no_kk', $cleanNoKk)
+            ->where('id', '!=', $id)
+            ->first();
+
+        if ($existingKk) {
+            $desa = $existingKk->wilayah ? $existingKk->wilayah->nama : 'Sumbawa';
+            return back()->withInput()->withErrors([
+                'no_kk' => "Nomor KK {$cleanNoKk} sudah terdaftar atas nama {$existingKk->kepala_keluarga} (Desa {$desa}). Nomor KK tidak boleh ganda!"
+            ]);
+        }
+
         $validated = $request->validate([
             'no_kk' => 'required|string|size:16|unique:keluarga_penerimas,no_kk,' . $id,
             'kepala_keluarga' => 'required|string|max:255',
@@ -231,6 +304,17 @@ class DataPenerimaController extends Controller
             'program_bantuan_id' => 'required|exists:program_bantuans,id',
             'pendamping_id' => 'nullable|exists:users,id',
             'status_validasi' => 'required|in:menunggu_validasi,proses_lapangan,valid,anomali',
+        ], [
+            'no_kk.required' => 'Nomor Kartu Keluarga (KK) wajib diisi.',
+            'no_kk.size' => 'Nomor KK harus 16 digit angka.',
+            'no_kk.unique' => 'Nomor KK ini sudah digunakan keluarga lain.',
+            'nik.required' => 'NIK Kepala Keluarga wajib diisi.',
+            'nik.size' => 'NIK harus 16 digit angka.',
+            'nik.unique' => 'NIK ini sudah digunakan penerima lain.',
+            'kepala_keluarga.required' => 'Nama Kepala Keluarga wajib diisi.',
+            'desil.required' => 'Tingkat desil wajib dipilih.',
+            'wilayah_id.required' => 'Wilayah desa/kelurahan wajib dipilih.',
+            'program_bantuan_id.required' => 'Program bantuan wajib dipilih.',
         ]);
 
         if ($validated['desil'] >= 6) {

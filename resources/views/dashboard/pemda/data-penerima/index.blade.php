@@ -466,20 +466,20 @@
                             </label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
                                 <label class="border border-border-light rounded-xl p-3 flex items-start gap-3 cursor-pointer hover:bg-surface-subtle transition-colors has-[:checked]:border-gov-green has-[:checked]:bg-gov-green-surface/20">
-                                    <input type="radio" name="duplicate_mode" value="update" checked class="mt-1 text-gov-green focus:ring-gov-green">
+                                    <input type="radio" name="duplicate_mode" value="skip" checked class="mt-1 text-gov-green focus:ring-gov-green">
                                     <div>
-                                        <span class="font-semibold text-xs text-text-primary block">Perbarui Data (Update)</span>
+                                        <span class="font-semibold text-xs text-text-primary block">Lewati Data Duplikat (Skip - Direkomendasikan)</span>
                                         <span class="text-[11px] text-text-secondary block mt-0.5">
-                                            Data profil, desil, dan alamat warga yang cocok akan diperbarui dengan data dari file.
+                                            Hanya tambahkan data warga baru. NIK / KK yang sudah ada dalam database atau berkas akan dilewati secara aman demi mencegah data ganda.
                                         </span>
                                     </div>
                                 </label>
                                 <label class="border border-border-light rounded-xl p-3 flex items-start gap-3 cursor-pointer hover:bg-surface-subtle transition-colors has-[:checked]:border-gov-green has-[:checked]:bg-gov-green-surface/20">
-                                    <input type="radio" name="duplicate_mode" value="skip" class="mt-1 text-gov-green focus:ring-gov-green">
+                                    <input type="radio" name="duplicate_mode" value="update" class="mt-1 text-gov-green focus:ring-gov-green">
                                     <div>
-                                        <span class="font-semibold text-xs text-text-primary block">Lewati (Skip)</span>
+                                        <span class="font-semibold text-xs text-text-primary block">Perbarui Data yang Ada (Update)</span>
                                         <span class="text-[11px] text-text-secondary block mt-0.5">
-                                            Hanya tambahkan data warga baru. NIK yang sudah ada akan dilewati tanpa diubah.
+                                            Data profil, desil, dan alamat warga yang cocok akan diperbarui dengan data dari file tanpa menambah baris baru.
                                         </span>
                                     </div>
                                 </label>

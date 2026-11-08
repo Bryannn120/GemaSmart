@@ -12,19 +12,36 @@
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
                 <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-gov-green-surface text-primary uppercase tracking-wider">
                     Laporan Masuk #{{ $laporan->id }}
                 </span>
+                @if($laporan->is_whatsapp || $laporan->sumber === 'whatsapp')
+                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1.5 shadow-sm">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                        <span>Kanal WhatsApp API ({{ $laporan->formatted_wa_sender }})</span>
+                    </span>
+                @else
+                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">language</span>
+                        <span>Portal Web</span>
+                    </span>
+                @endif
                 <span class="text-text-secondary text-xs">
-                    {{ $laporan->created_at->format('d M Y, H:i:s') }}
+                    {{ $laporan->created_at->format('d M Y, H:i:s') }} WITA
                 </span>
             </div>
             <h1 class="font-headline-lg text-headline-lg font-bold text-text-primary mt-1">
-                Laporan dari {{ $laporan->keluargaPenerima->kepala_keluarga ?? 'Warga Penerima' }}
+                Laporan dari {{ $laporan->keluargaPenerima->kepala_keluarga ?? ($laporan->pengirim_nama ?: 'Warga Penerima') }}
             </h1>
         </div>
-        <div>
+        <div class="flex items-center gap-2 flex-wrap">
+            @if($laporan->wa_sender)
+            <a href="https://wa.me/{{ preg_replace('/\D/', '', $laporan->wa_sender) }}?text=Halo%20Bpk%2FIbu%20{{ urlencode($laporan->keluargaPenerima->kepala_keluarga ?? $laporan->pengirim_nama ?? 'Warga') }}%2C%20menanggapi%20laporan%20Anda%20di%20GemaSmart%20(Tiket%20%23LAP-{{ $laporan->id }})%3A%20" target="_blank" class="flex items-center gap-2 px-space-md py-space-sm rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-label-md font-semibold transition-colors shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">chat</span>
+                <span>Balas via WhatsApp</span>
+            </a>
+            @endif
             <a href="{{ route('pemda.laporan.index') }}" class="flex items-center gap-2 px-space-md py-space-sm rounded-lg bg-surface-container hover:bg-surface-container-high text-text-primary font-label-md font-semibold transition-colors">
                 <span class="material-symbols-outlined text-[18px]">arrow_back</span>
                 <span>Kembali ke Daftar</span>

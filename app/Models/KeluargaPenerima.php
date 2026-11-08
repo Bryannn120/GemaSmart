@@ -11,7 +11,8 @@ class KeluargaPenerima extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'no_kk', 'kepala_keluarga', 'nik', 'alamat', 'desil', 'penghasilan_perbulan',
+        'no_kk', 'kepala_keluarga', 'nik', 'alamat', 'no_hp', 'desil', 'penghasilan_perbulan',
+        'tipe_periode', 'pendapatan', 'pengeluaran', 'pendapatan_perbulan', 'pengeluaran_perbulan', 'penghasilan_bersih',
         'wilayah_id', 'program_bantuan_id', 'status_validasi',
         'user_id', 'pendamping_id', 'kampus_id', 'status_kemandirian', 'is_flagged'
     ];

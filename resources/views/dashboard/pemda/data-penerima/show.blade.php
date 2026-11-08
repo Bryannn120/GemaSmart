@@ -42,6 +42,42 @@
                         <dt class="text-label-md text-text-secondary">Desil Kemiskinan</dt>
                         <dd class="text-body-md text-text-primary mt-1 font-semibold">Desil {{ $keluarga_penerima->desil }}</dd>
                     </div>
+                    <div>
+                        <dt class="text-label-md text-text-secondary">Tolak Ukur Pendapatan</dt>
+                        <dd class="text-body-md text-text-primary mt-1 font-semibold font-mono">
+                            @if($keluarga_penerima->pendapatan_perbulan > 0 || $keluarga_penerima->penghasilan_perbulan > 0)
+                                Rp {{ number_format($keluarga_penerima->pendapatan_perbulan ?: $keluarga_penerima->penghasilan_perbulan, 0, ',', '.') }}/bln
+                                @if($keluarga_penerima->tipe_periode === 'per_hari' && $keluarga_penerima->pendapatan > 0)
+                                    <span class="text-xs text-primary font-normal block">(Basis: Rp {{ number_format($keluarga_penerima->pendapatan, 0, ',', '.') }}/hari)</span>
+                                @endif
+                            @else
+                                <span class="text-text-tertiary font-normal">Belum Dinilai</span>
+                            @endif
+                        </dd>
+                    </div>
+                    <div>
+                        <dt class="text-label-md text-text-secondary">Tolak Ukur Pengeluaran</dt>
+                        <dd class="text-body-md text-text-primary mt-1 font-semibold font-mono">
+                            @if($keluarga_penerima->pengeluaran_perbulan > 0 || $keluarga_penerima->pengeluaran > 0)
+                                Rp {{ number_format($keluarga_penerima->pengeluaran_perbulan ?: ($keluarga_penerima->pengeluaran * 30), 0, ',', '.') }}/bln
+                                @if($keluarga_penerima->tipe_periode === 'per_hari' && $keluarga_penerima->pengeluaran > 0)
+                                    <span class="text-xs text-text-secondary font-normal block">(Basis: Rp {{ number_format($keluarga_penerima->pengeluaran, 0, ',', '.') }}/hari)</span>
+                                @endif
+                            @else
+                                <span class="text-text-tertiary font-normal">-</span>
+                            @endif
+                        </dd>
+                    </div>
+                    <div>
+                        <dt class="text-label-md text-text-secondary">Arus Kas Bersih (Surplus/Defisit)</dt>
+                        <dd class="text-body-md mt-1 font-bold font-mono {{ ($keluarga_penerima->penghasilan_bersih ?? 0) >= 0 ? 'text-emerald-700' : 'text-red-600' }}">
+                            @if($keluarga_penerima->penghasilan_bersih != 0 || $keluarga_penerima->pengeluaran_perbulan > 0)
+                                {{ $keluarga_penerima->penghasilan_bersih >= 0 ? '+' : '' }}Rp {{ number_format($keluarga_penerima->penghasilan_bersih, 0, ',', '.') }}/bln
+                            @else
+                                <span class="text-text-tertiary font-normal">-</span>
+                            @endif
+                        </dd>
+                    </div>
                     <div class="sm:col-span-2">
                         <dt class="text-label-md text-text-secondary">Alamat</dt>
                         <dd class="text-body-md text-text-primary mt-1">{{ $keluarga_penerima->alamat ?? '-' }}</dd>

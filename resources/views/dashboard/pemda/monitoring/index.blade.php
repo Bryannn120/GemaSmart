@@ -40,13 +40,48 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-space-lg">
         
         <!-- Peta Sebaran (Data Statistik) -->
-        <div class="lg:col-span-2 bg-canvas-bg rounded-xl shadow-sm border border-border-light flex flex-col overflow-hidden ">
+        <div class="lg:col-span-2 bg-canvas-bg rounded-xl shadow-sm border border-border-light flex flex-col overflow-hidden">
             <div class="p-space-md border-b border-border-light bg-surface-subtle flex justify-between items-center z-10 relative">
-                <h3 class="font-headline-sm font-semibold text-text-primary">Peta Interaktif Sebaran Penerima</h3>
-                <div class="text-xs text-text-secondary">Klik pada pin kecamatan untuk melihat detail desa.</div>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[20px]">map</span>
+                    <h3 class="font-headline-sm font-semibold text-text-primary">Peta Interaktif Sebaran Penerima</h3>
+                </div>
+                <div class="text-xs text-text-secondary hidden sm:flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[15px] text-primary">touch_app</span>
+                    <span>Klik pin untuk detail desa &middot; Scroll mouse untuk zoom</span>
+                </div>
             </div>
             
-            <div id="map" class="w-full relative z-0" style="height: 500px;"></div>
+            <div class="relative w-full h-[520px] overflow-hidden">
+                <div id="map" class="w-full h-full relative z-0"></div>
+
+                <!-- Floating Zoom & Navigation Controls (Top Right) -->
+                <div class="absolute top-3 right-3 z-[400] flex flex-col gap-1.5 bg-canvas-bg/95 backdrop-blur-md p-1.5 rounded-xl shadow-lg border border-border-light">
+                    <!-- Zoom In -->
+                    <button type="button" id="btn-monitoring-zoom-in" title="Perbesar Peta (Zoom In)" class="w-8 h-8 rounded-lg flex items-center justify-center bg-surface hover:bg-gov-green-surface text-text-primary hover:text-primary transition-colors cursor-pointer shadow-sm">
+                        <span class="material-symbols-outlined text-[20px]">add</span>
+                    </button>
+                    <!-- Zoom Out -->
+                    <button type="button" id="btn-monitoring-zoom-out" title="Perkecil Peta (Zoom Out)" class="w-8 h-8 rounded-lg flex items-center justify-center bg-surface hover:bg-gov-green-surface text-text-primary hover:text-primary transition-colors cursor-pointer shadow-sm">
+                        <span class="material-symbols-outlined text-[20px]">remove</span>
+                    </button>
+                    <div class="h-px w-full bg-border-light my-0.5"></div>
+                    <!-- Reset View -->
+                    <button type="button" id="btn-monitoring-reset" title="Pusatkan Peta ke Sumbawa" class="w-8 h-8 rounded-lg flex items-center justify-center bg-surface hover:bg-gov-green-surface text-text-primary hover:text-primary transition-colors cursor-pointer shadow-sm">
+                        <span class="material-symbols-outlined text-[18px]">center_focus_strong</span>
+                    </button>
+                    <!-- Zoom Level Badge -->
+                    <div id="monitoring-zoom-badge" title="Tingkat Zoom Peta" class="text-center font-mono text-[10px] font-bold text-text-tertiary px-1 py-0.5 bg-surface-subtle rounded">
+                        10x
+                    </div>
+                </div>
+
+                <!-- Bottom Hint Overlay -->
+                <div class="absolute bottom-3 left-3 z-[400] bg-canvas-bg/90 backdrop-blur-md px-3 py-1.5 rounded-xl shadow border border-border-light flex items-center gap-2 text-text-secondary text-xs">
+                    <span class="material-symbols-outlined text-primary text-[15px]">zoom_in</span>
+                    <span>Zoom interaktif: scroll mouse, double click, atau pinch layar</span>
+                </div>
+            </div>
         </div>
 
         <!-- Latest Reports Feed -->
@@ -62,9 +97,16 @@
                         <span class="material-symbols-outlined text-on-primary-fixed-variant text-[16px]">person</span>
                     </div>
                     <div class="flex flex-col">
-                        <div class="flex justify-between items-start">
-                            <span class="font-label-md text-text-primary">{{ $laporan->keluargaPenerima->kepala_keluarga ?? 'Anonim' }}</span>
-                            <span class="text-[10px] text-text-tertiary">{{ $laporan->created_at->diffForHumans() }}</span>
+                        <div class="flex justify-between items-start gap-2">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="font-label-md text-text-primary">{{ $laporan->keluargaPenerima->kepala_keluarga ?? $laporan->pengirim_nama ?? 'Anonim' }}</span>
+                                @if($laporan->sumber === 'whatsapp' || $laporan->is_whatsapp)
+                                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[9px] font-bold rounded bg-emerald-100 text-emerald-800" title="Dikirim via WhatsApp">
+                                        <i class="fa-brands fa-whatsapp text-[10px]"></i> WA
+                                    </span>
+                                @endif
+                            </div>
+                            <span class="text-[10px] text-text-tertiary shrink-0">{{ $laporan->created_at->diffForHumans() }}</span>
                         </div>
                         <span class="font-code-dense text-[11px] text-primary mb-1">
                             {{ $laporan->keluargaPenerima->wilayah->nama ?? 'Tidak Diketahui' }} 
@@ -83,7 +125,7 @@
 </div>
 
 <!-- Modal Detail Kecamatan -->
-<div id="detailModal" class="fixed inset-0 z-[1000] hidden items-center justify-center">
+<div id="detailModal" class="fixed inset-0 z-[9999] hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="closeDetailModal()"></div>
     <div class="bg-surface relative z-10 w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-xl flex flex-col overflow-hidden mx-4 transform transition-transform scale-95 opacity-0 duration-300" id="detailModalContent">
         <!-- Header -->
@@ -232,13 +274,49 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        var map = L.map('map').setView([-8.4975, 117.4278], 10);
+        var map = L.map('map', {
+            scrollWheelZoom: true,
+            doubleClickZoom: true,
+            touchZoom: true,
+            boxZoom: true,
+            zoomControl: false
+        }).setView([-8.4975, 117.4278], 10);
         
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors',
             subdomains: 'abcd',
             maxZoom: 19
         }).addTo(map);
+
+        // Floating Zoom Controls
+        var btnZoomIn = document.getElementById('btn-monitoring-zoom-in');
+        var btnZoomOut = document.getElementById('btn-monitoring-zoom-out');
+        var btnReset = document.getElementById('btn-monitoring-reset');
+        var zoomBadge = document.getElementById('monitoring-zoom-badge');
+
+        if (btnZoomIn) {
+            btnZoomIn.addEventListener('click', function(e) {
+                e.preventDefault();
+                map.zoomIn();
+            });
+        }
+        if (btnZoomOut) {
+            btnZoomOut.addEventListener('click', function(e) {
+                e.preventDefault();
+                map.zoomOut();
+            });
+        }
+        if (btnReset) {
+            btnReset.addEventListener('click', function(e) {
+                e.preventDefault();
+                map.setView([-8.4975, 117.4278], 10);
+            });
+        }
+        map.on('zoomend', function() {
+            if (zoomBadge) {
+                zoomBadge.textContent = map.getZoom() + 'x';
+            }
+        });
 
         fetch('/kecamatan_coords.json')
             .then(response => response.json())
