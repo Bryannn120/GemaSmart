@@ -216,7 +216,7 @@ class KeluargaPenerimaController extends Controller
             'nik.required' => 'NIK kepala keluarga wajib diisi.',
             'nik.size' => 'NIK harus 16 digit angka.',
             'nik.unique' => 'NIK ini sudah terdaftar dalam sistem.',
-            'desil.required' => 'Tingkat desil awal wajib ditentukan.',
+            'desil.required' => 'Tingkat kemandirian awal wajib ditentukan.',
             'wilayah_id.required' => 'Wilayah desa/kelurahan wajib dipilih.',
             'program_bantuan_id.required' => 'Program bantuan bibit wajib dipilih.',
         ]);
@@ -346,18 +346,18 @@ class KeluargaPenerimaController extends Controller
             'nik.required' => 'NIK kepala keluarga wajib diisi.',
             'nik.size' => 'NIK harus 16 digit angka.',
             'nik.unique' => 'NIK ini sudah digunakan penerima lain.',
-            'desil.required' => 'Tingkat desil wajib dipilih.',
+            'desil.required' => 'Tingkat kemandirian wajib dipilih.',
             'wilayah_id.required' => 'Wilayah desa/kelurahan wajib dipilih.',
             'program_bantuan_id.required' => 'Program bantuan bibit wajib dipilih.',
         ]);
 
         $dataLama = $keluarga_penerima->toArray();
 
-        // Update status kemandirian berdasarkan desil baru jika belum ada penilaian penurunan
+        // Update status kemandirian berdasarkan indikator baru jika belum ada penilaian penurunan
         if ($validated['desil'] >= 6) {
             $validated['status_kemandirian'] = 'Mandiri';
         } else {
-            if ($keluarga_penerima->status_kemandirian !== 'Penurunan Desil') {
+            if ($keluarga_penerima->status_kemandirian !== 'Penurunan Desil' && $keluarga_penerima->status_kemandirian !== 'Butuh Perhatian Khusus') {
                 $validated['status_kemandirian'] = 'Tahap Kemandirian';
             }
         }

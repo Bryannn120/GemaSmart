@@ -188,7 +188,7 @@ class PenyaluranBantuanController extends Controller
         $keluarga = KeluargaPenerima::findOrFail($validated['keluarga_penerima_id']);
         if ($keluarga->is_mandiri) {
             return back()->withInput()->withErrors([
-                'keluarga_penerima_id' => 'Keluarga ' . $keluarga->kepala_keluarga . ' telah berstatus Mandiri (Desil ' . $keluarga->desil . ') dan telah lulus dari daftar penerima bantuan.'
+                'keluarga_penerima_id' => 'Keluarga ' . $keluarga->kepala_keluarga . ' telah berstatus Mandiri dan telah lulus dari daftar penerima bantuan.'
             ]);
         }
         $pendampingId = Auth::id();

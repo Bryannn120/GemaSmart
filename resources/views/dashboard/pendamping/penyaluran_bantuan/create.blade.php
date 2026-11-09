@@ -70,7 +70,7 @@
                             <option value="{{ $keluarga->id }}" 
                                 data-text="{{ strtolower($keluarga->kepala_keluarga . ' ' . $keluarga->nik . ' ' . ($keluarga->wilayah->nama ?? '')) }}"
                                 data-wilayah="{{ $keluarga->wilayah->nama ?? '-' }}"
-                                data-desil="{{ $keluarga->desil ?? '-' }}"
+                                data-status="{{ $keluarga->status_kemandirian ?? '-' }}"
                                 {{ (old('keluarga_penerima_id', $selectedKeluargaId) == $keluarga->id) ? 'selected' : '' }}>
                                 {{ $keluarga->kepala_keluarga }} (NIK: {{ $keluarga->nik }}) - Desa {{ $keluarga->wilayah->nama ?? '-' }}
                             </option>

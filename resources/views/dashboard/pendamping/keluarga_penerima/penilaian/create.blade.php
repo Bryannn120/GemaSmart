@@ -363,15 +363,15 @@
                     </a>
                     <button type="submit" class="w-full sm:w-auto px-space-xl py-3 rounded-xl bg-primary hover:bg-gov-green-dark text-white font-label-md text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-[20px]">task_alt</span>
-                        <span>Simpan Hasil Penilaian &amp; Perbarui Desil</span>
+                        <span>Simpan Hasil Penilaian &amp; Perbarui Indikator</span>
                     </button>
                 </div>
             </form>
         </div>
 
-        <!-- Kolom Kanan: Live Simulator & Tolak Ukur Desil (5/12) -->
+        <!-- Kolom Kanan: Live Simulator & Tolak Ukur Indikator (5/12) -->
         <div class="lg:col-span-5 flex flex-col gap-space-lg">
-            <!-- Kartu Live Kalkulasi Desil -->
+            <!-- Kartu Live Kalkulasi Indikator -->
             <div class="bg-canvas-bg rounded-2xl shadow-sm border border-border-light p-space-lg flex flex-col gap-4 sticky top-24">
                 <div class="flex items-center justify-between pb-3 border-b border-border-light">
                     <div class="flex items-center gap-2">
@@ -387,9 +387,9 @@
                 <div class="p-4 rounded-xl bg-surface-subtle border border-border-light flex flex-col items-center text-center">
                     <span class="text-xs font-semibold text-text-tertiary uppercase tracking-wider">Hasil Indikator Penilaian</span>
                     <div class="mt-1 flex items-baseline gap-1">
-                        <span id="previewDesilNumber" class="text-3xl font-extrabold text-primary">Skor 70 / 100</span>
+                        <span id="previewSkorNumber" class="text-3xl font-extrabold text-primary">Skor 70 / 100</span>
                     </div>
-                    <span id="previewDesilLabel" class="text-xs font-medium text-text-secondary mt-1">Kategori: Mandiri Madya</span>
+                    <span id="previewIndikatorLabel" class="text-xs font-medium text-text-secondary mt-1">Kategori: Mandiri Madya</span>
 
                     <div class="w-full border-t border-border-light my-3"></div>
 
@@ -463,7 +463,7 @@
 </div>
 
 <script>
-    const desilAwal = {{ (int) $keluarga_penerima->desil }};
+    const tingkatAwal = {{ (int) ($keluarga_penerima->desil ?? 1) }};
     let currentTipe = 'per_bulan';
 
     const presets = {
@@ -545,7 +545,7 @@
             
             document.getElementById('labelInputPendapatan').innerText = 'Pendapatan per Hari (Rp)';
             document.getElementById('labelInputPengeluaran').innerText = 'Pengeluaran Pokok per Hari (Rp)';
-            document.getElementById('tipePeriodeDesc').innerText = 'Pilihan Per Hari: masukkan rata-rata penghasilan & belanja harian keluarga (otomatis dikali 30 hari untuk perhitungan desil bulanan).';
+            document.getElementById('tipePeriodeDesc').innerText = 'Pilihan Per Hari: masukkan rata-rata penghasilan & belanja harian keluarga (otomatis dikali 30 hari untuk perhitungan indikator bulanan).';
 
             document.getElementById('labelPeriodeHari').className = 'flex items-center justify-center gap-2 p-2.5 rounded-xl border border-primary bg-primary text-white font-semibold text-xs cursor-pointer transition-all shadow-xs';
             document.getElementById('labelPeriodeBulan').className = 'flex items-center justify-center gap-2 p-2.5 rounded-xl border border-border-medium bg-white text-text-secondary font-semibold text-xs cursor-pointer hover:border-primary/50 transition-all';
@@ -613,25 +613,25 @@
             konversiText.innerText = 'Rata-rata Harian: Pendapatan Rp ' + pendHari.toLocaleString('id-ID') + '/hr | Pengeluaran Rp ' + pengHari.toLocaleString('id-ID') + '/hr';
         }
 
-        // 1. Base Desil dari Tolak Ukur Pendapatan Bulanan
-        let baseDesil = 1;
-        if (pendBulan < 1000000) baseDesil = 1;
-        else if (pendBulan < 1800000) baseDesil = 2;
-        else if (pendBulan < 2700000) baseDesil = 3;
-        else if (pendBulan < 3800000) baseDesil = 4;
-        else if (pendBulan < 5000000) baseDesil = 5;
-        else if (pendBulan < 6500000) baseDesil = 6;
-        else if (pendBulan < 8500000) baseDesil = 7;
-        else if (pendBulan < 12000000) baseDesil = 8;
-        else if (pendBulan < 18000000) baseDesil = 9;
-        else baseDesil = 10;
+        // 1. Base Tingkat dari Tolak Ukur Pendapatan Bulanan
+        let baseTingkat = 1;
+        if (pendBulan < 1000000) baseTingkat = 1;
+        else if (pendBulan < 1800000) baseTingkat = 2;
+        else if (pendBulan < 2700000) baseTingkat = 3;
+        else if (pendBulan < 3800000) baseTingkat = 4;
+        else if (pendBulan < 5000000) baseTingkat = 5;
+        else if (pendBulan < 6500000) baseTingkat = 6;
+        else if (pendBulan < 8500000) baseTingkat = 7;
+        else if (pendBulan < 12000000) baseTingkat = 8;
+        else if (pendBulan < 18000000) baseTingkat = 9;
+        else baseTingkat = 10;
 
         // 2. Koreksi Arus Kas (Surplus/Defisit)
         let koreksiKas = 0;
-        if (sisaBulan < -200000 && baseDesil > 1) {
-            koreksiKas -= 1; // Defisit kronis menurunkan desil
-        } else if (sisaBulan >= 1500000 && baseDesil < 10) {
-            koreksiKas += 1; // Tabungan kuat menaikkan desil
+        if (sisaBulan < -200000 && baseTingkat > 1) {
+            koreksiKas -= 1; // Defisit kronis menurunkan tingkat skor
+        } else if (sisaBulan >= 1500000 && baseTingkat < 10) {
+            koreksiKas += 1; // Tabungan kuat menaikkan tingkat skor
         }
 
         // 3. Evaluasi Aset
@@ -653,29 +653,29 @@
 
         let koreksiAset = 0;
         if (poinAset >= 4) koreksiAset += 1;
-        else if (poinAset <= -2 && baseDesil > 2) koreksiAset -= 1;
+        else if (poinAset <= -2 && baseTingkat > 2) koreksiAset -= 1;
 
-        if (jumlahAnak >= 4 && perKapitaPendapatan < 600000 && baseDesil > 1) koreksiAset -= 1;
+        if (jumlahAnak >= 4 && perKapitaPendapatan < 600000 && baseTingkat > 1) koreksiAset -= 1;
 
-        const desil = Math.max(1, Math.min(10, baseDesil + koreksiKas + koreksiAset));
+        const tingkat = Math.max(1, Math.min(10, baseTingkat + koreksiKas + koreksiAset));
 
         // Skor Komposit (0 - 100)
-        const skorBase = (desil * 10) - 3;
+        const skorBase = (tingkat * 10) - 3;
         const totalSkor = Math.max(10, Math.min(100, Math.round(skorBase + (poinAset * 1.5))));
 
         const labelMap = {
-            1: "Desil 1 (Sangat Miskin / Ekstrem)",
-            2: "Desil 2 (Miskin)",
-            3: "Desil 3 (Hampir Miskin)",
-            4: "Desil 4 (Rentan Miskin)",
-            5: "Desil 5 (Menengah Bawah)",
-            6: "Desil 6 (Menengah / Mandiri Awal)",
-            7: "Desil 7 (Menengah Mapan)",
-            8: "Desil 8 (Menengah Atas)",
-            9: "Desil 9 (Mapan)",
-            10: "Desil 10 (Sangat Mapan / Sejahtera)"
+            1: "Tingkat 1 (Perlu Intervensi Ekstrem)",
+            2: "Tingkat 2 (Sangat Rentan)",
+            3: "Tingkat 3 (Rentan / Tahap Awal)",
+            4: "Tingkat 4 (Berkembang Bawah)",
+            5: "Tingkat 5 (Berkembang Menengah)",
+            6: "Tingkat 6 (Mandiri Awal)",
+            7: "Tingkat 7 (Mandiri Madya)",
+            8: "Tingkat 8 (Mandiri Maju)",
+            9: "Tingkat 9 (Mandiri Unggul)",
+            10: "Tingkat 10 (Mandiri Utama / Sejahtera)"
         };
-        const labelDesil = labelMap[desil] || ("Desil " + desil);
+        const labelTingkat = labelMap[tingkat] || ("Tingkat " + tingkat);
 
         // Status Kemandirian berdasarkan skor indikator dan surplus finansial
         let statusKemandirian = "Tahap Kemandirian";
@@ -701,8 +701,8 @@
         }
 
         // DOM Updates
-        document.getElementById('previewDesilNumber').innerText = "Skor " + totalSkor + " / 100";
-        document.getElementById('previewDesilLabel').innerText = labelKategori;
+        document.getElementById('previewSkorNumber').innerText = "Skor " + totalSkor + " / 100";
+        document.getElementById('previewIndikatorLabel').innerText = labelKategori;
         document.getElementById('previewTotalSkor').innerText = totalSkor + " / 100";
         
         const elemKemandirian = document.getElementById('previewKemandirian');
@@ -726,10 +726,10 @@
 
         // Trend Comparison
         const badgeTrend = document.getElementById('previewTrendBadge');
-        if (desil > desilAwal) {
+        if (tingkat > tingkatAwal) {
             badgeTrend.className = "flex items-center gap-1 font-bold text-green-600";
             badgeTrend.innerHTML = '<span class="material-symbols-outlined text-[18px]">trending_up</span><span>Maju (Skor Meningkat)</span>';
-        } else if (desil === desilAwal) {
+        } else if (tingkat === tingkatAwal) {
             badgeTrend.className = "flex items-center gap-1 font-bold text-blue-600";
             badgeTrend.innerHTML = '<span class="material-symbols-outlined text-[18px]">trending_flat</span><span>Tetap</span>';
         } else {

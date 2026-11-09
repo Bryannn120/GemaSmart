@@ -43,7 +43,7 @@ class KeluargaPenerimaSeeder extends Seeder
             $pendapatanBulanan = ($desil * 400000) + rand(300000, 600000);
             $pengeluaranBulanan = ($desil * 300000) + rand(250000, 500000);
             $surplusBulanan = $pendapatanBulanan - $pengeluaranBulanan;
-            $statusKemandirian = ($desil >= 6) ? 'Mandiri' : (($surplusBulanan < 0) ? 'Penurunan Desil' : 'Tahap Kemandirian');
+            $statusKemandirian = ($desil >= 6) ? 'Mandiri' : (($surplusBulanan < 0) ? 'Butuh Perhatian Khusus' : 'Tahap Kemandirian');
 
             $kk = KeluargaPenerima::create([
                 'no_kk' => $noKk,

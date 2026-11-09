@@ -133,7 +133,7 @@
                         <span>•</span>
                         <span><strong>Desa:</strong> {{ $keluarga->wilayah->nama ?? '-' }}</span>
                         <span>•</span>
-                        <span><strong>Desil Kemiskinan:</strong> Desil {{ $keluarga->desil ?? '-' }}</span>
+                        <span><strong>Status Kemandirian:</strong> {{ $keluarga->status_kemandirian ?? 'Tahap Kemandirian' }}</span>
                     </p>
                 </div>
             </div>
@@ -659,7 +659,7 @@
                         <tr>
                             <td class="py-0.5 text-slate-600">Tingkat Kesejahteraan</td>
                             <td class="text-center py-0.5">:</td>
-                            <td class="py-0.5 font-semibold text-slate-900">Desil {{ $keluarga->desil ?? '-' }} ({{ $keluarga->status_kemandirian ?? 'Tahap Kemandirian' }})</td>
+                            <td class="py-0.5 font-semibold text-slate-900">{{ $keluarga->status_kemandirian ?? 'Tahap Kemandirian' }}</td>
                         </tr>
                     </table>
                     <p class="text-[11px] text-slate-600 italic mt-0.5">

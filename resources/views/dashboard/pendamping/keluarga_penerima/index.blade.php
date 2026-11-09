@@ -139,7 +139,7 @@
         <a href="{{ route('pendamping.keluarga_penerima.index', array_merge(request()->except('tab'), ['tab' => 'mandiri'])) }}" 
            class="px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 {{ $tab === 'mandiri' ? 'bg-emerald-700 text-white shadow-sm' : 'bg-surface-subtle text-text-secondary hover:text-text-primary' }}">
             <span class="material-symbols-outlined text-[16px]">workspace_premium</span>
-            <span>Lulus Mandiri (Desil 6+)</span>
+            <span>Lulus Mandiri</span>
             <span class="px-2 py-0.5 rounded-full text-[10px] {{ $tab === 'mandiri' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800 font-bold' }}">{{ $countMandiri }}</span>
         </a>
     </div>
@@ -148,7 +148,7 @@
     <div class="bg-canvas-bg rounded-xl shadow-sm border border-border-light flex flex-col overflow-hidden">
         <div class="p-space-md border-b border-border-light bg-surface-subtle flex items-center justify-between">
             <span class="text-xs font-bold text-text-primary uppercase tracking-wider">
-                {{ $tab === 'mandiri' ? 'Warga Binaan Telah Mandiri / Lulus (Desil 6 ke atas)' : 'Daftar Penerima Bantuan Aktif Binaan (Desil 1 s/d 5)' }}
+                {{ $tab === 'mandiri' ? 'Warga Binaan Telah Mandiri / Lulus' : 'Daftar Penerima Bantuan Aktif Binaan' }}
             </span>
             <span class="text-xs text-text-secondary font-medium">
                 {{ $keluarga_penerimas->count() }} Data Ditampilkan
@@ -162,7 +162,7 @@
                         <th class="py-3 px-4 font-semibold">No. KK &amp; NIK</th>
                         <th class="py-3 px-4 font-semibold">Wilayah / Alamat</th>
                         <th class="py-3 px-4 font-semibold">Tolak Ukur (Pendapatan &amp; Pengeluaran)</th>
-                        <th class="py-3 px-4 font-semibold">Desil</th>
+                        <th class="py-3 px-4 font-semibold">Indikator Penilaian</th>
                         <th class="py-3 px-4 font-semibold">Kemandirian</th>
                         <th class="py-3 px-4 text-right font-semibold">Aksi</th>
                     </tr>
@@ -216,20 +216,30 @@
                             @endif
                         </td>
                         <td class="py-3.5 px-4">
-                            <span class="inline-block px-2.5 py-0.5 rounded text-xs font-bold bg-gov-green-surface text-primary border border-primary/20">
-                                Desil {{ $kp->desil }}
-                            </span>
+                            @php
+                                $latestPen = $kp->penilaianKemandirians->first();
+                                $skorVal = $latestPen ? $latestPen->total_skor : null;
+                            @endphp
+                            @if($skorVal !== null)
+                                <span class="inline-block px-2.5 py-0.5 rounded text-xs font-bold {{ $skorVal >= 70 ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
+                                    Skor: {{ $skorVal }}/100
+                                </span>
+                            @else
+                                <span class="inline-block px-2.5 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-600">
+                                    Belum Dinilai
+                                </span>
+                            @endif
                         </td>
                         <td class="py-3.5 px-4">
-                            @if ($kp->desil >= 6 || $kp->status_kemandirian == 'Mandiri')
+                            @if ($kp->status_kemandirian == 'Mandiri')
                                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-bold bg-green-100 text-green-800">
                                     <span class="material-symbols-outlined text-[13px]">verified</span>
                                     Sudah Mandiri
                                 </span>
-                            @elseif ($kp->status_kemandirian == 'Penurunan Desil')
+                            @elseif (str_contains($kp->status_kemandirian ?? '', 'Penurunan') || ($kp->penghasilan_bersih < 0 && $kp->pendapatan_perbulan > 0))
                                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-800">
-                                    <span class="material-symbols-outlined text-[13px]">trending_down</span>
-                                    Penurunan Desil
+                                    <span class="material-symbols-outlined text-[13px]">warning</span>
+                                    Butuh Perhatian
                                 </span>
                             @else
                                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-800">
@@ -240,7 +250,7 @@
                         </td>
                         <td class="py-3.5 px-4 text-right whitespace-nowrap">
                             <div class="inline-flex items-center gap-1.5">
-                                <a href="{{ route('pendamping.keluarga_penerima.penilaian.create', $kp->id) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-gov-green-surface hover:bg-gov-green text-primary hover:text-white font-label-md text-xs font-semibold transition-colors border border-primary/20" title="Beri Penilaian Desil (Tolak Ukur)">
+                                <a href="{{ route('pendamping.keluarga_penerima.penilaian.create', $kp->id) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-gov-green-surface hover:bg-gov-green text-primary hover:text-white font-label-md text-xs font-semibold transition-colors border border-primary/20" title="Beri Penilaian Indikator (Tolak Ukur)">
                                     <span class="material-symbols-outlined text-[15px]">rate_review</span>
                                     <span>Tolak Ukur</span>
                                 </a>
@@ -364,7 +374,7 @@
                                 <div>
                                     <span class="font-semibold text-xs text-text-primary block">Perbarui Data (Update)</span>
                                     <span class="text-[11px] text-text-secondary block mt-0.5">
-                                        Data profil, desil, dan tolak ukur pendapatan warga yang cocok diperbarui dengan data file tanpa membuat baris baru.
+                                        Data profil, indikator penilaian, dan tolak ukur pendapatan warga yang cocok diperbarui dengan data file tanpa membuat baris baru.
                                     </span>
                                 </div>
                             </label>
@@ -379,7 +389,7 @@
                         </div>
                         <p>• Akun login keluarga penerima bantuan akan otomatis dibuat (Email: <code class="bg-canvas-bg px-1 rounded">NIK@penerima.com</code>, Password default: <code class="bg-canvas-bg px-1 rounded">No. KK</code>).</p>
                         <p>• Data yang diimpor akan otomatis terhubung ke akun Anda sebagai Pendamping Lapangan.</p>
-                        <p>• Keluarga dengan nilai desil 6 ke atas akan otomatis berstatus <strong>Mandiri</strong>.</p>
+                        <p>• Keluarga dengan tolak ukur terpenuhi dan surplus finansial positif akan otomatis berstatus <strong>Mandiri</strong>.</p>
                         <p>• Seluruh proses impor akan tercatat pada <strong>Audit Log Sistem</strong>.</p>
                     </div>
                 </div>

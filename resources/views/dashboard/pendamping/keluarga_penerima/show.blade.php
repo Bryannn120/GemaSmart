@@ -30,7 +30,7 @@
             @endif
             <a href="{{ route('pendamping.keluarga_penerima.penilaian.create', $keluarga_penerima->id) }}" class="inline-flex items-center gap-space-xs px-space-md py-2 rounded-xl bg-secondary hover:bg-secondary/90 text-on-secondary font-label-md text-label-md font-semibold transition-colors shadow-sm">
                 <span class="material-symbols-outlined text-[18px]">rate_review</span>
-                <span>+ Input Penilaian Desil</span>
+                <span>+ Input Penilaian Indikator</span>
             </a>
             <a href="{{ route('pendamping.lapor.create', ['keluarga_id' => $keluarga_penerima->id]) }}" class="inline-flex items-center gap-space-xs px-space-md py-2 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md font-semibold hover:bg-gov-green-dark transition-colors shadow-sm">
                 <span class="material-symbols-outlined text-[18px]">assignment</span>
@@ -71,9 +71,19 @@
                 <span class="text-text-tertiary text-xs font-mono">No KK: {{ $keluarga_penerima->no_kk }}</span>
 
                 <div class="mt-4 flex flex-wrap gap-2 justify-center">
-                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-gov-green-surface text-primary border border-primary/20">
-                        Desil {{ $keluarga_penerima->desil }}
-                    </span>
+                    @php
+                        $latestPen = $keluarga_penerima->penilaianKemandirians->first();
+                        $skorKK = $latestPen ? $latestPen->total_skor : null;
+                    @endphp
+                    @if($skorKK !== null)
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold {{ $skorKK >= 70 ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
+                            Skor: {{ $skorKK }}/100
+                        </span>
+                    @else
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-gov-green-surface text-primary border border-primary/20">
+                            {{ $keluarga_penerima->status_kemandirian ?? 'Tahap Kemandirian' }}
+                        </span>
+                    @endif
                     @if ($keluarga_penerima->status_validasi == 'valid')
                         <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-status-verified-surface text-status-verified flex items-center gap-1">
                             <span class="material-symbols-outlined text-[14px]">check_circle</span>
@@ -134,15 +144,15 @@
 
                     <div>
                         <span class="text-text-tertiary text-xs uppercase font-semibold block">Status Kemandirian</span>
-                        @if ($keluarga_penerima->desil >= 6 || $keluarga_penerima->status_kemandirian == 'Mandiri')
+                        @if ($keluarga_penerima->status_kemandirian == 'Mandiri')
                             <span class="inline-flex items-center gap-1 px-2.5 py-0.5 mt-1 rounded text-xs font-bold bg-green-100 text-green-800">
                                 <span class="material-symbols-outlined text-[14px]">verified</span>
                                 Sudah Mandiri
                             </span>
-                        @elseif ($keluarga_penerima->status_kemandirian == 'Penurunan Desil')
+                        @elseif (str_contains($keluarga_penerima->status_kemandirian ?? '', 'Penurunan') || ($keluarga_penerima->penghasilan_bersih < 0 && $keluarga_penerima->pendapatan_perbulan > 0))
                             <span class="inline-flex items-center gap-1 px-2.5 py-0.5 mt-1 rounded text-xs font-bold bg-amber-100 text-amber-800">
                                 <span class="material-symbols-outlined text-[14px]">trending_down</span>
-                                Penurunan Desil
+                                Butuh Perhatian
                             </span>
                         @else
                             <span class="inline-flex items-center gap-1 px-2.5 py-0.5 mt-1 rounded text-xs font-bold bg-blue-100 text-blue-800">
@@ -169,7 +179,7 @@
                 <div class="w-full mt-4 pt-3 border-t border-border-light">
                     <a href="{{ route('pendamping.keluarga_penerima.penilaian.create', $keluarga_penerima->id) }}" class="w-full py-2.5 rounded-xl bg-gov-green-surface hover:bg-gov-green text-primary hover:text-white font-label-md text-xs font-bold transition-all border border-primary/20 flex items-center justify-center gap-1.5 shadow-sm">
                         <span class="material-symbols-outlined text-[16px]">rate_review</span>
-                        <span>Evaluasi Desil & Penghasilan</span>
+                        <span>Evaluasi Indikator & Penghasilan</span>
                     </a>
                 </div>
             </div>
@@ -321,13 +331,13 @@
                 @endif
             </div>
 
-            <!-- Kartu Perkembangan Kemandirian & Riwayat Desil -->
+            <!-- Kartu Perkembangan Kemandirian & Riwayat Indikator -->
             <div class="bg-canvas-bg rounded-xl shadow-sm border border-border-light p-space-lg flex flex-col">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-border-light gap-2 mb-4">
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-secondary text-[22px]">analytics</span>
                         <div>
-                            <h3 class="font-bold text-text-primary text-base">Riwayat Penilaian Desil & Kemandirian</h3>
+                            <h3 class="font-bold text-text-primary text-base">Riwayat Penilaian Indikator Kemandirian</h3>
                             <span class="text-xs text-text-secondary">Catatan evaluasi peningkatan pendapatan dan taraf hidup</span>
                         </div>
                     </div>
@@ -350,8 +360,8 @@
                                 @endif
                             </div>
                             <div class="flex items-center gap-2">
-                                <span class="px-2.5 py-0.5 rounded text-xs font-bold bg-gov-green-surface text-primary border border-primary/20">
-                                    Desil {{ $nilai->desil_hasil ?? $keluarga_penerima->desil }}
+                                <span class="px-2.5 py-0.5 rounded text-xs font-bold {{ ($nilai->total_skor ?? 0) >= 70 ? 'bg-green-100 text-green-800' : 'bg-gov-green-surface text-primary border border-primary/20' }}">
+                                    Skor: {{ $nilai->total_skor ?? 0 }}/100
                                 </span>
                                 @if($nilai->status_perkembangan == 'Maju')
                                     <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-800">
@@ -403,11 +413,13 @@
                                 <span class="text-[10px] text-text-tertiary block capitalize">{{ str_replace('_', ' ', $nilai->aset_rumah ?? 'Rumah Sederhana') }}</span>
                             </div>
                             <div class="p-2.5 rounded-lg bg-surface-muted">
-                                <span class="text-text-tertiary text-[11px] block">Skor & Desil:</span>
+                                <span class="text-text-tertiary text-[11px] block">Skor Indikator:</span>
                                 <span class="font-bold text-secondary block">
                                     {{ $nilai->total_skor ?? 0 }} / 100
                                 </span>
-                                <span class="text-[10px] text-text-tertiary block">Desil Hasil: {{ $nilai->desil_hasil ?? $nilai->desil_sebelumnya }}</span>
+                                <span class="text-[10px] {{ ($nilai->total_skor ?? 0) >= 70 ? 'text-green-700 font-semibold' : 'text-text-tertiary' }} block">
+                                    {{ ($nilai->total_skor ?? 0) >= 70 ? 'Kategori Mandiri' : 'Tahap Kemandirian' }}
+                                </span>
                             </div>
                         </div>
 
@@ -432,13 +444,13 @@
                 @else
                 <div class="text-center py-10 text-text-tertiary text-sm flex flex-col items-center">
                     <span class="material-symbols-outlined text-4xl block mb-2 text-text-tertiary">query_stats</span>
-                    <p class="font-semibold text-text-secondary">Belum ada penilaian subjektif desil untuk keluarga ini.</p>
+                    <p class="font-semibold text-text-secondary">Belum ada penilaian indikator kemandirian untuk keluarga ini.</p>
                     <p class="text-xs text-text-tertiary mt-1 max-w-md">
-                        Lakukan penginputan indikator pendapatan bulanan, jumlah anak, dan aset untuk mengetahui desil terkini sesuai peraturan standar.
+                        Lakukan penginputan indikator pendapatan bulanan, pengeluaran, jumlah anak, dan aset untuk mengetahui skor indikator kemandirian terkini.
                     </p>
                     <a href="{{ route('pendamping.keluarga_penerima.penilaian.create', $keluarga_penerima->id) }}" class="mt-4 px-4 py-2 rounded-xl bg-primary hover:bg-gov-green-dark text-white font-label-md text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5">
                         <span class="material-symbols-outlined text-[16px]">rate_review</span>
-                        <span>Mulai Penilaian Desil Sekarang</span>
+                        <span>Mulai Penilaian Indikator Sekarang</span>
                     </a>
                 </div>
                 @endif

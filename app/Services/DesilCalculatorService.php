@@ -60,38 +60,38 @@ class DesilCalculatorService
         $pengeluaranPerKapita = round($pengeluaranPerbulan / $totalAnggota, 2);
         $surplusPerKapita = round($penghasilanBersih / $totalAnggota, 2);
 
-        // 3. Base Desil dari Tolak Ukur Pendapatan Bulanan Keluarga
-        // Mengacu pada standar DTSK BPS & Kemensos RI
+        // 3. Base Tingkat dari Tolak Ukur Pendapatan Bulanan Keluarga
+        // Mengacu pada tolak ukur standar pemantauan kemandirian
         if ($pendapatanPerbulan < 1000000) {
             $baseDesil = 1;
-            $kategoriDesil = 'Desil 1 (Sangat Miskin / Ekstrem)';
+            $kategoriDesil = 'Tingkat 1 (Perlu Intervensi Ekstrem)';
         } elseif ($pendapatanPerbulan < 1800000) {
             $baseDesil = 2;
-            $kategoriDesil = 'Desil 2 (Miskin)';
+            $kategoriDesil = 'Tingkat 2 (Sangat Rentan)';
         } elseif ($pendapatanPerbulan < 2700000) {
             $baseDesil = 3;
-            $kategoriDesil = 'Desil 3 (Hampir Miskin)';
+            $kategoriDesil = 'Tingkat 3 (Rentan / Tahap Awal)';
         } elseif ($pendapatanPerbulan < 3800000) {
             $baseDesil = 4;
-            $kategoriDesil = 'Desil 4 (Rentan Miskin)';
+            $kategoriDesil = 'Tingkat 4 (Berkembang Bawah)';
         } elseif ($pendapatanPerbulan < 5000000) {
             $baseDesil = 5;
-            $kategoriDesil = 'Desil 5 (Menengah Bawah)';
+            $kategoriDesil = 'Tingkat 5 (Berkembang Menengah)';
         } elseif ($pendapatanPerbulan < 6500000) {
             $baseDesil = 6;
-            $kategoriDesil = 'Desil 6 (Menengah / Mandiri Awal)';
+            $kategoriDesil = 'Tingkat 6 (Mandiri Awal)';
         } elseif ($pendapatanPerbulan < 8500000) {
             $baseDesil = 7;
-            $kategoriDesil = 'Desil 7 (Menengah Mapan)';
+            $kategoriDesil = 'Tingkat 7 (Mandiri Madya)';
         } elseif ($pendapatanPerbulan < 12000000) {
             $baseDesil = 8;
-            $kategoriDesil = 'Desil 8 (Menengah Atas)';
+            $kategoriDesil = 'Tingkat 8 (Mandiri Maju)';
         } elseif ($pendapatanPerbulan < 18000000) {
             $baseDesil = 9;
-            $kategoriDesil = 'Desil 9 (Mapan)';
+            $kategoriDesil = 'Tingkat 9 (Mandiri Unggul)';
         } else {
             $baseDesil = 10;
-            $kategoriDesil = 'Desil 10 (Sangat Mapan / Sejahtera)';
+            $kategoriDesil = 'Tingkat 10 (Mandiri Utama / Sejahtera)';
         }
 
         // 4. Penyesuaian Berdasarkan Rasio Pengeluaran & Sisa Finansial (Surplus / Defisit)
@@ -190,26 +190,26 @@ class DesilCalculatorService
 
         $desil = max(1, min(10, $baseDesil + $penyesuaianKeuangan + $penyesuaianAset));
 
-        // Update label kategori desil jika ada penyesuaian
+        // Update label kategori indikator jika ada penyesuaian
         $daftarKategori = [
-            1 => 'Desil 1 (Sangat Miskin / Ekstrem)',
-            2 => 'Desil 2 (Miskin)',
-            3 => 'Desil 3 (Hampir Miskin)',
-            4 => 'Desil 4 (Rentan Miskin)',
-            5 => 'Desil 5 (Menengah Bawah)',
-            6 => 'Desil 6 (Menengah / Mandiri Awal)',
-            7 => 'Desil 7 (Menengah Mapan)',
-            8 => 'Desil 8 (Menengah Atas)',
-            9 => 'Desil 9 (Mapan)',
-            10 => 'Desil 10 (Sangat Mapan / Sejahtera)',
+            1 => 'Tingkat 1 (Perlu Intervensi Ekstrem)',
+            2 => 'Tingkat 2 (Sangat Rentan)',
+            3 => 'Tingkat 3 (Rentan / Tahap Awal)',
+            4 => 'Tingkat 4 (Berkembang Bawah)',
+            5 => 'Tingkat 5 (Berkembang Menengah)',
+            6 => 'Tingkat 6 (Mandiri Awal)',
+            7 => 'Tingkat 7 (Mandiri Madya)',
+            8 => 'Tingkat 8 (Mandiri Maju)',
+            9 => 'Tingkat 9 (Mandiri Unggul)',
+            10 => 'Tingkat 10 (Mandiri Utama / Sejahtera)',
         ];
-        $kategoriDesil = $daftarKategori[$desil] ?? "Desil {$desil}";
+        $kategoriDesil = $daftarKategori[$desil] ?? "Tingkat {$desil}";
 
         // 7. Total Skor Komposit (0 - 100)
         $skorBase = ($desil * 10) - 3;
         $totalSkor = max(10, min(100, round($skorBase + ($poinAset * 1.5))));
 
-        // 8. Status Perkembangan terhadap Desil Sebelumnya
+        // 8. Status Perkembangan terhadap Asesmen Sebelumnya
         if ($desilSebelumnya !== null && $desilSebelumnya > 0) {
             if ($desil > $desilSebelumnya) {
                 $statusPerkembangan = 'Maju';
@@ -222,12 +222,12 @@ class DesilCalculatorService
             $statusPerkembangan = 'Tetap';
         }
 
-        // 9. Status Kemandirian (Sesuai regulasi: Mandiri jika Desil 6 ke atas)
+        // 9. Status Kemandirian (Sesuai tolak ukur indikator: Mandiri jika Tingkat 6 ke atas)
         if ($desil >= 6) {
             $statusKemandirian = 'Mandiri';
         } else {
             if ($statusPerkembangan === 'Mundur') {
-                $statusKemandirian = 'Penurunan Desil';
+                $statusKemandirian = 'Butuh Perhatian Khusus';
             } else {
                 $statusKemandirian = 'Tahap Kemandirian';
             }

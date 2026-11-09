@@ -227,7 +227,7 @@
                                     <span>•</span>
                                     <span class="text-text-secondary font-medium">Desa {{ $keluarga->wilayah->nama ?? '-' }}</span>
                                     <span>•</span>
-                                    <span class="px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 font-bold text-[10px]">Desil {{ $keluarga->desil ?? '-' }}</span>
+                                    <span class="px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 font-bold text-[10px]">{{ $keluarga->status_kemandirian ?? 'Tahap Kemandirian' }}</span>
                                 </div>
                             </td>
 

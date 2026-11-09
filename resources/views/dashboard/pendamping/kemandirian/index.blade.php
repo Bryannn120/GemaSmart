@@ -285,7 +285,7 @@
                         $pendapatanNominal = $kl->pendapatan_perbulan ?: ($kl->penghasilan_perbulan ?: $kl->pendapatan);
                         $pengeluaranNominal = $kl->pengeluaran_perbulan ?: $kl->pengeluaran;
                         $surplusNominal = $kl->penghasilan_bersih ?: ($pendapatanNominal - $pengeluaranNominal);
-                        $skorIndikator = $latestNilai ? (int)$latestNilai->total_skor : (int)($kl->desil ? $kl->desil * 10 : 35);
+                        $skorIndikator = $latestNilai ? (int)$latestNilai->total_skor : 35;
                     @endphp
                     <tr class="hover:bg-surface-subtle transition-colors">
                         <td class="py-3 px-4">
@@ -333,12 +333,12 @@
                         <td class="py-3 px-4">
                             <div class="flex flex-col gap-1">
                                 <div class="flex items-center gap-1.5">
-                                    @if ($kl->status_kemandirian == 'Mandiri' || $skorIndikator >= 70 || $kl->desil >= 6)
+                                    @if ($kl->status_kemandirian == 'Mandiri' || $skorIndikator >= 70)
                                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-green-100 text-green-800">
                                             <span class="material-symbols-outlined text-[13px]">verified</span>
                                             Sudah Mandiri
                                         </span>
-                                    @elseif ($surplusNominal < 0 || $kl->status_kemandirian == 'Penurunan Desil')
+                                    @elseif ($surplusNominal < 0 || str_contains($kl->status_kemandirian ?? '', 'Penurunan'))
                                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">
                                             <span class="material-symbols-outlined text-[13px]">warning</span>
                                             Butuh Perhatian

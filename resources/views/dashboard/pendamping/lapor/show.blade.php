@@ -88,7 +88,7 @@
                     </span>
                     <div class="flex items-center gap-1.5 mt-1">
                         <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-status-info-surface text-status-info">
-                            Desil {{ $laporan->keluarga_penerima->desil ?? '-' }}
+                            {{ $laporan->keluarga_penerima->status_kemandirian ?? 'Tahap Kemandirian' }}
                         </span>
                     </div>
                 @endif

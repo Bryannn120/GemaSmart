@@ -153,7 +153,7 @@ class DataPenerimaExportImportService
             'Desa / Kelurahan',
             'Kecamatan',
             'Program Bantuan',
-            'Desil',
+            'Tingkat Kemandirian',
             'Status Kemandirian',
             'Pendapatan/bln (Rp)',
             'Status Validasi',
@@ -272,7 +272,7 @@ class DataPenerimaExportImportService
                 'Desa',
                 'Kecamatan',
                 'Program Bantuan',
-                'Desil',
+                'Tingkat Kemandirian',
                 'Status Kemandirian',
                 'Pendapatan Perbulan',
                 'Status Validasi',
@@ -328,7 +328,7 @@ class DataPenerimaExportImportService
                     'alamat',
                     'nama_desa',
                     'nama_program',
-                    'desil',
+                    'tingkat_kemandirian',
                     'pendapatan_perbulan',
                     'status_validasi'
                 ]);
@@ -380,7 +380,7 @@ class DataPenerimaExportImportService
             'alamat',
             'nama_desa',
             'nama_program',
-            'desil',
+            'tingkat_kemandirian',
             'pendapatan_perbulan',
             'status_validasi'
         ];
@@ -521,7 +521,7 @@ class DataPenerimaExportImportService
                 $columnMap['nama_desa'] = $colLetter;
             } elseif (in_array($normalized, ['namaprogram', 'program', 'programbantuan', 'bantuan'])) {
                 $columnMap['nama_program'] = $colLetter;
-            } elseif (in_array($normalized, ['desil', 'desilkemiskinan', 'tingkatdesil'])) {
+            } elseif (in_array($normalized, ['desil', 'desilkemiskinan', 'tingkatdesil', 'tingkatkemandirian', 'tingkat', 'indikator', 'indikatorkemandirian', 'skor'])) {
                 $columnMap['desil'] = $colLetter;
             } elseif (in_array($normalized, ['pendapatan', 'penghasilan', 'penghasilanperbulan', 'pendapatanperbulan', 'gaji'])) {
                 $columnMap['pendapatan_perbulan'] = $colLetter;

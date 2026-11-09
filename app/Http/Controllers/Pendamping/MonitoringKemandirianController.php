@@ -35,12 +35,13 @@ class MonitoringKemandirianController extends Controller
             $q->where('status_kemandirian', 'Tahap Kemandirian')
               ->orWhere(function($sub) {
                   $sub->where('desil', '<', 6)
-                      ->where('status_kemandirian', '!=', 'Penurunan Desil');
+                      ->whereNotIn('status_kemandirian', ['Penurunan Desil', 'Butuh Perhatian Khusus']);
               });
         })->count();
 
         $totalDefisit = (clone $baseKeluarga)->where(function($q) {
             $q->where('status_kemandirian', 'like', '%Penurunan%')
+              ->orWhere('status_kemandirian', 'like', '%Perhatian%')
               ->orWhere('penghasilan_bersih', '<', 0);
         })->count();
 
@@ -140,12 +141,13 @@ class MonitoringKemandirianController extends Controller
                     $q->where('status_kemandirian', 'Tahap Kemandirian')
                       ->orWhere(function($sub) {
                           $sub->where('desil', '<', 6)
-                              ->where('status_kemandirian', '!=', 'Penurunan Desil');
+                              ->whereNotIn('status_kemandirian', ['Penurunan Desil', 'Butuh Perhatian Khusus']);
                       });
                 });
             } elseif ($statusFilter === 'defisit' || $statusFilter === 'penurunan') {
                 $keluargaQuery->where(function($q) {
                     $q->where('status_kemandirian', 'like', '%Penurunan%')
+                      ->orWhere('status_kemandirian', 'like', '%Perhatian%')
                       ->orWhere('penghasilan_bersih', '<', 0);
                 });
             }

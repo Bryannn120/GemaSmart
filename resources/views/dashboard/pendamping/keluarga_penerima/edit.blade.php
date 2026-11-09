@@ -109,11 +109,11 @@
                 </div>
             </div>
 
-            <!-- Section 3: Program Bantuan & Status Desil -->
+            <!-- Section 3: Program Bantuan & Status Kemandirian -->
             <div>
                 <div class="flex items-center gap-2 pb-2 border-b border-border-light mb-4">
                     <span class="material-symbols-outlined text-primary text-[20px]">inventory_2</span>
-                    <h2 class="font-bold text-text-primary text-base">3. Program Bantuan & Tingkatan Desil</h2>
+                    <h2 class="font-bold text-text-primary text-base">3. Program Bantuan &amp; Indikator Kemandirian</h2>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -133,20 +133,20 @@
 
                     <div>
                         <label for="desil" class="block text-xs font-semibold text-text-secondary uppercase mb-1">
-                            Tingkat Desil <span class="text-status-fraud">*</span>
+                            Tingkat Kemandirian <span class="text-status-fraud">*</span>
                         </label>
                         <select name="desil" id="desil" required
                             class="w-full px-3.5 py-2.5 rounded-xl border border-border-medium bg-surface-subtle focus:bg-white text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all font-semibold">
-                            <option value="1" {{ old('desil', $keluarga_penerima->desil) == 1 ? 'selected' : '' }}>Desil 1 - Kemiskinan Ekstrem (Tahap Kemandirian)</option>
-                            <option value="2" {{ old('desil', $keluarga_penerima->desil) == 2 ? 'selected' : '' }}>Desil 2 - Miskin (Tahap Kemandirian)</option>
-                            <option value="3" {{ old('desil', $keluarga_penerima->desil) == 3 ? 'selected' : '' }}>Desil 3 - Hampir Miskin (Tahap Kemandirian)</option>
-                            <option value="4" {{ old('desil', $keluarga_penerima->desil) == 4 ? 'selected' : '' }}>Desil 4 - Rentan Miskin (Tahap Kemandirian)</option>
-                            <option value="5" {{ old('desil', $keluarga_penerima->desil) == 5 ? 'selected' : '' }}>Desil 5 - Menengah Bawah (Tahap Kemandirian)</option>
-                            <option value="6" {{ old('desil', $keluarga_penerima->desil) == 6 ? 'selected' : '' }}>Desil 6 - Menengah (Sudah Mandiri)</option>
-                            <option value="7" {{ old('desil', $keluarga_penerima->desil) == 7 ? 'selected' : '' }}>Desil 7 - Menengah Mapan (Sudah Mandiri)</option>
-                            <option value="8" {{ old('desil', $keluarga_penerima->desil) == 8 ? 'selected' : '' }}>Desil 8 - Menengah Atas (Sudah Mandiri)</option>
-                            <option value="9" {{ old('desil', $keluarga_penerima->desil) == 9 ? 'selected' : '' }}>Desil 9 - Mapan (Sudah Mandiri)</option>
-                            <option value="10" {{ old('desil', $keluarga_penerima->desil) == 10 ? 'selected' : '' }}>Desil 10 - Sangat Mapan (Sudah Mandiri)</option>
+                            <option value="1" {{ old('desil', $keluarga_penerima->desil) == 1 ? 'selected' : '' }}>Tingkat 1 - Perlu Intervensi Ekstrem (Tahap Kemandirian)</option>
+                            <option value="2" {{ old('desil', $keluarga_penerima->desil) == 2 ? 'selected' : '' }}>Tingkat 2 - Sangat Rentan (Tahap Kemandirian)</option>
+                            <option value="3" {{ old('desil', $keluarga_penerima->desil) == 3 ? 'selected' : '' }}>Tingkat 3 - Rentan / Tahap Awal (Tahap Kemandirian)</option>
+                            <option value="4" {{ old('desil', $keluarga_penerima->desil) == 4 ? 'selected' : '' }}>Tingkat 4 - Berkembang Bawah (Tahap Kemandirian)</option>
+                            <option value="5" {{ old('desil', $keluarga_penerima->desil) == 5 ? 'selected' : '' }}>Tingkat 5 - Berkembang Menengah (Tahap Kemandirian)</option>
+                            <option value="6" {{ old('desil', $keluarga_penerima->desil) == 6 ? 'selected' : '' }}>Tingkat 6 - Mandiri Awal (Sudah Mandiri)</option>
+                            <option value="7" {{ old('desil', $keluarga_penerima->desil) == 7 ? 'selected' : '' }}>Tingkat 7 - Mandiri Madya (Sudah Mandiri)</option>
+                            <option value="8" {{ old('desil', $keluarga_penerima->desil) == 8 ? 'selected' : '' }}>Tingkat 8 - Mandiri Maju (Sudah Mandiri)</option>
+                            <option value="9" {{ old('desil', $keluarga_penerima->desil) == 9 ? 'selected' : '' }}>Tingkat 9 - Mandiri Unggul (Sudah Mandiri)</option>
+                            <option value="10" {{ old('desil', $keluarga_penerima->desil) == 10 ? 'selected' : '' }}>Tingkat 10 - Mandiri Utama / Sejahtera (Sudah Mandiri)</option>
                         </select>
                     </div>
 

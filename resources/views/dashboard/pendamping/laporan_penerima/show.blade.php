@@ -122,13 +122,10 @@
                         <span class="text-text-primary font-mono font-semibold block mt-0.5">{{ $laporan->keluargaPenerima->nik ?? '-' }}</span>
                     </div>
                     <div>
-                        <span class="text-text-secondary text-xs block">Desil &amp; Kemandirian</span>
+                        <span class="text-text-secondary text-xs block">Status Kemandirian</span>
                         <div class="flex items-center gap-1.5 mt-0.5">
-                            <span class="px-2 py-0.5 rounded text-xs font-bold bg-gov-green-surface text-primary">
-                                Desil {{ $laporan->keluargaPenerima->desil ?? 1 }}
-                            </span>
-                            <span class="px-2 py-0.5 rounded text-xs font-bold bg-surface-container text-text-secondary">
-                                {{ $laporan->keluargaPenerima->status_kemandirian ?? 'Belum Dinilai' }}
+                            <span class="px-2 py-0.5 rounded text-xs font-bold {{ ($laporan->keluargaPenerima->status_kemandirian ?? '') === 'Mandiri' ? 'bg-green-100 text-green-800' : 'bg-gov-green-surface text-primary' }}">
+                                {{ $laporan->keluargaPenerima->status_kemandirian ?? 'Tahap Kemandirian' }}
                             </span>
                         </div>
                     </div>

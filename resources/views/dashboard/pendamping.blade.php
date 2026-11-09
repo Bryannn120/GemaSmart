@@ -6,7 +6,7 @@
         <div class="flex flex-col max-w-2xl">
             <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Halo, {{ Auth::user()->name }} 👋</h1>
             <p class="font-body-md text-text-secondary mt-1">
-                Selamat bertugas! Salurkan bantuan program kampus (uang modal, alat, bibit), pantau keluarga penerima bantuan, buat laporan kunjungan, dan evaluasi desil kemandirian.
+                Selamat bertugas! Salurkan bantuan program kampus (uang modal, alat, bibit), pantau keluarga penerima bantuan, buat laporan kunjungan, dan evaluasi indikator kemandirian.
             </p>
         </div>
         <div class="flex flex-wrap items-center gap-space-sm">
@@ -120,7 +120,7 @@
                 <span class="font-headline-xl text-headline-xl text-text-primary font-bold">{{ $totalBinaan ?? 0 }} KK</span>
             </div>
             <div class="text-xs text-text-secondary mt-2 flex items-center justify-between">
-                <span>Desil 1 - 5</span>
+                <span>Tahap Pembinaan</span>
                 @if(isset($totalMandiri) && $totalMandiri > 0)
                     <span class="text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">{{ $totalMandiri }} Mandiri (Lulus)</span>
                 @endif
@@ -144,11 +144,11 @@
             </div>
         </a>
 
-        <!-- Card 3: Evaluasi Desil Kemandirian -->
+        <!-- Card 3: Evaluasi Indikator Kemandirian -->
         <a href="{{ route('pendamping.kemandirian.index') }}" class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm border border-border-light flex flex-col justify-between hover:border-primary/40 transition-colors">
             <div>
                 <div class="flex items-center justify-between mb-2">
-                    <span class="font-label-md text-label-md text-text-secondary uppercase">Monitoring Desil</span>
+                    <span class="font-label-md text-label-md text-text-secondary uppercase">Monitoring Kemandirian</span>
                     <span class="material-symbols-outlined text-secondary">trending_up</span>
                 </div>
                 <span class="font-headline-xl text-headline-xl text-secondary font-bold">{{ $totalPenilaian ?? 0 }} Asesmen</span>
@@ -250,12 +250,12 @@
 
     <!-- Feed Tugas Lapangan & Aktivitas (2 Columns) -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg">
-        <!-- Perkembangan Desil & Penilaian Kemandirian -->
+        <!-- Perkembangan Indikator & Penilaian Kemandirian -->
         <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-border-light p-space-lg flex flex-col">
             <div class="flex items-center justify-between mb-space-md pb-2 border-b border-border-light">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-secondary text-[22px]">trending_up</span>
-                    <h2 class="font-headline-sm text-headline-sm text-text-primary font-bold">Penilaian Desil & Kemandirian</h2>
+                    <h2 class="font-headline-sm text-headline-sm text-text-primary font-bold">Indikator Penilaian Kemandirian</h2>
                 </div>
                 <a href="{{ route('pendamping.kemandirian.index') }}" class="text-xs text-primary font-semibold hover:underline">
                     Monitoring Lengkap
@@ -268,8 +268,8 @@
                     <div>
                         <div class="flex items-center gap-2">
                             <span class="font-semibold text-text-primary text-sm">{{ $pen->keluargaPenerima->kepala_keluarga ?? $pen->keluargaPenerima->nama ?? 'Penerima Bantuan' }}</span>
-                            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-gov-green-surface text-primary border border-primary/20">
-                                Desil {{ $pen->desil_hasil }}
+                            <span class="px-2 py-0.5 rounded text-[11px] font-bold {{ ($pen->total_skor ?? 0) >= 70 ? 'bg-green-100 text-green-800' : 'bg-gov-green-surface text-primary border border-primary/20' }}">
+                                Skor: {{ $pen->total_skor ?? 0 }}/100
                             </span>
                         </div>
                         <span class="text-xs text-text-secondary block">
@@ -295,8 +295,8 @@
                         <div>
                             <div class="flex items-center gap-2">
                                 <span class="font-semibold text-text-primary text-sm">{{ $kb->kepala_keluarga ?? $kb->nama }}</span>
-                                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-status-info-surface text-status-info">
-                                    Desil {{ $kb->desil }}
+                                <span class="px-2 py-0.5 rounded text-[11px] font-bold {{ ($kb->status_kemandirian == 'Mandiri') ? 'bg-green-100 text-green-800' : 'bg-blue-50 text-blue-700' }}">
+                                    {{ $kb->status_kemandirian ?? 'Tahap Kemandirian' }}
                                 </span>
                             </div>
                             <span class="text-xs text-text-secondary">Desa {{ $kb->wilayah->nama ?? 'Sumbawa' }}</span>
@@ -304,13 +304,13 @@
                         </div>
                         <a href="{{ route('pendamping.keluarga_penerima.penilaian.create', $kb->id) }}" class="px-3 py-1.5 bg-gov-green-surface hover:bg-gov-green text-primary hover:text-white font-label-md text-label-md font-semibold rounded-lg border border-primary/20 transition-colors text-xs shrink-0 flex items-center gap-1">
                             <span class="material-symbols-outlined text-[14px]">rate_review</span>
-                            <span>Nilai Desil</span>
+                            <span>Nilai Indikator</span>
                         </a>
                     </div>
                     @empty
                     <div class="text-center py-8 text-text-tertiary text-sm">
                         <span class="material-symbols-outlined text-3xl block mb-1">query_stats</span>
-                        Belum ada riwayat penilaian desil.
+                        Belum ada riwayat penilaian indikator kemandirian.
                     </div>
                     @endforelse
                 @endforelse

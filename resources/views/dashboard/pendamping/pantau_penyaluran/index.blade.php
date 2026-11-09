@@ -231,7 +231,7 @@
                                     <div class="flex items-center gap-1.5">
                                         <span>NIK: {{ $keluarga->nik }}</span>
                                         <span>•</span>
-                                        <span class="px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 font-bold text-[10px]">Desil {{ $keluarga->desil ?? '-' }}</span>
+                                        <span class="px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 font-bold text-[10px]">{{ $keluarga->status_kemandirian ?? 'Tahap Kemandirian' }}</span>
                                     </div>
                                     <div class="text-text-secondary font-medium flex items-center gap-1 mt-0.5">
                                         <span class="material-symbols-outlined text-[13px] text-primary">location_on</span>

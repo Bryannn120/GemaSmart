@@ -92,7 +92,7 @@
                             data-nama-keluarga="{{ $peny->keluargaPenerima->kepala_keluarga ?? '-' }}"
                             data-nik="{{ $peny->keluargaPenerima->nik ?? '-' }}"
                             data-desa="{{ $peny->keluargaPenerima->wilayah->nama ?? '-' }}"
-                            data-desil="{{ $peny->keluargaPenerima->desil ?? '-' }}"
+                            data-status="{{ $peny->keluargaPenerima->status_kemandirian ?? 'Tahap Kemandirian' }}"
                             data-jenis="{{ $peny->jenis }}"
                             data-nama-item="{{ $peny->itemBantuan->nama_item ?? '-' }}"
                             data-jumlah="{{ $peny->jenis === 'uang' ? 'Rp ' . number_format($peny->nominal_uang ?? $peny->jumlah, 0, ',', '.') : number_format($peny->jumlah) . ' ' . $peny->satuan }}"
@@ -272,7 +272,7 @@ function onPenyaluranSelected(penyaluranId) {
     const namaKeluarga = selectedOption.getAttribute('data-nama-keluarga');
     const nik = selectedOption.getAttribute('data-nik');
     const desa = selectedOption.getAttribute('data-desa');
-    const desil = selectedOption.getAttribute('data-desil');
+    const statusKemandirian = selectedOption.getAttribute('data-status') || 'Tahap Kemandirian';
     const jenis = selectedOption.getAttribute('data-jenis') || 'bibit';
     const namaItem = selectedOption.getAttribute('data-nama-item');
     const jumlah = selectedOption.getAttribute('data-jumlah');
@@ -303,7 +303,7 @@ function onPenyaluranSelected(penyaluranId) {
     document.getElementById('summaryProgramName').innerText = program;
     document.getElementById('summaryTglSalur').innerText = 'Disalurkan: ' + tglSalur;
     document.getElementById('summaryNamaKeluarga').innerText = namaKeluarga;
-    document.getElementById('summaryDetailPenerima').innerText = `NIK: ${nik} • Desa: ${desa} • Desil: ${desil}`;
+    document.getElementById('summaryDetailPenerima').innerText = `NIK: ${nik} • Desa: ${desa} • Status: ${statusKemandirian}`;
     document.getElementById('summaryNamaItem').innerText = namaItem;
     document.getElementById('summaryJumlah').innerText = jumlah;
 

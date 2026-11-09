@@ -13,7 +13,7 @@ use App\Services\DesilCalculatorService;
 class PenilaianKemandirianController extends Controller
 {
     /**
-     * Tampilkan form penginputan penilaian tolak ukur desil untuk keluarga penerima.
+     * Tampilkan form penginputan penilaian tolak ukur indikator kemandirian untuk keluarga penerima.
      */
     public function create(string $id)
     {
@@ -25,7 +25,7 @@ class PenilaianKemandirianController extends Controller
     }
 
     /**
-     * Simpan hasil penilaian dan hitung tolak ukur pendapatan & pengeluaran serta desil otomatis oleh sistem.
+     * Simpan hasil penilaian dan hitung tolak ukur pendapatan & pengeluaran serta indikator kemandirian otomatis oleh sistem.
      */
     public function store(Request $request, string $id)
     {

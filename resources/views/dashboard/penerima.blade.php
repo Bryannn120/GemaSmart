@@ -160,9 +160,9 @@
                             <dd class="text-gray-900 font-semibold font-mono text-base mt-0.5">{{ $keluarga->nik }}</dd>
                         </div>
                         <div>
-                            <dt class="text-gray-500 font-medium">Desil Kemiskinan</dt>
+                            <dt class="text-gray-500 font-medium">Status Kemandirian</dt>
                             <dd class="text-gray-900 font-semibold mt-0.5">
-                                <span class="inline-block px-2.5 py-0.5 rounded bg-blue-50 text-blue-700 font-bold">Desil {{ $keluarga->desil }}</span>
+                                <span class="inline-block px-2.5 py-0.5 rounded bg-blue-50 text-blue-700 font-bold">{{ $keluarga->status_kemandirian ?? 'Tahap Kemandirian' }}</span>
                             </dd>
                         </div>
                         <div>
