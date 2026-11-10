@@ -43,7 +43,7 @@
                         </div>
                         <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Dashboard Monitoring Program Bantuan</h1>
                         <p class="font-body-md text-text-secondary mt-1">
-                            Monitoring terpadu program bantuan daerah (bibit, bantuan dana usaha tani, alat/fasilitas), pemantauan desil kemandirian keluarga, dan sebaran wilayah se-Kabupaten Sumbawa.
+                            Monitoring terpadu program bantuan daerah (bibit, bantuan dana usaha tani, alat/fasilitas), pemantauan indikator kemandirian keluarga, dan sebaran wilayah se-Kabupaten Sumbawa.
                         </p>
                     </div>
                     <!-- Controls -->
@@ -111,7 +111,7 @@
                         </div>
                         <div class="mt-space-md pt-space-sm bg-surface-subtle -mx-space-lg -mb-space-lg p-space-md border-t border-border-light">
                             <div class="flex justify-between items-center text-text-secondary font-body-sm text-body-sm">
-                                <span>Lulus Mandiri (Desil 6+):</span>
+                                <span>Lulus Mandiri (Indikator Kemandirian):</span>
                                 <strong class="text-emerald-700 font-semibold">{{ $totalMandiri ?? 0 }} KK</strong>
                             </div>
                         </div>
@@ -142,7 +142,7 @@
                         </div>
                     </div>
 
-                    <!-- Card 4: Evaluasi Kemandirian & Desil -->
+                    <!-- Card 4: Evaluasi Indikator Kemandirian -->
                     <div class="bg-canvas-bg rounded-xl p-space-lg shadow-sm border border-border-light flex flex-col justify-between relative overflow-hidden">
                         <div class="flex items-start justify-between">
                             <div class="w-10 h-10 rounded-xl bg-status-info-surface flex items-center justify-center text-status-info">
@@ -153,7 +153,7 @@
                             </span>
                         </div>
                         <div class="mt-space-md">
-                            <span class="font-label-md text-label-md text-text-secondary block">Evaluasi Desil &amp; Kemandirian</span>
+                            <span class="font-label-md text-label-md text-text-secondary block">Evaluasi Indikator Kemandirian</span>
                             <span class="font-headline-xl text-headline-xl text-text-primary font-bold tracking-tight block mt-1">{{ $totalAsesmen ?? 0 }} Asesmen</span>
                         </div>
                         <div class="mt-space-md pt-space-sm bg-surface-subtle -mx-space-lg -mb-space-lg p-space-md border-t border-border-light">
@@ -608,15 +608,15 @@
                         </div>
                     </div>
 
-                    <!-- Row Grafik Bawah: Profil Kemiskinan Desil & Daftar Desa -->
+                    <!-- Row Grafik Bawah: Profil Indikator Kemandirian & Daftar Desa -->
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                        <!-- Grafik 3: Sebaran Desil Penerima Manfaat (6 cols) -->
+                        <!-- Grafik 3: Sebaran Indikator Kemandirian Penerima Manfaat (6 cols) -->
                         <div class="lg:col-span-6 p-4 sm:p-5 rounded-xl bg-surface-subtle/40 border border-surface-subtle flex flex-col">
                             <div class="flex items-center justify-between mb-3">
                                 <div>
                                     <h4 class="font-bold text-sm sm:text-base text-text-primary flex items-center gap-1.5">
                                         <span class="material-symbols-outlined text-primary text-[18px]">bar_chart</span>
-                                        Sebaran Desil Kesejahteraan (P3KE / DTKS)
+                                        Sebaran Indikator Kemandirian (P3KE / DTKS)
                                     </h4>
                                     <span class="text-xs text-text-tertiary">Prioritas sasaran kemiskinan ekstrem & pencegahan stunting</span>
                                 </div>
@@ -1098,7 +1098,7 @@
                         }
                     });
 
-                    // 3. Chart Desil Kesejahteraan (Horizontal Bar)
+                    // 3. Chart Indikator Kemandirian (Horizontal Bar)
                     const ctxDesil = document.getElementById('chart-desil-kesejahteraan').getContext('2d');
                     if (chartDesilInstance) {
                         chartDesilInstance.destroy();
@@ -1106,7 +1106,7 @@
                     chartDesilInstance = new Chart(ctxDesil, {
                         type: 'bar',
                         data: {
-                            labels: ['Desil 1 (Ekstrem)', 'Desil 2 (Sangat Miskin)', 'Desil 3 (Miskin)', 'Desil 4 (Rentan)', 'Desil 5+'],
+                            labels: ['Indikator 1 (Ekstrem)', 'Indikator 2 (Sangat Rentan)', 'Indikator 3 (Rentan)', 'Indikator 4 (Berkembang)', 'Indikator 5+'],
                             datasets: [{
                                 label: 'Jumlah Penerima (KK)',
                                 data: data.desilData,

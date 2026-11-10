@@ -133,7 +133,7 @@
 
                     <div>
                         <label for="desil" class="block text-xs font-semibold text-text-secondary uppercase mb-1">
-                            Tingkat Kemandirian <span class="text-status-fraud">*</span>
+                            Indikator Kemandirian <span class="text-status-fraud">*</span>
                         </label>
                         <select name="desil" id="desil" required
                             class="w-full px-3.5 py-2.5 rounded-xl border border-border-medium bg-surface-subtle focus:bg-white text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all font-semibold">

@@ -5,7 +5,7 @@ namespace App\Services;
 class DesilCalculatorService
 {
     /**
-     * Hitung tolak ukur penilaian desil dan kemandirian berdasarkan pendapatan dan pengeluaran
+     * Hitung tolak ukur penilaian indikator kemandirian berdasarkan pendapatan dan pengeluaran
      * (bisa dipilih basis waktu per bulan atau per hari), serta indikator sosial ekonomi keluarga.
      *
      * @param float $pendapatan

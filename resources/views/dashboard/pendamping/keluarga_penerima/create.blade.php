@@ -135,7 +135,7 @@
 
                     <div>
                         <label for="desil" class="block text-xs font-semibold text-text-secondary uppercase mb-1">
-                            Tingkat Kemandirian Awal <span class="text-status-fraud">*</span>
+                            Indikator Kemandirian Awal <span class="text-status-fraud">*</span>
                         </label>
                         <select name="desil" id="desil" required
                             class="w-full px-3.5 py-2.5 rounded-xl border border-border-medium bg-surface-subtle focus:bg-white text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all font-semibold">
@@ -150,7 +150,7 @@
                             <option value="9" {{ old('desil') == 9 ? 'selected' : '' }}>Tingkat 9 - Mandiri Unggul (Sudah Mandiri)</option>
                             <option value="10" {{ old('desil') == 10 ? 'selected' : '' }}>Tingkat 10 - Mandiri Utama / Sejahtera (Sudah Mandiri)</option>
                         </select>
-                        <span class="text-[11px] text-text-tertiary mt-1 block">Tingkat 6 ke atas otomatis diklasifikasikan sebagai Sudah Mandiri.</span>
+                        <span class="text-[11px] text-text-tertiary mt-1 block">Indikator kemandirian tingkat 6 ke atas otomatis diklasifikasikan sebagai Sudah Mandiri.</span>
                     </div>
 
                     <div>

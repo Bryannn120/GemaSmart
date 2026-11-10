@@ -154,7 +154,7 @@ class PublicLaporanController extends Controller
                 'desa' => $keluarga->wilayah ? $keluarga->wilayah->nama : '-',
                 'kecamatan' => ($keluarga->wilayah && $keluarga->wilayah->parent) ? $keluarga->wilayah->parent->nama : '-',
                 'program' => $keluarga->programBantuan ? $keluarga->programBantuan->nama_program : 'Program Bantuan Bibit',
-                'desil' => $keluarga->desil ? 'Desil ' . $keluarga->desil : null,
+                'indikator_kemandirian' => $keluarga->status_kemandirian ?: 'Tahap Kemandirian',
             ]);
         }
 

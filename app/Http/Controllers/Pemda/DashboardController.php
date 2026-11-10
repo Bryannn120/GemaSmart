@@ -73,7 +73,7 @@ class DashboardController extends Controller
             ->take(8)
             ->get();
 
-        // 7. Evaluasi Desil Terbaru
+        // 7. Evaluasi Indikator Kemandirian Terbaru
         $asesmenTerbaru = PenilaianKemandirian::with(['keluargaPenerima.wilayah', 'pendamping'])
             ->latest()
             ->take(5)

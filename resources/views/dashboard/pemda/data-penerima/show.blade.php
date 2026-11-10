@@ -39,8 +39,17 @@
                         <dd class="text-body-md text-text-primary font-mono mt-1">{{ $keluarga_penerima->no_kk }}</dd>
                     </div>
                     <div>
-                        <dt class="text-label-md text-text-secondary">Desil Kemiskinan</dt>
-                        <dd class="text-body-md text-text-primary mt-1 font-semibold">Desil {{ $keluarga_penerima->desil }}</dd>
+                        <dt class="text-label-md text-text-secondary">Indikator Kemandirian</dt>
+                        <dd class="text-body-md text-text-primary mt-1 font-semibold">
+                            @php
+                                $latestPenShow = $keluarga_penerima->penilaianKemandirians->sortByDesc('id')->first();
+                            @endphp
+                            @if($latestPenShow && $latestPenShow->total_skor !== null)
+                                Skor: {{ $latestPenShow->total_skor }}/100 ({{ $keluarga_penerima->status_kemandirian ?? 'Tahap Kemandirian' }})
+                            @else
+                                {{ $keluarga_penerima->status_kemandirian ?? 'Tahap Kemandirian' }} (Tingkat {{ $keluarga_penerima->desil }})
+                            @endif
+                        </dd>
                     </div>
                     <div>
                         <dt class="text-label-md text-text-secondary">Tolak Ukur Pendapatan</dt>

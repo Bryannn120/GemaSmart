@@ -90,10 +90,10 @@
                         <dd class="text-text-primary font-mono font-semibold mt-0.5">{{ $laporan->keluargaPenerima->nik ?? '-' }}</dd>
                     </div>
                     <div>
-                        <dt class="text-text-secondary font-label-md text-xs">Tingkat Desil</dt>
+                        <dt class="text-text-secondary font-label-md text-xs">Indikator Kemandirian</dt>
                         <dd class="text-text-primary font-semibold mt-0.5">
                             <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-gov-green-surface text-primary border border-primary/20">
-                                Desil {{ $laporan->keluargaPenerima->desil ?? '-' }}
+                                {{ $laporan->keluargaPenerima->status_kemandirian ?? ($laporan->keluargaPenerima ? 'Tingkat ' . $laporan->keluargaPenerima->desil : '-') }}
                             </span>
                         </dd>
                     </div>

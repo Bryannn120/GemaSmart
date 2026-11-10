@@ -22,13 +22,21 @@ class DataPenerimaController extends Controller
         $programId = $request->query('program_bantuan_id');
         $pendampingFilter = $request->query('pendamping_filter');
 
-        $query = KeluargaPenerima::with(['wilayah.parent', 'programBantuan', 'user', 'pendamping.kampus']);
+        $query = KeluargaPenerima::with([
+            'wilayah.parent',
+            'programBantuan',
+            'user',
+            'pendamping.kampus',
+            'penilaianKemandirians' => function ($q) {
+                $q->latest('id');
+            },
+        ]);
 
         if ($tab === 'mandiri') {
-            // Warga yang telah mandiri atau mencapai desil 6 ke atas (Lulus Bantuan)
+            // Warga yang telah mandiri atau memenuhi indikator kemandirian tingkat 6 ke atas (Lulus Bantuan)
             $query->mandiri();
         } elseif ($tab === 'aktif') {
-            // Default: Penerima Bantuan Aktif (Otomatis menghilangkan yang sudah mandiri atau desil 6+)
+            // Default: Penerima Bantuan Aktif (Otomatis menghilangkan yang sudah mandiri)
             $query->penerimaAktif();
         }
 
@@ -92,7 +100,7 @@ class DataPenerimaController extends Controller
     }
 
     /**
-     * Ekspor Data Penerima Bantuan ke Excel (.xlsx) atau CSV (.csv).
+     * Ekspor Data Penerima Bantuan ke Excel (.xlsx), CSV (.csv), atau PDF (.pdf).
      */
     public function export(Request $request, DataPenerimaExportImportService $service)
     {
@@ -101,8 +109,12 @@ class DataPenerimaController extends Controller
         $wilayahId = $request->query('wilayah_id');
         $programId = $request->query('program_bantuan_id');
         $search = $request->query('search');
+        $pendampingFilter = $request->query('pendamping_filter');
 
-        return $service->export($format, $tab, $wilayahId, $programId, $search);
+        return $service->export($format, $tab, $wilayahId, $programId, $search, [
+            'role' => 'pemda',
+            'pendamping_filter' => $pendampingFilter,
+        ]);
     }
 
     /**
@@ -194,7 +206,7 @@ class DataPenerimaController extends Controller
             'nik.size' => 'NIK harus 16 digit angka.',
             'nik.unique' => 'NIK ini sudah terdaftar dalam sistem.',
             'kepala_keluarga.required' => 'Nama Kepala Keluarga wajib diisi.',
-            'desil.required' => 'Tingkat desil wajib dipilih.',
+            'desil.required' => 'Indikator kemandirian wajib dipilih.',
             'wilayah_id.required' => 'Wilayah desa/kelurahan wajib dipilih.',
             'program_bantuan_id.required' => 'Program bantuan wajib dipilih.',
         ]);
@@ -312,7 +324,7 @@ class DataPenerimaController extends Controller
             'nik.size' => 'NIK harus 16 digit angka.',
             'nik.unique' => 'NIK ini sudah digunakan penerima lain.',
             'kepala_keluarga.required' => 'Nama Kepala Keluarga wajib diisi.',
-            'desil.required' => 'Tingkat desil wajib dipilih.',
+            'desil.required' => 'Indikator kemandirian wajib dipilih.',
             'wilayah_id.required' => 'Wilayah desa/kelurahan wajib dipilih.',
             'program_bantuan_id.required' => 'Program bantuan wajib dipilih.',
         ]);

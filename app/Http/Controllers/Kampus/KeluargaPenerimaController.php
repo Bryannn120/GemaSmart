@@ -20,7 +20,14 @@ class KeluargaPenerimaController extends Controller
         $search = $request->query('search');
         $kampus = KampusMitra::where('user_id', Auth::id())->first() ?? KampusMitra::first();
         
-        $baseQuery = KeluargaPenerima::with(['wilayah', 'programBantuan', 'pendamping']);
+        $baseQuery = KeluargaPenerima::with([
+            'wilayah',
+            'programBantuan',
+            'pendamping',
+            'penilaianKemandirians' => function ($q) {
+                $q->latest('id');
+            },
+        ]);
         if ($kampus) {
             $baseQuery->where(function($q) use ($kampus) {
                 $q->where('kampus_id', $kampus->id)
@@ -64,7 +71,7 @@ class KeluargaPenerimaController extends Controller
     }
 
     /**
-     * Ekspor Data Penerima Binaan Kampus ke Excel (.xlsx) atau CSV (.csv).
+     * Ekspor Data Penerima Binaan Kampus ke Excel (.xlsx), CSV (.csv), atau PDF (.pdf).
      */
     public function export(Request $request, DataPenerimaExportImportService $service)
     {

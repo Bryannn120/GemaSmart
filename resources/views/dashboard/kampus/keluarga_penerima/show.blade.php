@@ -13,19 +13,19 @@
             </div>
             <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Detail Keluarga Penerima Bantuan</h1>
             <p class="font-body-md text-text-secondary mt-1">
-                Informasi profil penerima bantuan, status desil, dan rekam jejak pembinaan oleh kampus.
+                Informasi profil penerima bantuan, status indikator kemandirian, dan rekam jejak pembinaan oleh kampus.
             </p>
         </div>
         <div class="flex items-center gap-space-sm">
             @if($keluarga_penerima->is_mandiri)
                 <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-100 text-emerald-800 font-label-md text-xs font-bold border border-emerald-300">
                     <span class="material-symbols-outlined text-[18px]">workspace_premium</span>
-                    <span>Telah Lulus Mandiri (Desil {{ $keluarga_penerima->desil }})</span>
+                    <span>Telah Lulus Mandiri</span>
                 </span>
             @else
                 <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gov-green-surface text-primary font-label-md text-xs font-bold border border-primary/20">
                     <span class="material-symbols-outlined text-[18px]">verified</span>
-                    <span>Penerima Bantuan Aktif (Desil {{ $keluarga_penerima->desil }})</span>
+                    <span>Penerima Bantuan Aktif</span>
                 </span>
             @endif
         </div>
@@ -44,8 +44,15 @@
                 <span class="text-text-tertiary text-xs font-mono">No KK: {{ $keluarga_penerima->no_kk }}</span>
 
                 <div class="mt-4 flex flex-wrap gap-2 justify-center">
+                    @php
+                        $latestPenKampus = $keluarga_penerima->penilaianKemandirians->sortByDesc('id')->first();
+                    @endphp
                     <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-gov-green-surface text-primary border border-primary/20">
-                        Desil {{ $keluarga_penerima->desil }}
+                        @if($latestPenKampus && $latestPenKampus->total_skor !== null)
+                            Skor Indikator: {{ $latestPenKampus->total_skor }}/100
+                        @else
+                            {{ $keluarga_penerima->status_kemandirian ?? 'Tahap Kemandirian' }}
+                        @endif
                     </span>
                     @if ($keluarga_penerima->status_validasi == 'valid')
                         <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-status-verified-surface text-status-verified flex items-center gap-1">

@@ -410,7 +410,7 @@
                 name: "{{ $user->name }}",
                 no_kk: "{{ $keluarga->no_kk }}",
                 nik: "{{ $keluarga->nik }}",
-                desil: "{{ $keluarga->desil }}",
+                indikator_kemandirian: "{{ $keluarga->status_kemandirian ?? 'Tahap Kemandirian' }}",
                 status_validasi: "{{ $keluarga->status_validasi }}",
                 wilayah: "{{ $keluarga->wilayah->nama ?? '-' }}",
                 alamat: "{{ $keluarga->alamat ?? '-' }}",

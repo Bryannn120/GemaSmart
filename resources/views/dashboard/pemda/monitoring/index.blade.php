@@ -19,7 +19,7 @@
         <div class="flex flex-col max-w-2xl">
             <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight">Monitoring & Peta Sebaran</h1>
             <p class="font-body-md text-text-secondary mt-1">
-                Pantau sebaran masyarakat penerima bantuan berdasarkan desa dan rincian tingkat ekonomi (desil), serta laporan terkini.
+                Pantau sebaran masyarakat penerima bantuan berdasarkan desa dan rincian indikator kemandirian, serta laporan terkini.
             </p>
         </div>
         <div class="flex flex-wrap items-center gap-space-sm">
@@ -110,7 +110,7 @@
                         </div>
                         <span class="font-code-dense text-[11px] text-primary mb-1">
                             {{ $laporan->keluargaPenerima->wilayah->nama ?? 'Tidak Diketahui' }} 
-                            � Desil {{ $laporan->keluargaPenerima->desil ?? '-' }}
+                            • {{ $laporan->keluargaPenerima->status_kemandirian ?? 'Tahap Kemandirian' }}
                         </span>
                         <p class="font-body-sm text-text-secondary">{{ $laporan->laporan_teks }}</p>
                     </div>
@@ -132,7 +132,7 @@
         <div class="px-6 py-4 border-b border-border-light bg-surface-subtle flex justify-between items-center">
             <div>
                 <h3 class="font-headline-md font-bold text-text-primary" id="modalTitle">Data Penerima Bantuan - Kec. ...</h3>
-                <p class="font-label-sm text-text-secondary mt-1">Daftar lengkap keluarga penerima beserta rincian desil ekonomi.</p>
+                <p class="font-label-sm text-text-secondary mt-1">Daftar lengkap keluarga penerima beserta rincian indikator kemandirian.</p>
             </div>
             <button onclick="closeDetailModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-variant text-text-secondary transition-colors">
                 <span class="material-symbols-outlined text-[20px]">close</span>
@@ -163,7 +163,7 @@
                             <th class="py-3 px-4 font-label-sm text-text-secondary border-b border-border-medium">No. KK / NIK</th>
                             <th class="py-3 px-4 font-label-sm text-text-secondary border-b border-border-medium">Kepala Keluarga</th>
                             <th class="py-3 px-4 font-label-sm text-text-secondary border-b border-border-medium">Desa</th>
-                            <th class="py-3 px-4 font-label-sm text-text-secondary border-b border-border-medium text-center">Desil</th>
+                            <th class="py-3 px-4 font-label-sm text-text-secondary border-b border-border-medium text-center">Indikator Kemandirian</th>
                             <th class="py-3 px-4 font-label-sm text-text-secondary border-b border-border-medium">Status Kemandirian</th>
                         </tr>
                     </thead>
@@ -210,7 +210,7 @@
                     tableBody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-text-tertiary">Tidak ada data penerima di kecamatan ini.</td></tr>`;
                 } else {
                     data.penerimas.forEach(p => {
-                        let desilColor = p.desil <= 2 ? 'bg-error-container text-error' : (p.desil <= 4 ? 'bg-warning-container text-warning' : 'bg-success-container text-success');
+                        let indikatorColor = p.indikator_level <= 2 ? 'bg-error-container text-error' : (p.indikator_level <= 4 ? 'bg-warning-container text-warning' : 'bg-success-container text-success');
                         
                         tableBody.innerHTML += `
                             <tr class="hover:bg-surface-subtle transition-colors search-row">
@@ -221,8 +221,8 @@
                                 <td class="py-3 px-4 font-bold search-nama">${p.nama || '-'}</td>
                                 <td class="py-3 px-4 search-desa">${p.desa || '-'}</td>
                                 <td class="py-3 px-4 text-center">
-                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-xs ${desilColor}">
-                                        ${p.desil || '-'}
+                                    <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full font-bold text-xs ${indikatorColor}">
+                                        ${p.indikator_kemandirian || '-'}
                                     </span>
                                 </td>
                                 <td class="py-3 px-4">
@@ -349,12 +349,12 @@
                                             <span style="background-color: #d1fae5; color: #065f46; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${desa.total_penerima} KK</span>
                                         </div>
                                         <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 4px; text-align:center;">
-                                            <div style="background:#f3f4f6; padding: 4px; border-radius: 4px;"><span style="display:block; font-size:9px; color:#6b7280;">D1</span><strong style="font-size:12px;">${desa.desil['1']}</strong></div>
-                                            <div style="background:#f3f4f6; padding: 4px; border-radius: 4px;"><span style="display:block; font-size:9px; color:#6b7280;">D2</span><strong style="font-size:12px;">${desa.desil['2']}</strong></div>
-                                            <div style="background:#f3f4f6; padding: 4px; border-radius: 4px;"><span style="display:block; font-size:9px; color:#6b7280;">D3</span><strong style="font-size:12px;">${desa.desil['3']}</strong></div>
-                                            <div style="background:#f3f4f6; padding: 4px; border-radius: 4px;"><span style="display:block; font-size:9px; color:#6b7280;">D4</span><strong style="font-size:12px;">${desa.desil['4']}</strong></div>
-                                            <div style="background:#f3f4f6; padding: 4px; border-radius: 4px;"><span style="display:block; font-size:9px; color:#6b7280;">D5</span><strong style="font-size:12px;">${desa.desil['5']}</strong></div>
-                                            <div style="background:#f3f4f6; padding: 4px; border-radius: 4px;"><span style="display:block; font-size:9px; color:#6b7280;">>D5</span><strong style="font-size:12px;">${desa.desil['>5']}</strong></div>
+                                            <div style="background:#f3f4f6; padding: 4px; border-radius: 4px;"><span style="display:block; font-size:9px; color:#6b7280;">IK 1</span><strong style="font-size:12px;">${desa.indikator['1']}</strong></div>
+                                            <div style="background:#f3f4f6; padding: 4px; border-radius: 4px;"><span style="display:block; font-size:9px; color:#6b7280;">IK 2</span><strong style="font-size:12px;">${desa.indikator['2']}</strong></div>
+                                            <div style="background:#f3f4f6; padding: 4px; border-radius: 4px;"><span style="display:block; font-size:9px; color:#6b7280;">IK 3</span><strong style="font-size:12px;">${desa.indikator['3']}</strong></div>
+                                            <div style="background:#f3f4f6; padding: 4px; border-radius: 4px;"><span style="display:block; font-size:9px; color:#6b7280;">IK 4</span><strong style="font-size:12px;">${desa.indikator['4']}</strong></div>
+                                            <div style="background:#f3f4f6; padding: 4px; border-radius: 4px;"><span style="display:block; font-size:9px; color:#6b7280;">IK 5</span><strong style="font-size:12px;">${desa.indikator['5']}</strong></div>
+                                            <div style="background:#f3f4f6; padding: 4px; border-radius: 4px;"><span style="display:block; font-size:9px; color:#6b7280;">Mandiri</span><strong style="font-size:12px;">${desa.indikator['>5']}</strong></div>
                                         </div>
                                     </div>
                                 `;

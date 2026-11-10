@@ -60,7 +60,7 @@ class KeluargaPenerimaController extends Controller
         if ($tab === 'mandiri') {
             $query->mandiri();
         } else {
-            // Otomatis hilangkan penerima yang sudah mandiri atau mencapai desil 6 ke atas
+            // Otomatis hilangkan penerima yang sudah mandiri
             $query->penerimaAktif();
         }
 
@@ -75,7 +75,7 @@ class KeluargaPenerimaController extends Controller
     }
 
     /**
-     * Ekspor Data Keluarga Penerima Binaan ke Excel (.xlsx) atau CSV (.csv).
+     * Ekspor Data Keluarga Penerima Binaan ke Excel (.xlsx), CSV (.csv), atau PDF (.pdf).
      */
     public function export(Request $request, DataPenerimaExportImportService $service)
     {
@@ -216,7 +216,7 @@ class KeluargaPenerimaController extends Controller
             'nik.required' => 'NIK kepala keluarga wajib diisi.',
             'nik.size' => 'NIK harus 16 digit angka.',
             'nik.unique' => 'NIK ini sudah terdaftar dalam sistem.',
-            'desil.required' => 'Tingkat kemandirian awal wajib ditentukan.',
+            'desil.required' => 'Indikator kemandirian awal wajib ditentukan.',
             'wilayah_id.required' => 'Wilayah desa/kelurahan wajib dipilih.',
             'program_bantuan_id.required' => 'Program bantuan bibit wajib dipilih.',
         ]);
@@ -237,7 +237,7 @@ class KeluargaPenerimaController extends Controller
         $validated['penghasilan_perbulan'] = $validated['penghasilan_perbulan'] ?? 0;
         $validated['status_validasi'] = $validated['status_validasi'] ?? 'valid';
         
-        // Status kemandirian: Desil 6 ke atas = Mandiri, Desil 1-5 = Tahap Kemandirian
+        // Status kemandirian: Indikator Kemandirian tingkat 6 ke atas = Mandiri, 1-5 = Tahap Kemandirian
         $validated['status_kemandirian'] = ($validated['desil'] >= 6) ? 'Mandiri' : 'Tahap Kemandirian';
 
         $penerima = KeluargaPenerima::create($validated);
@@ -346,7 +346,7 @@ class KeluargaPenerimaController extends Controller
             'nik.required' => 'NIK kepala keluarga wajib diisi.',
             'nik.size' => 'NIK harus 16 digit angka.',
             'nik.unique' => 'NIK ini sudah digunakan penerima lain.',
-            'desil.required' => 'Tingkat kemandirian wajib dipilih.',
+            'desil.required' => 'Indikator kemandirian wajib dipilih.',
             'wilayah_id.required' => 'Wilayah desa/kelurahan wajib dipilih.',
             'program_bantuan_id.required' => 'Program bantuan bibit wajib dipilih.',
         ]);

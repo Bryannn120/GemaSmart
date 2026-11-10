@@ -187,7 +187,7 @@
 
                             // Format Label Modul & Icon
                             $modulLabel = match($log->model) {
-                                'PenilaianKemandirian' => 'Penilaian Desil',
+                                'PenilaianKemandirian' => 'Penilaian Indikator Kemandirian',
                                 'PenyaluranBantuan' => 'Penyaluran Bantuan',
                                 'KeluargaPenerima' => 'Keluarga Penerima',
                                 'KampusMitra' => 'Kampus Mitra',
@@ -268,7 +268,7 @@
                                         @elseif(isset($log->data_baru['nominal_transaksi']))
                                             Nominal: <strong>Rp {{ number_format($log->data_baru['nominal_transaksi'], 0, ',', '.') }}</strong>
                                         @elseif(isset($log->data_baru['desil']))
-                                            Desil: <strong>{{ $log->data_baru['desil'] }}</strong> ({{ $log->data_baru['status_kemandirian'] ?? '' }})
+                                            Indikator Kemandirian: <strong>Tingkat {{ $log->data_baru['desil'] }}</strong> ({{ $log->data_baru['status_kemandirian'] ?? '' }})
                                         @elseif(isset($log->data_baru['nama_program']))
                                             Program: <strong>{{ $log->data_baru['nama_program'] }}</strong>
                                         @elseif(isset($log->data_baru['name']))

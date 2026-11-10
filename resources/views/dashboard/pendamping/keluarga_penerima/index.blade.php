@@ -44,6 +44,13 @@
                             <div class="text-[11px] text-text-secondary">Kompatibel UTF-8 BOM</div>
                         </div>
                     </a>
+                    <a href="{{ route('pendamping.keluarga_penerima.export', array_merge(request()->query(), ['format' => 'pdf'])) }}" target="_blank" class="flex items-center gap-2 px-4 py-2.5 text-xs text-text-primary hover:bg-surface-subtle transition-colors border-t border-border-light">
+                        <span class="material-symbols-outlined text-[18px] text-red-700">picture_as_pdf</span>
+                        <div>
+                            <div class="font-semibold">Dokumen PDF (.pdf)</div>
+                            <div class="text-[11px] text-text-secondary">Siap cetak format lanskap A4</div>
+                        </div>
+                    </a>
                 </div>
             </div>
 

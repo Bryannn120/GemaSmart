@@ -53,13 +53,13 @@
                 </div>
                 
                 <div class="flex flex-col gap-space-xs">
-                    <label for="desil" class="font-label-md text-text-primary">Desil Kemiskinan <span class="text-error">*</span></label>
+                    <label for="desil" class="font-label-md text-text-primary">Indikator Kemandirian <span class="text-error">*</span></label>
                     <div class="relative">
                         <select name="desil" id="desil" required
                             class="appearance-none w-full font-body-md px-space-md py-2.5 rounded-lg border border-border-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-surface-subtle cursor-pointer">
                             @for($d = 1; $d <= 10; $d++)
                                 <option value="{{ $d }}" {{ old('desil', 1) == $d ? 'selected' : '' }}>
-                                    Desil {{ $d }} {{ $d >= 6 ? '• Mandiri (Lulus Bantuan)' : '• Prioritas Penerima Bantuan' }}
+                                    Indikator Kemandirian {{ $d }} {{ $d >= 6 ? '• Mandiri (Lulus Bantuan)' : '• Prioritas Penerima Bantuan' }}
                                 </option>
                             @endfor
                         </select>

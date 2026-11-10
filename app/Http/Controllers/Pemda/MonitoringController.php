@@ -37,7 +37,7 @@ class MonitoringController extends Controller
                     'desa' => $desa ? $desa->nama : 'Tidak Diketahui',
                     'kecamatan' => $desa && $desa->parent ? $desa->parent->nama : '-',
                     'total_penerima' => $items->count(),
-                    'desil' => [
+                    'indikator' => [
                         '1' => $items->where('desil', 1)->count(),
                         '2' => $items->where('desil', 2)->count(),
                         '3' => $items->where('desil', 3)->count(),
@@ -63,21 +63,26 @@ class MonitoringController extends Controller
     {
         $kecamatan = Wilayah::where('jenis', 'kecamatan')->findOrFail($id);
         
-        $penerimas = KeluargaPenerima::with('wilayah')
+        $penerimas = KeluargaPenerima::with(['wilayah', 'penilaianKemandirians' => fn($q) => $q->latest('id')])
             ->whereHas('wilayah', function($q) use ($id) {
                 $q->where('parent_id', $id)->orWhere('id', $id);
             })
             ->get()
             ->map(function($item) {
+                $latestPen = $item->penilaianKemandirians->first();
+                $indikatorText = ($latestPen && $latestPen->total_skor !== null)
+                    ? 'Skor: ' . $latestPen->total_skor . '/100'
+                    : ($item->desil ? 'Tingkat ' . $item->desil : '-');
                 return [
                     'id' => $item->id,
                     'no_kk' => $item->no_kk,
-                    'nik' => $item->nik_kepala_keluarga,
+                    'nik' => $item->nik,
                     'nama' => $item->kepala_keluarga,
                     'desa' => $item->wilayah ? $item->wilayah->nama : '-',
-                    'desil' => $item->desil,
+                    'indikator_level' => (int) ($item->desil ?? 1),
+                    'indikator_kemandirian' => $indikatorText,
                     'status_kemandirian' => $item->status_kemandirian ?? '-',
-                    'alamat' => $item->alamat_detail,
+                    'alamat' => $item->alamat,
                 ];
             });
 

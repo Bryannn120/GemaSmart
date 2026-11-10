@@ -61,7 +61,7 @@ class PenilaianKemandirianController extends Controller
         $pengeluaran = (float) $request->pengeluaran;
         $tipePeriode = $request->tipe_periode;
 
-        // Hitung tolak ukur dan desil secara objektif dan sistematis
+        // Hitung tolak ukur dan indikator kemandirian secara objektif dan sistematis
         $hasil = DesilCalculatorService::hitung(
             pendapatan: $pendapatan,
             pengeluaran: $pengeluaran,

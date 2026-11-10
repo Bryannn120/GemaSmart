@@ -44,6 +44,13 @@
                             <div class="text-[11px] text-text-secondary">Kompatibel UTF-8 BOM</div>
                         </div>
                     </a>
+                    <a href="{{ route('kampus.keluarga_penerima.export', array_merge(request()->query(), ['format' => 'pdf'])) }}" target="_blank" class="flex items-center gap-2 px-4 py-2.5 text-xs text-text-primary hover:bg-surface-subtle transition-colors border-t border-border-light">
+                        <span class="material-symbols-outlined text-[18px] text-red-700">picture_as_pdf</span>
+                        <div>
+                            <div class="font-semibold">Dokumen PDF (.pdf)</div>
+                            <div class="text-[11px] text-text-secondary">Siap cetak format lanskap A4</div>
+                        </div>
+                    </a>
                 </div>
             </div>
 
@@ -137,7 +144,7 @@
         <a href="{{ route('kampus.keluarga_penerima.index', array_merge(request()->except('tab'), ['tab' => 'mandiri'])) }}" 
            class="px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 {{ $tab === 'mandiri' ? 'bg-emerald-700 text-white shadow-sm' : 'bg-surface-subtle text-text-secondary hover:text-text-primary' }}">
             <span class="material-symbols-outlined text-[16px]">workspace_premium</span>
-            <span>Lulus Mandiri (Desil 6+)</span>
+            <span>Lulus Mandiri</span>
             <span class="px-2 py-0.5 rounded-full text-[10px] {{ $tab === 'mandiri' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800 font-bold' }}">{{ $countMandiri }}</span>
         </a>
     </div>
@@ -146,7 +153,7 @@
     <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-border-light flex flex-col overflow-hidden">
         <div class="p-space-md border-b border-border-light bg-surface-subtle flex items-center justify-between">
             <span class="text-xs font-bold text-text-primary uppercase tracking-wider">
-                {{ $tab === 'mandiri' ? 'Keluarga Binaan Telah Mandiri / Lulus (Desil 6 ke atas)' : 'Daftar Penerima Bantuan Aktif Binaan Kampus (Desil 1 s/d 5)' }}
+                {{ $tab === 'mandiri' ? 'Keluarga Binaan Telah Mandiri / Lulus' : 'Daftar Penerima Bantuan Aktif Binaan Kampus (Tahap Indikator Kemandirian)' }}
             </span>
             <span class="text-xs text-text-secondary font-medium">
                 {{ $keluarga_penerimas->count() }} Data Ditampilkan
@@ -160,7 +167,7 @@
                         <th class="py-3 px-4 font-semibold">No. KK &amp; NIK</th>
                         <th class="py-3 px-4 font-semibold">Desa / Wilayah</th>
                         <th class="py-3 px-4 font-semibold">Pendapatan / Bulan</th>
-                        <th class="py-3 px-4 font-semibold">Desil &amp; Status</th>
+                        <th class="py-3 px-4 font-semibold">Indikator Kemandirian</th>
                         <th class="py-3 px-4 font-semibold">Pendamping Lapangan</th>
                         <th class="py-3 px-4 font-semibold">Program Bantuan</th>
                         <th class="py-3 px-4 font-semibold">Status Validasi</th>
@@ -190,13 +197,17 @@
                             </span>
                         </td>
                         <td class="py-3.5 px-4">
+                            @php
+                                $latestPen = $kp->penilaianKemandirians->first();
+                                $skorVal = $latestPen ? $latestPen->total_skor : null;
+                            @endphp
                             @if($kp->desil >= 6 || strtolower($kp->status_kemandirian ?? '') === 'mandiri')
                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                                    Desil {{ $kp->desil }} • Mandiri
+                                    {{ $skorVal !== null ? "Skor: {$skorVal}/100 • " : '' }}Mandiri
                                 </span>
                             @else
                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-gov-green-surface text-primary border border-primary/20">
-                                    Desil {{ $kp->desil }} • Aktif
+                                    {{ $skorVal !== null ? "Skor: {$skorVal}/100 • " : '' }}Tahap Kemandirian
                                 </span>
                             @endif
                         </td>
@@ -334,7 +345,7 @@
                                 <div>
                                     <span class="font-semibold text-xs text-text-primary block">Perbarui Data (Update)</span>
                                     <span class="text-[11px] text-text-secondary block mt-0.5">
-                                        Data profil, desil, dan tolak ukur pendapatan warga yang cocok diperbarui dengan data file tanpa membuat baris baru.
+                                        Data profil, indikator kemandirian, dan tolak ukur pendapatan warga yang cocok diperbarui dengan data file tanpa membuat baris baru.
                                     </span>
                                 </div>
                             </label>
@@ -349,7 +360,7 @@
                         </div>
                         <p>• Akun login keluarga penerima bantuan akan otomatis dibuat (Email: <code class="bg-canvas-bg px-1 rounded">NIK@penerima.com</code>, Password default: <code class="bg-canvas-bg px-1 rounded">No. KK</code>).</p>
                         <p>• Data yang diimpor akan otomatis terafiliasi dengan akun Kampus Mitra Anda.</p>
-                        <p>• Keluarga dengan nilai desil 6 ke atas akan otomatis berstatus <strong>Mandiri</strong>.</p>
+                        <p>• Keluarga yang memenuhi indikator kemandirian tingkat 6 ke atas akan otomatis berstatus <strong>Mandiri</strong>.</p>
                         <p>• Seluruh proses impor akan tercatat pada <strong>Audit Log Sistem</strong>.</p>
                     </div>
                 </div>

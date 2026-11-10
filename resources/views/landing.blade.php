@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>GEMASMART - Inovasi Tata Kelola Bantuan Pangan &amp; Kemandirian Keluarga Binaan Kab. Sumbawa</title>
-    <meta name="description" content="Profil Inovasi Daerah GEMASMART: Sistem Informasi Manajemen Bantuan Bibit, Pendampingan Lapangan, dan Monitoring Kemandirian Pangan Keluarga Binaan Kabupaten Sumbawa berbasis Desil P3KE dan Pencegahan Stunting."/>
+    <meta name="description" content="Profil Inovasi Daerah GEMASMART: Sistem Informasi Manajemen Bantuan Bibit, Pendampingan Lapangan, dan Monitoring Kemandirian Pangan Keluarga Binaan Kabupaten Sumbawa berbasis Indikator Kemandirian dan Pencegahan Stunting."/>
     <meta name="keywords" content="GemaSmart, Inovasi Daerah, Bappeda Sumbawa, Kabupaten Sumbawa, Bantuan Bibit, Ketahanan Pangan, P3KE, Stunting, IGA Kemendagri"/>
     <meta name="author" content="Bappeda Kabupaten Sumbawa &amp; Perguruan Tinggi Mitra"/>
 
@@ -297,7 +297,7 @@
 
                         <!-- Subtitle Description -->
                         <p class="text-base sm:text-lg text-slate-300 font-normal leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                            <strong class="text-white font-semibold">GEMASMART</strong> memadukan kebijakan fiskal daerah, pendampingan perguruan tinggi mitra (Tim Pendamping &amp; Validator), serta pemantauan geospasial real-time untuk menjamin ketepatan sasaran bagi keluarga <span class="text-amber-300 font-semibold">Desil 1–3 P3KE</span> dan percepatan penanganan stunting di 24 Kecamatan.
+                            <strong class="text-white font-semibold">GEMASMART</strong> memadukan kebijakan fiskal daerah, pendampingan perguruan tinggi mitra (Tim Pendamping &amp; Validator), serta pemantauan geospasial real-time untuk menjamin ketepatan sasaran bagi keluarga <span class="text-amber-300 font-semibold">Indikator Kemandirian Prioritas</span> dan percepatan penanganan stunting di 24 Kecamatan.
                         </p>
 
                         <!-- CTA Action Buttons -->
@@ -361,7 +361,7 @@
                                 <div class="bg-black/30 rounded-xl p-4 border border-white/10">
                                     <span class="text-[11px] text-slate-300 uppercase font-medium block">Target Sasaran</span>
                                     <div class="text-2xl sm:text-3xl font-black text-white mt-1">{{ number_format($stats['total_penerima'] ?? 6426, 0, ',', '.') }} <span class="text-xs font-normal text-slate-400">KK</span></div>
-                                    <span class="text-[10px] text-amber-300 mt-1 block">Desil 1 s.d. 3 P3KE</span>
+                                    <span class="text-[10px] text-amber-300 mt-1 block">Indikator Kemandirian 1–3</span>
                                 </div>
 
                                 <div class="bg-black/30 rounded-xl p-4 border border-white/10">
@@ -463,7 +463,7 @@
                         <ul class="space-y-3.5 text-sm text-slate-700">
                             <li class="flex items-start gap-2.5">
                                 <span class="material-symbols-outlined text-emerald-600 text-[18px] mt-0.5 flex-shrink-0">check_circle</span>
-                                <span><strong>Berbasis Keluarga Penerima Bantuan (KPB):</strong> Intervensi langsung ke rumah tangga Desil 1–3 P3KE untuk ketahanan pangan pekarangan.</span>
+                                <span><strong>Berbasis Keluarga Penerima Bantuan (KPB):</strong> Intervensi langsung ke rumah tangga Indikator Kemandirian 1–3 untuk ketahanan pangan pekarangan.</span>
                             </li>
                             <li class="flex items-start gap-2.5">
                                 <span class="material-symbols-outlined text-emerald-600 text-[18px] mt-0.5 flex-shrink-0">check_circle</span>
@@ -706,7 +706,7 @@
                             </div>
                             <div>
                                 <h3 class="font-bold text-base text-slate-900">Keluarga Penerima Bantuan (KPB)</h3>
-                                <span class="text-xs text-emerald-800 font-semibold">Rumah Tangga Sasaran Desil 1–3</span>
+                                <span class="text-xs text-emerald-800 font-semibold">Rumah Tangga Sasaran Indikator Kemandirian 1–3</span>
                             </div>
                         </div>
                         <p class="text-xs text-slate-600 leading-relaxed">
@@ -768,7 +768,7 @@
                                 <tr class="hover:bg-slate-50 transition-colors">
                                     <td class="py-4 px-6 font-semibold text-slate-900">Unit Sasaran Bantuan</td>
                                     <td class="py-4 px-6 text-slate-600 bg-red-50/20">Kelompok Tani (Poktan), sering elitis</td>
-                                    <td class="py-4 px-6 font-bold text-emerald-800 bg-emerald-50/30">Keluarga Penerima Manfaat (Desil 1–3 P3KE)</td>
+                                    <td class="py-4 px-6 font-bold text-emerald-800 bg-emerald-50/30">Keluarga Penerima Manfaat (Indikator Kemandirian 1–3)</td>
                                     <td class="py-4 px-6 text-slate-600">Keadilan distributif menjangkau warga termiskin</td>
                                 </tr>
                                 <tr class="hover:bg-slate-50 transition-colors">
@@ -920,7 +920,7 @@
                                 <strong>GEMASMART</strong> adalah platform digital terintegrasi milik Pemerintah Kabupaten Sumbawa berkolaborasi dengan Perguruan Tinggi Mitra untuk mengelola, memvalidasi, mendistribusikan, dan memantau bantuan bibit secara akuntabel dan transparan.
                             </p>
                             <p>
-                                Perbedaan utamanya: Bantuan pertanian konvensional umumnya menyasar <em>Kelompok Tani (Poktan)</em> tanpa pendampingan intensif pasca-salur. Sedangkan GemaSmart berfokus pada <strong>Keluarga Penerima Bantuan (KPB / Rumah Tangga)</strong> berbasis data mikro kemiskinan ekstrem (P3KE Desil 1–3) dan lokus pencegahan stunting. Bantuan didampingi langsung oleh tim Pendamping dan Validator dari fase tanam hingga panen dan graduasi mandiri.
+                                Perbedaan utamanya: Bantuan pertanian konvensional umumnya menyasar <em>Kelompok Tani (Poktan)</em> tanpa pendampingan intensif pasca-salur. Sedangkan GemaSmart berfokus pada <strong>Keluarga Penerima Bantuan (KPB / Rumah Tangga)</strong> berbasis data mikro kemiskinan ekstrem (Indikator Kemandirian 1–3) dan lokus pencegahan stunting. Bantuan didampingi langsung oleh tim Pendamping dan Validator dari fase tanam hingga panen dan graduasi mandiri.
                             </p>
                             <div class="pt-2 flex items-center gap-2 text-xs text-slate-500">
                                 <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">Kategori: Kebijakan &amp; Sasaran</span>
@@ -930,7 +930,7 @@
                     </div>
 
                     <!-- Q2 -->
-                    <div class="faq-item bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden transition-all duration-200 hover:border-emerald-400" data-category="kebijakan" data-keywords="siapa penerima kriteria syarat p3ke desil kemiskinan ekstrem stunting pekarangan">
+                    <div class="faq-item bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden transition-all duration-200 hover:border-emerald-400" data-category="kebijakan" data-keywords="siapa penerima kriteria syarat p3ke indikator kemandirian kemiskinan ekstrem stunting pekarangan">
                         <button type="button" onclick="toggleFaq('faq-2')" class="w-full p-5 sm:p-6 text-left flex items-start justify-between gap-4 focus:outline-none">
                             <div class="flex items-start gap-3.5">
                                 <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center flex-shrink-0 mt-0.5">Q2</span>
@@ -941,7 +941,7 @@
                         <div id="faq-ans-faq-2" class="hidden px-6 pb-6 pt-1 text-sm text-slate-600 border-t border-slate-100 leading-relaxed space-y-2">
                             <p>Penerima bantuan ditentukan melalui kriteria terukur:</p>
                             <ul class="list-disc list-inside space-y-1.5 pl-2 text-slate-700">
-                                <li>Terdaftar dalam database resmi <strong>Pensasaran Percepatan Penghapusan Kemiskinan Ekstrem (P3KE) pada Desil 1, Desil 2, atau Desil 3</strong> di Kabupaten Sumbawa.</li>
+                                <li>Terdaftar dalam database resmi <strong>Pensasaran Percepatan Penghapusan Kemiskinan Ekstrem (P3KE) pada Indikator Kemandirian Tingkat 1, 2, atau 3</strong> di Kabupaten Sumbawa.</li>
                                 <li>Keluarga yang memiliki balita berisiko stunting atau ibu hamil pada lokus prioritas penanganan stunting.</li>
                                 <li>Memiliki kesediaan dan ketersediaan lahan pekarangan rumah (tanah atau polybag) serta akses sumber air sederhana.</li>
                                 <li>Telah melalui sensus faktual <em>door-to-door</em> oleh Pendamping Lapangan dan lolos uji petik oleh Validator.</li>
@@ -1585,7 +1585,7 @@
                             <span class="w-7 h-7 rounded-lg bg-amber-700 text-white font-bold text-xs flex items-center justify-center flex-shrink-0">1</span>
                             <div>
                                 <strong class="text-slate-900 block">Sensus Faktual &amp; Ambil Foto Geotagging</strong>
-                                <p class="text-xs text-slate-600 mt-1">Buka menu <em>Input CPCL</em> melalui smartphone. Masukkan NIK, No KK, desil, ambil foto lahan dan koordinat GPS di lokasi calon penerima.</p>
+                                <p class="text-xs text-slate-600 mt-1">Buka menu <em>Input CPCL</em> melalui smartphone. Masukkan NIK, No KK, indikator kemandirian, ambil foto lahan dan koordinat GPS di lokasi calon penerima.</p>
                             </div>
                         </div>
 
@@ -1837,7 +1837,7 @@
                                     <span class="material-symbols-outlined text-emerald-700 text-[18px] shrink-0 mt-0.5">verified</span>
                                     <div>
                                         <strong>Terverifikasi KPB:</strong> ${data.nama} (${data.desa}, Kec. ${data.kecamatan})<br>
-                                        <span class="text-[11px] text-emerald-800">${data.program || 'Bantuan Bibit'} ${data.desil ? '• ' + data.desil : ''}</span>
+                                        <span class="text-[11px] text-emerald-800">${data.program || 'Bantuan Bibit'} ${data.indikator_kemandirian ? '• ' + data.indikator_kemandirian : ''}</span>
                                     </div>
                                 `;
                                 if (namaInput && !namaInput.value.trim()) {
